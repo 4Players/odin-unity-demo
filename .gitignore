@@ -1,0 +1,4 @@
+#exclude builds
+/[Bb]uild/
+/[Bb]uilds/
+
