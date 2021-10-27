@@ -24,9 +24,16 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void InstantiatePlayer()
         {
-            if (null != playerPrefab && PhotonNetwork.IsConnectedAndReady)
+            if (null != playerPrefab)
             {
-                _instantiatedPlayer = PhotonNetwork.Instantiate(playerPrefab.name, spawnLocation, Quaternion.identity);
+                if (PhotonNetwork.IsConnectedAndReady)
+                {
+                    _instantiatedPlayer = PhotonNetwork.Instantiate(playerPrefab.name, spawnLocation, Quaternion.identity);
+                }
+                else
+                {
+                    _instantiatedPlayer = Instantiate(playerPrefab, spawnLocation, Quaternion.identity);
+                }
             }
         }
     }

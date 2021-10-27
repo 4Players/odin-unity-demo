@@ -1,17 +1,27 @@
+using System;
+using ODIN_Sample.Scripts.Runtime.Data;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
-    public class PhotonAutoLogin : MonoBehaviourPunCallbacks
+    public class PhotonAutoJoinRoom : MonoBehaviourPunCallbacks
     {
+        [SerializeField] private StringVariable roomName;
+
+        private void Awake()
+        {
+            Assert.IsNotNull(roomName);
+        }
+
         public void Start()
         {
             PhotonNetwork.AutomaticallySyncScene = true;
             if (PhotonNetwork.IsConnected)
             {
-                PhotonNetwork.JoinRandomRoom();
+                PhotonNetwork.JoinOrCreateRoom(roomName.Value, new RoomOptions(), TypedLobby.Default);
             }
             else
             {
@@ -40,7 +50,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             Debug.Log("Failed to join room, creating new room.");
             PhotonNetwork.CreateRoom(null, new RoomOptions());
-
         }
 
         public override void OnJoinedRoom()

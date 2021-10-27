@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 2753487309498945344}
   - component: {fileID: 2753487309498945345}
   - component: {fileID: 2117767823}
+  - component: {fileID: 8467058282131849167}
   m_Layer: 6
   m_Name: PlayerMesh
   m_TagString: Untagged
@@ -214,6 +215,18 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &8467058282131849167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2753487309498945351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf93ad0fbb3e8654a82a0f1e946fd27f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2753487309664625877
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,6 +240,7 @@ GameObject:
   - component: {fileID: 514420905}
   - component: {fileID: 1127366961609738256}
   - component: {fileID: 1142259676711152276}
+  - component: {fileID: 1070322640664595568}
   m_Layer: 0
   m_Name: ThirdPersonPlayer
   m_TagString: Untagged
@@ -322,6 +336,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localPlayerOnly: {fileID: 295737307298345554}
+--- !u!114 &1070322640664595568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2753487309664625877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 958070e9ccbeec24b917c968c300d65b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  odinAudioSourcePrefab: {fileID: 0}
 --- !u!1 &2753487309756592916
 GameObject:
   m_ObjectHideFlags: 0
