@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
-    [RequireComponent(typeof(CharacterController))]
+    /// <summary>
+    /// Will use the given input and the linked CharacterController to implement basic movement.
+    /// </summary>
     public class Movement : MonoBehaviour
     {
         [Header("Input")]
@@ -15,13 +17,12 @@ namespace ODIN_Sample.Runtime.ThirdPerson
         [SerializeField] private float movementSpeed = 10.0f;
         [SerializeField] private float sprintMultiplier = 1.5f;
         
-
-        private CharacterController _characterController = null;
+        [Header("References")]
+        [SerializeField] private CharacterController characterController = null;
 
         private void Awake()
         {
-            _characterController = GetComponent<CharacterController>();
-            Assert.IsNotNull(_characterController);
+            Assert.IsNotNull(characterController);
         }
 
         // Update is called once per frame
@@ -35,7 +36,7 @@ namespace ODIN_Sample.Runtime.ThirdPerson
             Vector3 input = new Vector3(horizontal, 0.0f, vertical);
             Vector3 deltaMovement = (input.x * transform.right + input.z * transform.forward) * movementSpeed * currentSprintMultiplier;
             
-            _characterController.SimpleMove(deltaMovement);
+            characterController.SimpleMove(deltaMovement);
         }
     }
 }
