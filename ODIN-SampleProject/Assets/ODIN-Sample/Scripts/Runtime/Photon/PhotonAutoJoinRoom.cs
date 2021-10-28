@@ -43,18 +43,19 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
+            Debug.LogError($"Could not join room {roomName.Value}, joining room with null roomName");
             OnFailedToJoinAnyRoom();
         }
 
         private void OnFailedToJoinAnyRoom()
         {
-            Debug.Log("Failed to join room, creating new room.");
+            Debug.Log($"Failed to join Photon room {roomName.Value}, creating new room.");
             PhotonNetwork.CreateRoom(null, new RoomOptions());
         }
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("Joined room.");
+            Debug.Log($"Joined Photon {roomName.Value} room.");
         }
     }
 }

@@ -7,5 +7,10 @@ namespace ODIN_Sample.Scripts.Runtime.Data
     {
         [field: SerializeField]
         public string Value { get; set; } = "default";
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

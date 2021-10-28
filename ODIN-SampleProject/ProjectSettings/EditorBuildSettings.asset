@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Samples/4Players ODIN/0.3.8/Audio 3D example/Sample3dScene.unity
+    guid: 3640ef761a0eda24a94dcb4d20e44d15
+  - enabled: 1
     path: Assets/ODIN-Sample/Scenes/Lobby.unity
     guid: 0b710b7d9f236ba4f89805ce02330ea3
   - enabled: 1
