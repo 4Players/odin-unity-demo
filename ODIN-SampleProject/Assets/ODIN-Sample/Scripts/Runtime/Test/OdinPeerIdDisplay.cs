@@ -22,7 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.Test
                 {
                     foreach (Peer peer in room.RemotePeers)
                     {
-                        if (peer.Id == room.Self.Id)
+                        if (null != room.Self && peer.Id == room.Self.Id)
                         {
                             displayBuilder.AppendLine($"Room: {room.Config.Name}, Self peer Id: {peer.Id}");
                         }

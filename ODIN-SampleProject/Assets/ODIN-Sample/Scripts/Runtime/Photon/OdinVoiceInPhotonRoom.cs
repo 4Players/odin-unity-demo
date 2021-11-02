@@ -44,11 +44,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
         }
 
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            base.OnPlayerEnteredRoom(newPlayer);
-        }
-
         public override void OnJoinedRoom()
         {
             if (!photonView.IsMine)
@@ -95,6 +90,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                     {
                         foreach (MediaStream media in peer.Medias)
                         {
+                            
                             if (media is PlaybackStream)
                             {
                                 SpawnOdinPlayback(room.Config.Name, media.Id);
