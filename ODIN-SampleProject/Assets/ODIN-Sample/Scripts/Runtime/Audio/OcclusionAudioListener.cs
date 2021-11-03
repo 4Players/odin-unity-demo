@@ -37,7 +37,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         private void OnTriggerEnter(Collider other)
         {
             _audioSources.AddRange(other.GetComponentsInChildren<AudioSource>());
-            // Debug.Log($"Tried Adding from {other.name} - AudioSource Count: {_audioSources.Count}");
         }
 
         private void OnTriggerExit(Collider other)
@@ -46,13 +45,20 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             {
                 _audioSources.Remove(audioSource);
             }
-            // Debug.Log($"Tried Removing from {other.name} - AudioSource Count: {_audioSources.Count}");
         }
 
         private void Update()
         {
-            foreach (AudioSource audioSource in _audioSources)
+
+            for (int i = _audioSources.Count-1; i >= 0; i--)
             {
+                AudioSource audioSource = _audioSources[i];
+                if (!audioSource)
+                {
+                    _audioSources.RemoveAt(i);
+                    continue;
+                }
+                
                 Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
                 Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
                 var forwardHits = GetOccluderHits(rayOrigins[0], toAudioSource);
@@ -62,30 +68,42 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
                 Assert.IsTrue(forwardHits.Count == backwardsHits.Count);
                 
-                float occlusionThicknessSum = GetOcclusionThickness(forwardHits, backwardsHits, toAudioSource);
+                float occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toAudioSource);
                 if (occlusionThicknessSum > 0.0f)
                 {
-                    float cutoffFrequency = occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
-                    AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
-                    if (!filter)
-                        filter = audioSource.gameObject.AddComponent<AudioLowPassFilter>();
-                    Assert.IsNotNull(filter);
-                    filter.enabled = true;
-                    filter.cutoffFrequency = cutoffFrequency;
+                    SetOcclusionEffectFromThickness(occlusionThicknessSum, audioSource);
                 }
                 else
                 {
-                    AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
-                    if (filter)
-                    {
-                        filter.enabled = false;
-                    }
+                    DeactivateOcclusionEffect(audioSource);
                 }
             }
         }
 
-        private static float GetOcclusionThickness(List<RaycastHit> forwardHits, List<RaycastHit> backwardsHits, Vector3 toAudioSource)
+        private void SetOcclusionEffectFromThickness(float occlusionThicknessSum, AudioSource audioSource)
         {
+            float cutoffFrequency = occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
+            AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
+            if (!filter)
+                filter = audioSource.gameObject.AddComponent<AudioLowPassFilter>();
+            Assert.IsNotNull(filter);
+            filter.enabled = true;
+            filter.cutoffFrequency = cutoffFrequency;
+        }
+
+        private static void DeactivateOcclusionEffect(AudioSource audioSource)
+        {
+            AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
+            if (filter)
+            {
+                filter.enabled = false;
+            }
+        }
+
+        private static float GetOccluderThickness(List<RaycastHit> forwardHits, List<RaycastHit> backwardsHits, Vector3 toAudioSource)
+        {
+            Assert.IsTrue(forwardHits.Count == backwardsHits.Count);
+            
             float occlusionThicknessSum = 0.0f;
             for (int forwardsIndex = 0; forwardsIndex < forwardHits.Count; ++forwardsIndex)
             {
@@ -96,6 +114,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 {
                     float occlusionThickness = toAudioSource.magnitude - forwardHit.distance -
                                                backwardHit.distance;
+                    //make every occluding object at least a millimeter thick.
+                    occlusionThickness = Mathf.Max(occlusionThickness, 0.001f);
 
                     occlusionThicknessSum += occlusionThickness;
                 }
@@ -134,7 +154,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// <param name="origins">The ray origins.</param>
         private void RemoveOriginCollisions(ref List<RaycastHit> hits, params Vector3[] origins)
         {
-            for (int i = hits.Count - 1; i > -1; i--)
+            for (int i = hits.Count - 1; i >= 0; i--)
             {
                 RaycastHit occludingHit = hits[i];
                 foreach (Vector3 origin in origins)
@@ -142,6 +162,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                     if (occludingHit.collider.bounds.Contains(origin))
                     {
                         hits.RemoveAt(i);
+                        break;
                     }
                 }
             }

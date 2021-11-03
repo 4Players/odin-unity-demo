@@ -10,6 +10,8 @@ namespace ODIN_Sample.Scripts.Runtime.Test
     public class OdinPeerIdDisplay : MonoBehaviour
     {
         [SerializeField] private Text display;
+        [SerializeField] private bool logOutput = false;
+        
         
         private StringBuilder displayBuilder = new StringBuilder();
 
@@ -52,8 +54,14 @@ namespace ODIN_Sample.Scripts.Runtime.Test
                     
                 }
             }
-            display.text = displayBuilder.ToString();
+
+            string displayString = displayBuilder.ToString();
             displayBuilder.Clear();
+
+            display.text = displayString;
+            if(logOutput)
+                Debug.Log(displayString);
+            
         }
     }
 }

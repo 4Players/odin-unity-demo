@@ -28,7 +28,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             {
                 Debug.Log($"Odin - joining room {refRoomName.Value}");
                 OdinHandler.Instance.JoinRoom(refRoomName.Value, userId);
-
             }
         }
 
@@ -39,6 +38,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 Debug.Log($"Odin - leaving room {refRoomName.Value}");
                 OdinHandler.Instance.LeaveRoom(refRoomName.Value);
             }
+
         }
     }
 }
