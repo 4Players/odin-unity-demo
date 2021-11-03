@@ -61,26 +61,46 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 RemoveOriginCollisions(ref backwardsHits, rayOrigins);
 
                 Assert.IsTrue(forwardHits.Count == backwardsHits.Count);
-
-                float occlusionThicknessSum = 0.0f;
                 
-                for (int forwardsIndex = 0; forwardsIndex < forwardHits.Count; ++forwardsIndex)
+                float occlusionThicknessSum = GetOcclusionThickness(forwardHits, backwardsHits, toAudioSource);
+                if (occlusionThicknessSum > 0.0f)
                 {
-                    int backwardsIndex = backwardsHits.Count - 1 - forwardsIndex;
-                    var forwardHit = forwardHits[forwardsIndex];
-                    var backwardHit = backwardsHits[backwardsIndex];
-                    if (forwardHit.collider == backwardHit.collider)
+                    float cutoffFrequency = occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
+                    AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
+                    if (!filter)
+                        filter = audioSource.gameObject.AddComponent<AudioLowPassFilter>();
+                    Assert.IsNotNull(filter);
+                    filter.enabled = true;
+                    filter.cutoffFrequency = cutoffFrequency;
+                }
+                else
+                {
+                    AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
+                    if (filter)
                     {
-                        float occlusionThickness = toAudioSource.magnitude - forwardHit.distance -
-                                                   backwardHit.distance;
-
-                        occlusionThicknessSum += occlusionThickness;
-                        Debug.Log($"Occlusion thickness of object {forwardHit.collider.name} = {occlusionThickness}");
+                        filter.enabled = false;
                     }
                 }
-                
-                
             }
+        }
+
+        private static float GetOcclusionThickness(List<RaycastHit> forwardHits, List<RaycastHit> backwardsHits, Vector3 toAudioSource)
+        {
+            float occlusionThicknessSum = 0.0f;
+            for (int forwardsIndex = 0; forwardsIndex < forwardHits.Count; ++forwardsIndex)
+            {
+                int backwardsIndex = backwardsHits.Count - 1 - forwardsIndex;
+                var forwardHit = forwardHits[forwardsIndex];
+                var backwardHit = backwardsHits[backwardsIndex];
+                if (forwardHit.collider == backwardHit.collider)
+                {
+                    float occlusionThickness = toAudioSource.magnitude - forwardHit.distance -
+                                               backwardHit.distance;
+
+                    occlusionThicknessSum += occlusionThickness;
+                }
+            }
+            return occlusionThicknessSum;
         }
 
         /// <summary>
