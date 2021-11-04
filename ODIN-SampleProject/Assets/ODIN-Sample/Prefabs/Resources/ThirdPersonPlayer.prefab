@@ -233,7 +233,6 @@ GameObject:
   - component: {fileID: 1127366961609738256}
   - component: {fileID: 1142259676711152276}
   - component: {fileID: 1070322640664595568}
-  - component: {fileID: 3183418718983588453}
   m_Layer: 0
   m_Name: ThirdPersonPlayer
   m_TagString: Untagged
@@ -340,22 +339,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958070e9ccbeec24b917c968c300d65b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  refRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   refPlayerName: {fileID: 11400000, guid: 3b0f5470e3024fb409c41d4969c7c596, type: 2}
   odinAudioSourcePrefab: {fileID: 1106984047728189001, guid: 7a4cfbae9051d514bba40fbe578d208a, type: 3}
---- !u!136 &3183418718983588453
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2753487309664625877}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2753487309756592916
 GameObject:
   m_ObjectHideFlags: 0

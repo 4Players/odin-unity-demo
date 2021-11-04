@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ODIN_Sample.Scripts.Runtime.Data;
+using OdinNative.Odin;
 using OdinNative.Odin.Media;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
+using OdinNative.Unity;
 using OdinNative.Unity.Audio;
 using Photon.Pun;
 using Photon.Realtime;
@@ -18,10 +20,12 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     [DisallowMultipleComponent]
     public class OdinVoiceInPhotonRoom : MonoBehaviourPunCallbacks
     {
+        [SerializeField] private StringVariable refRoomName;
         [SerializeField] private StringVariable refPlayerName;
         [SerializeField] private PlaybackComponent odinAudioSourcePrefab;
 
-
+        private Dictionary<string, ulong> roomToPeerIds = new Dictionary<string, ulong>();
+        
         private Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia = new Dictionary<(string, ulong, int), PlaybackComponent>();
 
         private void Awake()
@@ -29,28 +33,56 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             Assert.IsNotNull(odinAudioSourcePrefab);
             Assert.IsNotNull(refPlayerName);
         }
-        
+
+        private void Start()
+        {
+            string userId = refPlayerName.Value + DateTime.Now.Ticks;
+
+            if (!PhotonNetwork.IsConnected)
+                return;
+
+            if (photonView.IsMine)
+            {
+                if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
+                {
+                    Debug.Log($"Odin - joining room {refRoomName.Value}");
+                    OdinHandler.Instance.JoinRoom(refRoomName.Value, userId);
+                }
+            }
+        }
+
         public override void OnEnable()
         {
             base.OnEnable();
-            // OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
-            OdinHandler.Instance.OnCreatedMediaObject.AddListener(OnCreatedMediaObject);
+            OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
         }
-
-       
 
         public override void OnDisable()
         {
             base.OnDisable();
-            // OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
-            OdinHandler.Instance.OnCreatedMediaObject.RemoveListener(OnCreatedMediaObject);
+            OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
         }
-        
-        // private void OnRoomJoined(RoomJoinedEventArgs arg0)
-        // {
-        //     Debug.Log($"On Room Joined was called.");
-        //     BroadcastRemoteUpdate();
-        // }
+
+        private void OnMediaAdded(object obj, MediaAddedEventArgs mediaAddedEventArgs)
+        {
+            Debug.Log($"OnMediaAdded with obj {obj}, Peer: {mediaAddedEventArgs.PeerId}, MediaId: {mediaAddedEventArgs.Media.Id}");
+            if (!photonView.IsMine)
+            {
+                Debug.Log("Requesting Peer Ids.");
+                photonView.RPC("RequestPeerIds", RpcTarget.Others);
+            }
+        }
+
+
+        [PunRPC]
+        private void RequestPeerIds()
+        {
+            if (photonView.IsMine)
+            {
+                Debug.Log("Received Peer Id Request.");
+                BroadcastRemoteUpdate();
+            }
+        }
 
         private void BroadcastRemoteUpdate()
         {
@@ -58,50 +90,60 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             {
                 if (null != room.MicrophoneMedia)
                 {
-                    int microphoneMediaId = room.MicrophoneMedia.Id;
                     ulong peerId = room.MicrophoneMedia.GetPeerId();
-                    RequestRemoteMediaObjectCreation(room.Config.Name, peerId, microphoneMediaId);
+                    BroadcastPeerId(room.Config.Name, peerId);
                 }
-            }
-        }
-        
-        private void OnCreatedMediaObject(string roomId, ulong peerId, int mediaId)
-        {
-            BroadcastRemoteUpdate();
-            // StartCoroutine(DelayedOnCreatedMediaObject(roomId, peerId, mediaId));
-        }
-
-        private IEnumerator DelayedOnCreatedMediaObject(string roomId, ulong peerId, int mediaId)
-        {
-            yield return null;
-            
-            Debug.Log($"On Created Media Object - Room: {roomId}, Peer: {peerId}, Media: {mediaId}");
-            if (photonView.IsMine && OdinHandler.Instance.Rooms.Contains(roomId))
-            {
-                bool hasOwnerCreatedMedia = OdinHandler.Instance.Rooms[roomId].MicrophoneMedia.GetPeerId() == peerId;
-                if (hasOwnerCreatedMedia)
+                else
                 {
-                    RequestRemoteMediaObjectCreation(roomId, peerId, mediaId);
+                    Debug.LogError($"MicrophoneMedia in room {room.Config.Name} is null.");
                 }
             }
         }
 
-        private void RequestRemoteMediaObjectCreation(string roomId, ulong peerId, int mediaId)
+        private void BroadcastPeerId(string roomId, ulong peerId)
         {
-            Debug.Log($"Requesting remote create Media Object: Room: {roomId}, Peer: {peerId}, Media: {mediaId}");
-            photonView.RPC("OnRemoteCreateMedia", RpcTarget.Others, roomId, (long)peerId, mediaId);
+            Debug.Log($"RequestBroadcastPeerId: Room: {roomId}, Peer: {peerId}");
+            photonView.RPC("OnUpdatePeerId", RpcTarget.Others, roomId, (long) peerId);
         }
 
         [PunRPC]
-        private void OnRemoteCreateMedia(string roomId, long peerId, int mediaId)
+        private void OnUpdatePeerId(string roomId, long peerId)
         {
             if (!photonView.IsMine)
             {
-                Debug.Log($"Remote Created Media Object: Room: {roomId}, Peer: {peerId}, Media: {mediaId}");
-                SpawnOdinPlayback(roomId, (ulong)peerId, mediaId);
+                Debug.Log($"OnUpdatePeerId: {roomId}, Peer: {peerId}");
+                roomToPeerIds[roomId] = (ulong)peerId;
+                UpdatePlaybacks();
             }
         }
-        
+
+        private void UpdatePlaybacks()
+        {
+            foreach (string roomId in roomToPeerIds.Keys)
+            {
+                ulong peerId = roomToPeerIds[roomId];
+                if (OdinHandler.Instance.Rooms.Contains(roomId))
+                {
+                    Room room = OdinHandler.Instance.Rooms[roomId];
+                    foreach (Peer peer in room.RemotePeers)
+                    {
+                        if (peer.Id == peerId)
+                        {
+                            UpdatePlaybackComponents(peer, roomId);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdatePlaybackComponents(Peer peer, string roomId)
+        {
+            foreach (MediaStream mediaStream in peer.Medias)
+            {
+                SpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
+            }
+        }
+
         private PlaybackComponent SpawnOdinPlayback(string roomName, ulong peerId,  int mediaId)
         {
             var dictionaryKey = (roomName, peerId, mediaId);
