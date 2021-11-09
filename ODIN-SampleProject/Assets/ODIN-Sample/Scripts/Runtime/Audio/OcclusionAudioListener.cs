@@ -66,17 +66,23 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 var backwardsHits = GetOccluderHits(rayOrigins[1], -toAudioSource);
                 RemoveOriginCollisions(ref backwardsHits, rayOrigins);
 
-                Assert.IsTrue(forwardHits.Count == backwardsHits.Count);
-                
-                float occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toAudioSource);
-                if (occlusionThicknessSum > 0.0f)
+                if (forwardHits.Count == backwardsHits.Count)
                 {
-                    SetOcclusionEffectFromThickness(occlusionThicknessSum, audioSource);
+                    float occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toAudioSource);
+                    if (occlusionThicknessSum > 0.0f)
+                    {
+                        SetOcclusionEffectFromThickness(occlusionThicknessSum, audioSource);
+                    }
+                    else
+                    {
+                        DeactivateOcclusionEffect(audioSource);
+                    }
                 }
                 else
                 {
-                    DeactivateOcclusionEffect(audioSource);
+                    Debug.LogWarning("ODIN - Audio Occlusion: Number of forwards hits not equal to number of backwards hits.");
                 }
+                
             }
         }
 

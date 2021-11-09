@@ -43,6 +43,13 @@ MonoBehaviour:
   - OnUpdatePeerId
   - OnRemoteCreateMedia
   - RequestPeerIds
+  - SetColor
+  - SetCapsuleColor
+  - OnRequestColorSync
+  - PerformColorSync
+  - OnRequestedColorSync
+  - OnReceivedPeerIdUpdate
+  - OnRequestedPeerIds
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

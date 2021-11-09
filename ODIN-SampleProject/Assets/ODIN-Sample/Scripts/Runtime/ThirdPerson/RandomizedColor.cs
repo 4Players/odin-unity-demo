@@ -1,26 +1,69 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
-    [RequireComponent(typeof(Renderer))]
-    public class RandomizedColor : MonoBehaviour
+    public class RandomizedColor : MonoBehaviourPunCallbacks
     {
-        private Renderer _renderer;
+        [SerializeField]
+        private Renderer capsuleRenderer = null;
+        private static string ColorKey => "PlayerColor";
 
         private void Awake()
         {
-            _renderer = GetComponent<Renderer>();
-            Assert.IsNotNull(_renderer);
+            Assert.IsNotNull(photonView);
+            Assert.IsNotNull(capsuleRenderer);
 
-            if (null != _renderer)
+            if (capsuleRenderer && photonView.IsMine)
             {
-                _renderer.material.color = Random.ColorHSV();
+                Random.InitState(SystemInfo.deviceUniqueIdentifier.GetHashCode());
+                Color playerColor = Random.ColorHSV();
+                if (PlayerPrefs.HasKey(ColorKey))
+                {
+                    string playerColorString = PlayerPrefs.GetString(ColorKey);
+                    ColorUtility.TryParseHtmlString("#" + playerColorString, out playerColor);
+                }
+                else
+                {
+                    PlayerPrefs.SetString(ColorKey, ColorUtility.ToHtmlStringRGB(playerColor));
+                    PlayerPrefs.Save();
+                }
+                capsuleRenderer.material.color = playerColor;
+                
+                if(PhotonNetwork.IsConnected)
+                    SendColorSync();
             }
         }
         
+
+        public override void OnJoinedRoom()
+        {
+            if (photonView.IsMine)
+            {
+                SendColorSync();
+            }
+        }
         
+        private void SendColorSync()
+        {
+            Debug.Log("Sending Color Sync");
+            photonView.RPC("PerformColorSync", RpcTarget.OthersBuffered,
+                ColorUtility.ToHtmlStringRGB(capsuleRenderer.material.color));
+        }
+        
+        [PunRPC]
+        private void PerformColorSync(string colorName)
+        {
+            Debug.Log($"Received PerformColorSync: {colorName}");
+            if (!photonView.IsMine)
+            {
+                ColorUtility.TryParseHtmlString("#" + colorName, out Color capsuleColor);
+                capsuleRenderer.material.color = capsuleColor;
+                Debug.Log($"Successfully set remote capsule color.");
+            }
+        }
     }
 }
