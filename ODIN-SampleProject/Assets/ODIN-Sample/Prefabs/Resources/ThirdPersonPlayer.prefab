@@ -330,6 +330,9 @@ MonoBehaviour:
   refRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   refPlayerName: {fileID: 11400000, guid: 3b0f5470e3024fb409c41d4969c7c596, type: 2}
   odinAudioSourcePrefab: {fileID: 1106984047728189001, guid: 7a4cfbae9051d514bba40fbe578d208a, type: 3}
+  onPlaybackComponentAdded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &674250535690355230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,6 +389,7 @@ GameObject:
   - component: {fileID: 2753487310897480874}
   - component: {fileID: 2753487310897480875}
   - component: {fileID: 2753487310897480872}
+  - component: {fileID: 8661089412719448497}
   m_Layer: 0
   m_Name: ViewDirection
   m_TagString: Untagged
@@ -672,6 +676,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2753487310897480879}
   m_Mesh: {fileID: 0}
+--- !u!114 &8661089412719448497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2753487310897480879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  voiceUser: {fileID: 1070322640664595568}
+  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0

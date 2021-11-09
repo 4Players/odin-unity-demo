@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
     [RequireComponent(typeof(InputField))]
-    public class PlayerName : MonoBehaviour
+    public class SetPlayerNameBehaviour : MonoBehaviour
     {
         [SerializeField] private StringVariable playerName;
 

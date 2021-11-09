@@ -12,7 +12,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         private MicrophoneReader _microphoneReader;
         
-
         private void Awake()
         {
             _microphoneReader = GetComponent<MicrophoneReader>();

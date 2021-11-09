@@ -13,19 +13,21 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Events;
 using Room = OdinNative.Odin.Room.Room;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
     [DisallowMultipleComponent]
-    public class OdinVoiceInPhotonRoom : MonoBehaviourPunCallbacks
+    public class OdinVoiceUser : MonoBehaviourPunCallbacks
     {
         [SerializeField] private StringVariable refRoomName;
         [SerializeField] private StringVariable refPlayerName;
         [SerializeField] private PlaybackComponent odinAudioSourcePrefab;
 
+        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
+
         private Dictionary<string, ulong> roomToPeerIds = new Dictionary<string, ulong>();
-        
         private Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia = new Dictionary<(string, ulong, int), PlaybackComponent>();
 
         private void Awake()
@@ -43,7 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             {
                 if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
                 {
-                    Debug.Log($"Odin - joining room {refRoomName.Value}");
+                    Debug.Log($"ODIN - joining room {refRoomName.Value}");
                     
                     OdinUserData odinUserData = new OdinUserData();
                     odinUserData.name = refPlayerName.Value;
@@ -58,8 +60,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
         }
-
-        
 
         public override void OnDisable()
         {
@@ -135,13 +135,13 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                 {
                     foreach (MediaStream mediaStream in peer.Medias)
                     {
-                        SpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
+                        TrySpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
                     }
                 }
             }
         }
 
-        private PlaybackComponent SpawnOdinPlayback(string roomName, ulong peerId,  int mediaId)
+        private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId,  int mediaId)
         {
             var dictionaryKey = (roomName, peerId, mediaId);
             if (registeredRemoteMedia.ContainsKey(dictionaryKey))
@@ -159,6 +159,8 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             playbackComponent.transform.localRotation = Quaternion.identity;
             
             registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
+            
+            onPlaybackComponentAdded?.Invoke(playbackComponent);
             
             return playbackComponent;
         }
