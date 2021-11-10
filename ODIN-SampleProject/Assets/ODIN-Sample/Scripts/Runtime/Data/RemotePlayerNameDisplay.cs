@@ -3,6 +3,7 @@ using ODIN_Sample.Scripts.Runtime.Photon;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
+using WebSocketSharp;
 
 namespace ODIN_Sample.Scripts.Runtime.Data
 {
@@ -27,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.Data
             string displayedName = "";
             if (photonView.IsMine)
             {
-                displayedName = TruncateName(playerName.Value);
+                displayedName = AdjustName(playerName.Value);
                 nameDisplay.text = displayedName;
 
                 photonView.RPC("UpdateName", RpcTarget.OthersBuffered, playerName.Value);
@@ -40,12 +41,16 @@ namespace ODIN_Sample.Scripts.Runtime.Data
             if (!photonView.IsMine)
             {
                 _remoteName = remotePlayerName;
-                nameDisplay.text = TruncateName(remotePlayerName);
+                nameDisplay.text = AdjustName(remotePlayerName);
             }
         }
 
-        private string TruncateName(string displayedName)
+        private string AdjustName(string displayedName)
         {
+            if (displayedName.IsNullOrEmpty())
+            {
+                displayedName = "Player";
+            }
             if (displayedName.Length > maxDisplayCharacters)
             {
                 displayedName = displayedName.Substring(0, maxDisplayCharacters) + "...";

@@ -49,16 +49,18 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void Update()
         {
-
+            // iterate backwards in case we remove an audio source from the list
             for (int i = _audioSources.Count-1; i >= 0; i--)
             {
                 AudioSource audioSource = _audioSources[i];
+                // Remove already destroyed audiosources from our list
                 if (!audioSource)
                 {
                     _audioSources.RemoveAt(i);
                     continue;
                 }
-                
+
+
                 Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
                 Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
                 var forwardHits = GetOccluderHits(rayOrigins[0], toAudioSource);
@@ -68,10 +70,21 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
                 if (forwardHits.Count == backwardsHits.Count)
                 {
+                    
+                    foreach (RaycastHit hit in forwardHits)
+                    {
+                        AudioObstacle audioObstacle = hit.collider.GetComponent<AudioObstacle>();
+                        if (audioObstacle)
+                        {
+                            
+                        }
+                    }
+                    
                     float occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toAudioSource);
                     if (occlusionThicknessSum > 0.0f)
                     {
-                        SetOcclusionEffectFromThickness(occlusionThicknessSum, audioSource);
+                        float cutoffFrequency = occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
+                        SetOcclusionEffect(cutoffFrequency, audioSource);
                     }
                     else
                     {
@@ -82,16 +95,14 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 {
                     Debug.LogWarning("ODIN - Audio Occlusion: Number of forwards hits not equal to number of backwards hits.");
                 }
-                
             }
         }
 
-        private void SetOcclusionEffectFromThickness(float occlusionThicknessSum, AudioSource audioSource)
+        private void SetOcclusionEffect(float cutoffFrequency, AudioSource source)
         {
-            float cutoffFrequency = occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
-            AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
+            AudioLowPassFilter filter = source.GetComponent<AudioLowPassFilter>();
             if (!filter)
-                filter = audioSource.gameObject.AddComponent<AudioLowPassFilter>();
+                filter = source.gameObject.AddComponent<AudioLowPassFilter>();
             Assert.IsNotNull(filter);
             filter.enabled = true;
             filter.cutoffFrequency = cutoffFrequency;
@@ -138,6 +149,10 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         private List<RaycastHit> GetOccluderHits(Vector3 rayOrigin, Vector3 rayDirection)
         {
             Ray occluderRay = new Ray(rayOrigin, rayDirection);
+            
+            // TODO: Improve performance by using Non-Alloc Raycast
+            // Using two arrays with a fixed max size would only be problematic if numFoundHits > max size
+            // but in that case we can just assume, that the max occlusion effect can be applied.
             List<RaycastHit> occludingHits = new List<RaycastHit>(
                 Physics.RaycastAll(
                     occluderRay,
