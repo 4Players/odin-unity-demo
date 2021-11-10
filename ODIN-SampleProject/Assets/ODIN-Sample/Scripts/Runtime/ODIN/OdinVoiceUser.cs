@@ -21,59 +21,32 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     [DisallowMultipleComponent]
     public class OdinVoiceUser : MonoBehaviourPunCallbacks
     {
-        [SerializeField] private StringVariable refRoomName;
-        [SerializeField] private StringVariable refPlayerName;
         [SerializeField] private PlaybackComponent odinAudioSourcePrefab;
 
         public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
 
         private Dictionary<string, ulong> roomToPeerIds = new Dictionary<string, ulong>();
-        private Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia = new Dictionary<(string, ulong, int), PlaybackComponent>();
+
+        private Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia =
+            new Dictionary<(string, ulong, int), PlaybackComponent>();
 
         private void Awake()
         {
             Assert.IsNotNull(odinAudioSourcePrefab);
-            Assert.IsNotNull(refPlayerName);
-        }
-
-        private void Start()
-        {
-            if (!PhotonNetwork.IsConnected)
-                return;
-
-            if (photonView.IsMine)
-            {
-                if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
-                {
-                    Debug.Log($"ODIN - joining room {refRoomName.Value}");
-                    
-                    OdinUserData odinUserData = new OdinUserData();
-                    odinUserData.name = refPlayerName.Value;
-                    OdinHandler.Instance.JoinRoom(refRoomName.Value, odinUserData.ToUserData());
-                }
-            }
         }
 
         public override void OnEnable()
         {
             base.OnEnable();
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
-            OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
             OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
-            OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
         }
-        
-        private void OnRoomJoined(RoomJoinedEventArgs roomJoinedArgs)
-        {
-            OdinUserData odinUserData = new OdinUserData();
-            odinUserData.name = refPlayerName.Value;
-            roomJoinedArgs.Room.UpdateUserData(odinUserData.ToUserData());
-        }
+
 
         private void OnMediaAdded(object obj, MediaAddedEventArgs mediaAddedEventArgs)
         {
@@ -93,7 +66,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                     if (null != room.MicrophoneMedia)
                     {
                         ulong peerId = room.MicrophoneMedia.GetPeerId();
-                        photonView.RPC("OnReceivedPeerIdUpdate", RpcTarget.Others, room.Config.Name, (long) peerId);
+                        photonView.RPC("OnReceivedPeerIdUpdate", RpcTarget.Others, room.Config.Name, (long)peerId);
                     }
                     else
                     {
@@ -141,12 +114,12 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             }
         }
 
-        private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId,  int mediaId)
+        private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId, int mediaId)
         {
             var dictionaryKey = (roomName, peerId, mediaId);
             if (registeredRemoteMedia.ContainsKey(dictionaryKey))
                 return null;
-            
+
             Debug.Log($"New Odin Sound spawned: {roomName} peerId: {peerId} mediaId: {mediaId}");
             PlaybackComponent playbackComponent =
                 Instantiate(odinAudioSourcePrefab.gameObject).GetComponent<PlaybackComponent>();
@@ -157,11 +130,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             playbackComponent.transform.SetParent(transform);
             playbackComponent.transform.localPosition = Vector3.zero;
             playbackComponent.transform.localRotation = Quaternion.identity;
-            
+
             registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
-            
+
             onPlaybackComponentAdded?.Invoke(playbackComponent);
-            
+
             return playbackComponent;
         }
     }
