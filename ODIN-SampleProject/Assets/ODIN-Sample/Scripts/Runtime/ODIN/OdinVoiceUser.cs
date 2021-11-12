@@ -38,13 +38,15 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         public override void OnEnable()
         {
             base.OnEnable();
-            OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+            if(OdinHandler.Instance)
+                OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
-            OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
+            if(OdinHandler.Instance)
+                OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
         }
 
 

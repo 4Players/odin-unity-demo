@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d07926144db411ebc5c5d1c966327e0, type: 3}
   m_Name: OcclusionSettings
   m_EditorClassIdentifier: 
-  audioSourceDetectionRange: 50
+  audioSourceDetectionRange: 100
   audioSourceDetectionLayer:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -21,21 +21,21 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 4000
+      value: 3500
       inSlope: 0
-      outSlope: -2136.3015
+      outSlope: -2405.5364
       tangentMode: 5
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.030952381
+      outWeight: 0.028571429
     - serializedVersion: 3
       time: 4
       value: 100
-      inSlope: 0
-      outSlope: 0
+      inSlope: -148.2086
+      outSlope: -148.2086
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.053571403
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

@@ -9,23 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 43207006181673603, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_Name
-      value: AO_Glass
+      value: AO_Concrete
       objectReference: {fileID: 0}
     - target: {fileID: 43207006181673608, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 43207006181673608, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_SelectedEdges.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 43207006181673608, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_SelectedFaces.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 43207006181673608, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_SelectedVertices.Array.size
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 43207006181673612, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_RootOrder
@@ -82,35 +70,15 @@ PrefabInstance:
     - target: {fileID: 43207006181673615, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: d3b353a389b5c9b4184937b265860e92, type: 2}
+      objectReference: {fileID: 2100000, guid: 1eb526b56e308c74da9de8b5a9977566, type: 2}
     - target: {fileID: 237525820043695498, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_Text
-      value: Glass
-      objectReference: {fileID: 0}
-    - target: {fileID: 4196470834272739686, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_Text
-      value: Glass
-      objectReference: {fileID: 0}
-    - target: {fileID: 4196470834272739686, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_FontStyle
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6377363992248980929, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.11
-      objectReference: {fileID: 0}
-    - target: {fileID: 6377363992248980929, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.11
-      objectReference: {fileID: 0}
-    - target: {fileID: 6377363992248980929, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.11
+      value: Concrete
       objectReference: {fileID: 0}
     - target: {fileID: 8208957543244139321, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: settings
       value: 
-      objectReference: {fileID: 11400000, guid: 09722560fd072c24c927777ee860d49e, type: 2}
+      objectReference: {fileID: 11400000, guid: 5fd113763b3471a46a1072bc0304ecac, type: 2}
     - target: {fileID: 8208957543244139321, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: audioObstacleData
       value: 

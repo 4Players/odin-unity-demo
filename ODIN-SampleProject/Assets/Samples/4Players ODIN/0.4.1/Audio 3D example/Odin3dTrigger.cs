@@ -55,6 +55,7 @@ public class Odin3dTrigger : MonoBehaviour
 
         playback.OnPlaybackPlayingStatusChanged += TalkIndicator; // set function for talking indication by status
         playback.PlaybackSource.spatialBlend = 1.0f; // set AudioSource to full 3D
+        
 
         //set dummy PeerCube label
         var data = OdinUserData.FromUserData(room.RemotePeers[peerId]?.UserData);

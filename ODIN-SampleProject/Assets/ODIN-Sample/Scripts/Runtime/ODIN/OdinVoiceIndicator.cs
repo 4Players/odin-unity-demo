@@ -43,8 +43,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void Update()
         {
-            if(photonView.IsMine)
-                SetFeedbackColor(OdinHandler.Instance.Microphone.RedirectCapturedAudio);
+            if (photonView && photonView.IsMine)
+            {
+                bool isVoiceOn = false;
+                if (OdinHandler.Instance)
+                    isVoiceOn = OdinHandler.Instance.Microphone.RedirectCapturedAudio;
+                SetFeedbackColor(isVoiceOn);
+            }
         }
 
         private void OnDestroy()

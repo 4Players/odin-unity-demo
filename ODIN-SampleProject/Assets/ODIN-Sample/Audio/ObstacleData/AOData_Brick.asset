@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ad497cd0d4c4967813f33b83094b052, type: 3}
   m_Name: AOData_Brick
   m_EditorClassIdentifier: 
-  cutoffFrequency: 500
-  lowpassResonanceQ: 1
-  reverbPreset: 0
+  effect:
+    cutoffFrequency: 500
+    lowpassResonanceQ: 2
