@@ -23,19 +23,19 @@ namespace ODIN_Sample.Scripts.Runtime.Test
             {
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
-                    foreach (Peer peer in room.RemotePeers)
-                    {
-                        OdinUserData fromUserData = OdinUserData.FromUserData(peer.UserData);
-                        
-                        if (null != room.Self && peer.Id == room.Self.Id)
-                        {
-                            displayBuilder.AppendLine($"Current Name: {fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}");
-                        }
-                        else
-                        {
-                            displayBuilder.AppendLine($"Remote Name: {fromUserData.name},Room: {room.Config.Name}, Remote peer Id: {peer.Id}");
-                        }
-                    }
+                    // foreach (Peer peer in room.RemotePeers)
+                    // {
+                    //     OdinUserData fromUserData = OdinUserData.FromUserData(peer.UserData);
+                    //     
+                    //     if (null != room.Self && peer.Id == room.Self.Id)
+                    //     {
+                    //         displayBuilder.AppendLine($"Current Name: {fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}");
+                    //     }
+                    //     else
+                    //     {
+                    //         displayBuilder.AppendLine($"Remote Name: {fromUserData.name},Room: {room.Config.Name}, Remote peer Id: {peer.Id}");
+                    //     }
+                    // }
 
                     if (null != room.MicrophoneMedia)
                     {

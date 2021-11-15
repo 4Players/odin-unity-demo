@@ -22,10 +22,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
             {
                 Debug.Log($"ODIN - joining room {refRoomName.Value}");
-
-                OdinUserData odinUserData = new OdinUserData();
-                odinUserData.name = refPlayerName.Value;
-                OdinHandler.Instance.JoinRoom(refRoomName.Value, odinUserData.ToUserData());
+                //
+                // OdinUserData odinUserData = new OdinUserData();
+                // odinUserData.name = refPlayerName.Value;
+                
+                
+                OdinHandler.Instance.JoinRoom(refRoomName.Value);
             }
         }
     }
