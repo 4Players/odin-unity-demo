@@ -84,7 +84,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 // Only check occlusion thickness, if we found occlusions that don't have an AudioObstacle component
                 if (numHitAudioObstacles != forwardHits.Count)
                 {
-                    Debug.Log($"Num Hit Audio Obstacles: {numHitAudioObstacles} vs ForwardHits: {forwardHits.Count}");
+                    // Debug.Log($"Num Hit Audio Obstacles: {numHitAudioObstacles} vs ForwardHits: {forwardHits.Count}");
                     
                     var backwardsHits = GetOccluderHits(rayOrigins[1], -toAudioSource);
                     RemoveOriginCollisions(ref backwardsHits, rayOrigins);
@@ -105,7 +105,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
                 if (null != applicableEffect)
                 {
-                    Debug.Log($"Audiosource: {audioSource.gameObject.name} Cutoff Frequency: {applicableEffect.cutoffFrequency}");
+                    // Debug.Log($"Audiosource: {audioSource.gameObject.name} Cutoff Frequency: {applicableEffect.cutoffFrequency}");
                     ApplyOcclusionEffect(applicableEffect, audioSource);
                 }
                 else
