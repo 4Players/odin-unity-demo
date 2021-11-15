@@ -3,7 +3,6 @@ using ODIN_Sample.Scripts.Runtime.Photon;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
-using WebSocketSharp;
 
 namespace ODIN_Sample.Scripts.Runtime.Data
 {
@@ -47,7 +46,7 @@ namespace ODIN_Sample.Scripts.Runtime.Data
 
         private string AdjustName(string displayedName)
         {
-            if (displayedName.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(displayedName))
             {
                 displayedName = "Player";
             }
