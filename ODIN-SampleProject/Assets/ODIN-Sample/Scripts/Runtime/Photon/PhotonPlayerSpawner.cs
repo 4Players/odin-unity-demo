@@ -24,12 +24,21 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void InstantiatePlayer()
         {
-            if (null != playerPrefab)
+            if (null != playerPrefab && PhotonNetwork.IsConnectedAndReady)
             {
-                if (PhotonNetwork.IsConnectedAndReady)
+                Vector3 adjustedSpawnLocation = spawnLocation;
+                Collider playerCollider = playerPrefab.GetComponent<Collider>();
+                if (playerCollider)
                 {
-                    _instantiatedPlayer = PhotonNetwork.Instantiate(playerPrefab.name, spawnLocation, Quaternion.identity);
+                    Bounds playerBounds = playerCollider.bounds;
+                    bool hitSomething = Physics.BoxCast(spawnLocation, playerBounds.extents, Vector3.down);
+                    if (hitSomething)
+                    {
+                        adjustedSpawnLocation.y = adjustedSpawnLocation.y + 2.0f;
+                    }
                 }
+                _instantiatedPlayer = PhotonNetwork.Instantiate(playerPrefab.name, adjustedSpawnLocation, Quaternion.identity);
+                
             }
         }
     }

@@ -17,11 +17,25 @@ namespace ODIN_Sample.Scripts.Runtime.Test
         
         private StringBuilder displayBuilder = new StringBuilder();
 
+        private float smoothedFPS = 0.0f;
+        private float alpha = 0.01f;
+        
+        
+
         // Update is called once per frame
         void Update()
         {
+            if (Time.smoothDeltaTime > 0.0f)
+            {
+                float fps = 1.0f /  Time.smoothDeltaTime;
+                smoothedFPS = alpha * fps + smoothedFPS * (1 - alpha);
+                
+                displayBuilder.AppendLine($"FPS: {Mathf.RoundToInt(smoothedFPS)}");
+            }
+            
             if (OdinHandler.Instance)
             {
+                
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
                     foreach (Peer peer in room.RemotePeers)

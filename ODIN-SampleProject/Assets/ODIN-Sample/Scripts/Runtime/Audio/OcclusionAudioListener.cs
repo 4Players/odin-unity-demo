@@ -11,6 +11,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     {
         [SerializeField] private OcclusionSettings occlusionSettings;
         [SerializeField] private AudioListener audioListener;
+        [SerializeField] private bool includeInactiveSourcesInSearch = true;
+        
 
         private Dictionary<AudioSource, AudioObstacleEffect> _audioSources =
             new Dictionary<AudioSource, AudioObstacleEffect>();
@@ -44,7 +46,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void OnTriggerEnter(Collider other)
         {
-            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>())
+            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
             {
                 if (!_audioSources.ContainsKey(audioSource))
                 {
@@ -65,7 +67,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void OnTriggerExit(Collider other)
         {
-            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>())
+            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
             {
                 _audioSources.Remove(audioSource);
             }

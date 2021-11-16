@@ -838,6 +838,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
   audioListener: {fileID: 4558789485580523338}
+  includeInactiveSourcesInSearch: 1
 --- !u!1818360609 &7663716378265911341
 RotationConstraint:
   m_ObjectHideFlags: 0
