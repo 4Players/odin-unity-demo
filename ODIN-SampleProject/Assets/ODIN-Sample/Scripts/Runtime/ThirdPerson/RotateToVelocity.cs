@@ -8,6 +8,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
     /// </summary>
     public class RotateToVelocity : MonoBehaviour
     {
+        [SerializeField] private string rotationalInputAxis = "Rotational";
         [SerializeField] private GameObject target;
         [SerializeField] private CharacterController characterController;
         [SerializeField] private float rotationSpeed = 5.0f;
@@ -27,9 +28,24 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             if (movementDirection.sqrMagnitude > 0.1f)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-                float lerpValue = Time.deltaTime * rotationSpeed;
-                target.transform.rotation = Quaternion.Lerp(targetTransform.rotation, targetRotation, lerpValue);
+                RotateTowards(targetRotation);
             }
+            else
+            {
+                float customRotation = Input.GetAxis(rotationalInputAxis);
+                if (Mathf.Abs(customRotation) > 0.01f)
+                {
+                    Quaternion deltaRotation = Quaternion.AngleAxis(customRotation * 30, Vector3.up);
+                    Quaternion targetRotation = target.transform.rotation * deltaRotation;
+                    RotateTowards(targetRotation);
+                }
+            }
+        }
+
+        private void RotateTowards(Quaternion targetRotation)
+        {
+            float lerpValue = Time.deltaTime * rotationSpeed;
+            target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, lerpValue);
         }
     }
 }

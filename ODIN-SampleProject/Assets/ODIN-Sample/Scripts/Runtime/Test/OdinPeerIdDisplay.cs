@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using OdinNative.Unity;
@@ -23,20 +24,20 @@ namespace ODIN_Sample.Scripts.Runtime.Test
             {
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
-                    // foreach (Peer peer in room.RemotePeers)
-                    // {
-                    //     OdinUserData fromUserData = OdinUserData.FromUserData(peer.UserData);
-                    //     
-                    //     if (null != room.Self && peer.Id == room.Self.Id)
-                    //     {
-                    //         displayBuilder.AppendLine($"Current Name: {fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}");
-                    //     }
-                    //     else
-                    //     {
-                    //         displayBuilder.AppendLine($"Remote Name: {fromUserData.name},Room: {room.Config.Name}, Remote peer Id: {peer.Id}");
-                    //     }
-                    // }
-
+                    foreach (Peer peer in room.RemotePeers)
+                    {
+                        OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
+                        
+                        if (null != room.Self && peer.Id == room.Self.Id)
+                        {
+                            displayBuilder.AppendLine($"Current Name: {fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}");
+                        }
+                        else
+                        {
+                            displayBuilder.AppendLine($"Remote Name: {fromUserData.name},Room: {room.Config.Name}, Remote peer Id: {peer.Id}");
+                        }
+                    }
+                    
                     if (null != room.MicrophoneMedia)
                     {
                         int micMediaId = room.MicrophoneMedia.Id;
@@ -51,7 +52,7 @@ namespace ODIN_Sample.Scripts.Runtime.Test
 
                         if (null != microphoneMediaOwner)
                         {
-                            displayBuilder.AppendLine($"Room: {room.Config.Name}, Microphone Id: {room.MicrophoneMedia.Id}, Owner: {microphoneMediaOwner.Id}");
+                            displayBuilder.AppendLine($"Current Microphone: Microphone Id: {room.MicrophoneMedia.Id}, Owner: {microphoneMediaOwner.Id}, Room: {room.Config.Name}");
                         }
                     }
                     

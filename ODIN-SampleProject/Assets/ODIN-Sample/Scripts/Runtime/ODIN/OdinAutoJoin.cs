@@ -1,5 +1,6 @@
 ﻿using System;
 using ODIN_Sample.Scripts.Runtime.Data;
+using OdinNative.Odin;
 using OdinNative.Unity;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,9 +26,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 //
                 // OdinUserData odinUserData = new OdinUserData();
                 // odinUserData.name = refPlayerName.Value;
-                
-                
-                OdinHandler.Instance.JoinRoom(refRoomName.Value);
+                OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
+                OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
             }
         }
     }

@@ -5,6 +5,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     [Serializable]
     public class AudioObstacleEffect : IComparable<AudioObstacleEffect>
     {
+        public float volumeMultiplier = 1.0f;
+        
         public float cutoffFrequency = 500.0f;
         public float lowpassResonanceQ = 1.0f;
         public int CompareTo(AudioObstacleEffect other)

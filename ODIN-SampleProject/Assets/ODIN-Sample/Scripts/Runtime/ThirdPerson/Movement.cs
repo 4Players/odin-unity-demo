@@ -37,6 +37,8 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             Vector3 deltaMovement = (input.x * transform.right + input.z * transform.forward) * movementSpeed * currentSprintMultiplier;
             
             characterController.SimpleMove(deltaMovement);
+
+            
         }
     }
 }

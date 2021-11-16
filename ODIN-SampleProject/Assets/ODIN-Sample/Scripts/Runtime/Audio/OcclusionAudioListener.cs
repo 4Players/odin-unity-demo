@@ -12,7 +12,9 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         [SerializeField] private OcclusionSettings occlusionSettings;
         [SerializeField] private AudioListener audioListener;
 
-        private List<AudioSource> _audioSources = new List<AudioSource>();
+        private Dictionary<AudioSource, AudioObstacleEffect> _audioSources = new Dictionary<AudioSource, AudioObstacleEffect>();
+        
+
         private SphereCollider _audioSourceDetector;
 
         private void Awake()
@@ -36,7 +38,23 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void OnTriggerEnter(Collider other)
         {
-            _audioSources.AddRange(other.GetComponentsInChildren<AudioSource>());
+            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>())
+            {
+                if (!_audioSources.ContainsKey(audioSource))
+                {
+                    AudioObstacleEffect originalEffect = new AudioObstacleEffect();
+                    originalEffect.volumeMultiplier = audioSource.volume;
+
+                    AudioLowPassFilter lowPassFilter = audioSource.GetComponent<AudioLowPassFilter>();
+                    if (lowPassFilter)
+                    {
+                        originalEffect.cutoffFrequency = lowPassFilter.cutoffFrequency;
+                        originalEffect.lowpassResonanceQ = lowPassFilter.lowpassResonanceQ;
+                    }
+
+                    _audioSources[audioSource] = originalEffect;
+                }
+            }
         }
 
         private void OnTriggerExit(Collider other)
@@ -49,14 +67,14 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void Update()
         {
+            List<AudioSource> toRemove = new List<AudioSource>();
             // iterate backwards in case we remove an audio source from the list
-            for (int i = _audioSources.Count - 1; i >= 0; i--)
+            foreach (AudioSource audioSource in _audioSources.Keys)
             {
-                AudioSource audioSource = _audioSources[i];
                 // Remove already destroyed audiosources from our list
                 if (!audioSource)
                 {
-                    _audioSources.RemoveAt(i);
+                    toRemove.Add(audioSource);
                     continue;
                 }
 
@@ -79,13 +97,14 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                         applicableEffect = GetLargerEffect(applicableEffect, currentEffect);
                         numHitAudioObstacles++;
                     }
+                    
+                    // if(hit.collider.gameObject.name == "BacksideAudioOccluder")
+                    //     Debug.Log("BacksideAudioOccluder hit");
                 }
 
                 // Only check occlusion thickness, if we found occlusions that don't have an AudioObstacle component
                 if (numHitAudioObstacles != forwardHits.Count)
                 {
-                    // Debug.Log($"Num Hit Audio Obstacles: {numHitAudioObstacles} vs ForwardHits: {forwardHits.Count}");
-                    
                     var backwardsHits = GetOccluderHits(rayOrigins[1], -toAudioSource);
                     RemoveOriginCollisions(ref backwardsHits, rayOrigins);
 
@@ -113,6 +132,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                     DeactivateOcclusionEffect(audioSource);
                 }
             }
+
+            foreach (AudioSource audioSource in toRemove)
+            {
+                _audioSources.Remove(audioSource);
+            }
         }
 
         private AudioObstacleEffect GetLargerEffect(AudioObstacleEffect first, AudioObstacleEffect second)
@@ -133,10 +157,20 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             if (!filter)
                 filter = source.gameObject.AddComponent<AudioLowPassFilter>();
             Assert.IsNotNull(filter);
+
+            if (obstacleEffect.cutoffFrequency < 0.0f)
+            {
+                filter.enabled = false;
+            }
+            else
+            {
+                filter.enabled = true;
+                filter.cutoffFrequency = obstacleEffect.cutoffFrequency;
+                filter.lowpassResonanceQ = obstacleEffect.lowpassResonanceQ;
+            }
             
-            filter.enabled = true;
-            filter.cutoffFrequency = obstacleEffect.cutoffFrequency;
-            filter.lowpassResonanceQ = obstacleEffect.lowpassResonanceQ;
+            AudioObstacleEffect originalEffect = _audioSources[source];
+            source.volume = originalEffect.volumeMultiplier * obstacleEffect.volumeMultiplier;
         }
         
         private static bool IsValidCutoffFrequency(float cutoffFrequency)
@@ -144,8 +178,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             return cutoffFrequency < float.MaxValue && cutoffFrequency > 0.0f;
         }
 
-        private static void DeactivateOcclusionEffect(AudioSource audioSource)
+        private void DeactivateOcclusionEffect(AudioSource audioSource)
         {
+            AudioObstacleEffect originalEffect = _audioSources[audioSource];
+            audioSource.volume = originalEffect.volumeMultiplier;
+            
             AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
             if (filter)
             {

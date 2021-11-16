@@ -14,6 +14,7 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using Room = OdinNative.Odin.Room.Room;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
@@ -21,7 +22,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     [DisallowMultipleComponent]
     public class OdinVoiceUser : MonoBehaviourPunCallbacks
     {
-        [SerializeField] private PlaybackComponent odinAudioSourcePrefab;
+        [FormerlySerializedAs("odinAudioSourcePrefab")] [SerializeField] private PlaybackComponent remoteAudioSourcePrefab;
+        [Tooltip("The transform on which the remoteAudioSourcePrefab will be instantiated.")]
+        [SerializeField] private Transform instantiationTarget;
+        
 
         public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
 
@@ -32,7 +36,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void Awake()
         {
-            Assert.IsNotNull(odinAudioSourcePrefab);
+            Assert.IsNotNull(remoteAudioSourcePrefab);
         }
 
         public override void OnEnable()
@@ -124,12 +128,13 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
             Debug.Log($"New Odin Sound spawned: {roomName} peerId: {peerId} mediaId: {mediaId}");
             PlaybackComponent playbackComponent =
-                Instantiate(odinAudioSourcePrefab.gameObject).GetComponent<PlaybackComponent>();
+                Instantiate(remoteAudioSourcePrefab.gameObject).GetComponent<PlaybackComponent>();
             playbackComponent.RoomName = roomName;
             playbackComponent.PeerId = peerId;
             playbackComponent.MediaId = mediaId;
 
-            playbackComponent.transform.SetParent(transform);
+            Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
+            playbackComponent.transform.SetParent(parentTransform);
             playbackComponent.transform.localPosition = Vector3.zero;
             playbackComponent.transform.localRotation = Quaternion.identity;
 
