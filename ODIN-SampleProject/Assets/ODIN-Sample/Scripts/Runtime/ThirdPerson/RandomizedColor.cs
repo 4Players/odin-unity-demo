@@ -49,20 +49,24 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         
         private void SendColorSync()
         {
-            Debug.Log("Sending Color Sync");
-            photonView.RPC("PerformColorSync", RpcTarget.OthersBuffered,
-                ColorUtility.ToHtmlStringRGB(capsuleRenderer.material.color));
+            // Debug.Log("Sending Color Sync");
+            if (PhotonNetwork.IsConnectedAndReady)
+            {
+                photonView.RPC("PerformColorSync", RpcTarget.OthersBuffered,
+                    ColorUtility.ToHtmlStringRGB(capsuleRenderer.material.color));
+            }
+            
         }
         
         [PunRPC]
         private void PerformColorSync(string colorName)
         {
-            Debug.Log($"Received PerformColorSync: {colorName}");
+            // Debug.Log($"Received PerformColorSync: {colorName}");
             if (!photonView.IsMine)
             {
                 ColorUtility.TryParseHtmlString("#" + colorName, out Color capsuleColor);
                 capsuleRenderer.material.color = capsuleColor;
-                Debug.Log($"Successfully set remote capsule color.");
+                // Debug.Log($"Successfully set remote capsule color.");
             }
         }
     }

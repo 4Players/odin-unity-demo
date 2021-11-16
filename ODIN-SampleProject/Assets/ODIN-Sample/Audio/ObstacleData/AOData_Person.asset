@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AOData_Person
   m_EditorClassIdentifier: 
   effect:
-    volumeMultiplier: 0.1
-    cutoffFrequency: -1
+    volumeMultiplier: 0.8
+    cutoffFrequency: 4000
     lowpassResonanceQ: 1

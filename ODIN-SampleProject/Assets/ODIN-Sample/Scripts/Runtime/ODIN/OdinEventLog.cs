@@ -8,24 +8,32 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     {
         private void OnEnable()
         {
-            OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
-            OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
-            OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+            if (OdinHandler.Instance)
+            {
+                OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
+                OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
+                OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
             
-            OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
-            OdinHandler.Instance.OnPeerLeft.AddListener(OnPeerLeft);
-            OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
+                OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
+                OdinHandler.Instance.OnPeerLeft.AddListener(OnPeerLeft);
+                OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
+            }
+            
         }
         
         private void OnDisable()
         {
-            OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
-            OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
-            OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
+            if (OdinHandler.Instance)
+            {
+                OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
+                OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
+                OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
             
-            OdinHandler.Instance.OnRoomLeft.RemoveListener(OnRoomLeft);
-            OdinHandler.Instance.OnPeerLeft.RemoveListener(OnPeerLeft);
-            OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
+                OdinHandler.Instance.OnRoomLeft.RemoveListener(OnRoomLeft);
+                OdinHandler.Instance.OnPeerLeft.RemoveListener(OnPeerLeft);
+                OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
+            }
+            
         }
         
         private void OnRoomJoined(RoomJoinedEventArgs arg0)

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: AOData_Wood
   m_EditorClassIdentifier: 
   effect:
+    volumeMultiplier: 0.95
     cutoffFrequency: 1200
     lowpassResonanceQ: 2

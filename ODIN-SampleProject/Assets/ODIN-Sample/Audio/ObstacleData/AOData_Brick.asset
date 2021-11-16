@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: AOData_Brick
   m_EditorClassIdentifier: 
   effect:
+    volumeMultiplier: 0.9
     cutoffFrequency: 500
     lowpassResonanceQ: 2

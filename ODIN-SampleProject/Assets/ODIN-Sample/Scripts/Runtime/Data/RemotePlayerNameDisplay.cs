@@ -1,6 +1,7 @@
 using System;
 using ODIN_Sample.Scripts.Runtime.Photon;
 using Photon.Pun;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -9,7 +10,7 @@ namespace ODIN_Sample.Scripts.Runtime.Data
     public class RemotePlayerNameDisplay : MonoBehaviourPunCallbacks
     {
         [SerializeField] private StringVariable playerName;
-        [SerializeField] private TextMesh nameDisplay;
+        [SerializeField] private TMP_Text  nameDisplay;
 
         [SerializeField] private int maxDisplayCharacters = 8;
 
@@ -30,7 +31,8 @@ namespace ODIN_Sample.Scripts.Runtime.Data
                 displayedName = AdjustName(playerName.Value);
                 nameDisplay.text = displayedName;
 
-                photonView.RPC("UpdateName", RpcTarget.OthersBuffered, playerName.Value);
+                if(PhotonNetwork.IsConnectedAndReady)
+                    photonView.RPC("UpdateName", RpcTarget.OthersBuffered, playerName.Value);
             }
         }
 

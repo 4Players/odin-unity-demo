@@ -75,6 +75,10 @@ PrefabInstance:
       propertyPath: m_Text
       value: Concrete
       objectReference: {fileID: 0}
+    - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_text
+      value: Concrete
+      objectReference: {fileID: 0}
     - target: {fileID: 8208957543244139321, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: settings
       value: 

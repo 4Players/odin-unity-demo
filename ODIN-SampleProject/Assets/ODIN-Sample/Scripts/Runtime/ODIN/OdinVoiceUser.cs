@@ -56,7 +56,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void OnMediaAdded(object obj, MediaAddedEventArgs mediaAddedEventArgs)
         {
-            if (!photonView.IsMine)
+            if (PhotonNetwork.IsConnectedAndReady && !photonView.IsMine)
             {
                 photonView.RPC("OnRequestedPeerIds", RpcTarget.Others);
             }
@@ -72,7 +72,8 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                     if (null != room.MicrophoneMedia)
                     {
                         ulong peerId = room.MicrophoneMedia.GetPeerId();
-                        photonView.RPC("OnReceivedPeerIdUpdate", RpcTarget.Others, room.Config.Name, (long)peerId);
+                        if(PhotonNetwork.IsConnectedAndReady)
+                            photonView.RPC("OnReceivedPeerIdUpdate", RpcTarget.Others, room.Config.Name, (long)peerId);
                     }
                     else
                     {

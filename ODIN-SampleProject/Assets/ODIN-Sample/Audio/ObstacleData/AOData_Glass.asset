@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: AOData_Glass
   m_EditorClassIdentifier: 
   effect:
+    volumeMultiplier: 0.95
     cutoffFrequency: 2500
     lowpassResonanceQ: 2
