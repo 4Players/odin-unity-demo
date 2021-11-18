@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Threading.Tasks;
 using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin;
 using OdinNative.Unity;
@@ -9,25 +11,29 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     public class OdinAutoJoin : MonoBehaviour
     {
-        [SerializeField] private StringVariable refRoomName;
+        [SerializeField] private StringVariable[] refRoomNames;
         [SerializeField] private StringVariable refPlayerName;
 
         private void Awake()
         {
-            Assert.IsNotNull(refRoomName);
+            Assert.IsTrue(refRoomNames.Length > 0);
             Assert.IsNotNull(refPlayerName);
         }
 
-        private void Start()
+        IEnumerator Start()
         {
-            if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
+            foreach (StringVariable refRoomName in refRoomNames)
             {
-                Debug.Log($"ODIN - joining room {refRoomName.Value}");
-                //
-                // OdinUserData odinUserData = new OdinUserData();
-                // odinUserData.name = refPlayerName.Value;
-                OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
-                OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
+                if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
+                {
+                    Debug.Log($"ODIN - joining room {refRoomName.Value}");
+                
+                    OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
+                    OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
+                    
+                    // await Task.Delay(TimeSpan.FromSeconds(1));
+                    yield return null;
+                }
             }
         }
     }

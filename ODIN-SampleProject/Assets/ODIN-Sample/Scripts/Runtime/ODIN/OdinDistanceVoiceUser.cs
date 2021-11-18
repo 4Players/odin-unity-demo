@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ODIN_Sample.Scripts.Runtime.Data;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin;
 using OdinNative.Odin.Media;
 using OdinNative.Odin.Peer;
@@ -24,7 +25,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     /// Will only use rooms listed in <see cref="connectedOdinRooms"/>.
     /// </summary>
     [DisallowMultipleComponent]
-    public class OdinVoiceUser : MonoBehaviourPunCallbacks
+    public class OdinDistanceVoiceUser : AOdinUser
     {
         /// <summary>
         /// All rooms which should be handled by the odin voice user script.
@@ -32,44 +33,32 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// </summary>
         [SerializeField] private StringVariable[] connectedOdinRooms;
 
-        [SerializeField]
-        private PlaybackComponent remoteAudioSourcePrefab;
-
-        [Tooltip("The transform on which the remoteAudioSourcePrefab will be instantiated.")] [SerializeField]
-        private Transform instantiationTarget;
-
-
-        /// <summary>
-        /// Called when a new playbackcomponent was created by this script
-        /// </summary>
-        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
+        [SerializeField] private PhotonView photonView;
+        
 
         /// <summary>
         /// Contains all pairs of roomname to peer ids associated to the player owning the photonView
         /// </summary>
         private Dictionary<string, ulong> roomToPeerIds = new Dictionary<string, ulong>();
-
-        /// <summary>
-        /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
-        /// </summary>
-        private Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia =
-            new Dictionary<(string, ulong, int), PlaybackComponent>();
-
+        
         private void Awake()
         {
-            Assert.IsNotNull(remoteAudioSourcePrefab);
+            Assert.IsNotNull(playbackComponentPrefab);
+            Assert.IsTrue(connectedOdinRooms.Length > 0);
+            if (null == photonView)
+                photonView = GetComponentInParent<PhotonView>();
+            
+            Assert.IsNotNull(photonView);
         }
 
-        public override void OnEnable()
+        public void OnEnable()
         {
-            base.OnEnable();
             if (OdinHandler.Instance)
                 OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
         }
 
-        public override void OnDisable()
+        public void OnDisable()
         {
-            base.OnDisable();
             if (OdinHandler.Instance)
                 OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
         }
@@ -82,10 +71,23 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// <param name="mediaAddedEventArgs"></param>
         private void OnMediaAdded(object obj, MediaAddedEventArgs mediaAddedEventArgs)
         {
-            if (PhotonNetwork.IsConnectedAndReady && !photonView.IsMine)
+            if (null != mediaAddedEventArgs)
             {
-                photonView.RPC("OnRequestedPeerIds", RpcTarget.Others, mediaAddedEventArgs.Peer.RoomName);
+                string mediaRoomName = mediaAddedEventArgs.Peer.RoomName;
+                foreach (StringVariable connectedOdinRoom in connectedOdinRooms)
+                {
+                    if (connectedOdinRoom == mediaRoomName)
+                    {
+                        if (PhotonNetwork.IsConnectedAndReady && !photonView.IsMine)
+                        {
+                            photonView.RPC("OnRequestedPeerIds", RpcTarget.Others, mediaAddedEventArgs.Peer.RoomName);
+                        }
+
+                        break;
+                    }
+                }
             }
+            
         }
 
         /// <summary>
@@ -165,37 +167,38 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                 Peer peer = room.RemotePeers[peerId];
                 foreach (MediaStream mediaStream in peer.Medias)
                 {
-                    TrySpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
+                    SpawnPlaybackComponent(roomId, peer.Id, mediaStream.Id);
+                    // TrySpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
                 }
             }
         }
 
-        private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId, int mediaId)
-        {
-            // Skip, if we've already created the Playback component for this media
-            var dictionaryKey = (roomName, peerId, mediaId);
-            if (registeredRemoteMedia.ContainsKey(dictionaryKey))
-                return null;
-            
-            // Create and initialize the Playback Component
-            Debug.Log($"New Odin Sound spawned: {roomName} peerId: {peerId} mediaId: {mediaId}");
-            PlaybackComponent playbackComponent =
-                Instantiate(remoteAudioSourcePrefab.gameObject).GetComponent<PlaybackComponent>();
-            playbackComponent.RoomName = roomName;
-            playbackComponent.PeerId = peerId;
-            playbackComponent.MediaId = mediaId;
-
-            Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
-            playbackComponent.transform.SetParent(parentTransform);
-            playbackComponent.transform.localPosition = Vector3.zero;
-            playbackComponent.transform.localRotation = Quaternion.identity;
-
-            // add to registered playback components
-            registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
-            
-            // notify listeners, that a new playback component was registered
-            onPlaybackComponentAdded?.Invoke(playbackComponent);
-            return playbackComponent;
-        }
+        // private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId, int mediaId)
+        // {
+        //     // Skip, if we've already created the Playback component for this media
+        //     var dictionaryKey = (roomName, peerId, mediaId);
+        //     if (registeredRemoteMedia.ContainsKey(dictionaryKey))
+        //         return null;
+        //     
+        //     // Create and initialize the Playback Component
+        //     Debug.Log($"New Odin Sound spawned: {roomName} peerId: {peerId} mediaId: {mediaId}");
+        //     PlaybackComponent playbackComponent =
+        //         Instantiate(playbackComponentPrefab.gameObject).GetComponent<PlaybackComponent>();
+        //     playbackComponent.RoomName = roomName;
+        //     playbackComponent.PeerId = peerId;
+        //     playbackComponent.MediaId = mediaId;
+        //
+        //     Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
+        //     playbackComponent.transform.SetParent(parentTransform);
+        //     playbackComponent.transform.localPosition = Vector3.zero;
+        //     playbackComponent.transform.localRotation = Quaternion.identity;
+        //
+        //     // add to registered playback components
+        //     registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
+        //     
+        //     // notify listeners, that a new playback component was registered
+        //     onPlaybackComponentAdded?.Invoke(playbackComponent);
+        //     return playbackComponent;
+        // }
     }
 }

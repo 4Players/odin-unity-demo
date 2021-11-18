@@ -18,7 +18,7 @@ namespace ODIN_Sample.Scripts.Runtime.Test
         private StringBuilder displayBuilder = new StringBuilder();
 
         private float smoothedFPS = 0.0f;
-        private float alpha = 0.01f;
+        private float alpha = 0.03f;
         
         
 

@@ -1,9 +1,7 @@
 using System;
 using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin.Room;
-using OdinNative.Unity.Audio;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
@@ -13,6 +11,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         private void Update()
         {
+            if (!(OdinHandler.Instance && null != OdinHandler.Instance.Rooms))
+                return;
+            
             foreach (OdinPushToTalkData pushToTalkData in pushToTalkSettings)
             {
                 if (OdinHandler.Instance.Rooms.Contains(pushToTalkData.connectedRoom))

@@ -32,6 +32,7 @@ Transform:
   - {fileID: 2309341422395066622}
   - {fileID: 1007562410489983024}
   - {fileID: 1810139959340640886}
+  - {fileID: 7070602923581338638}
   m_Father: {fileID: 2753487309664625876}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -377,13 +378,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958070e9ccbeec24b917c968c300d65b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectedOdinRooms:
-  - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  remoteAudioSourcePrefab: {fileID: 1106984047728189001, guid: 7a4cfbae9051d514bba40fbe578d208a, type: 3}
+  playbackComponentPrefab: {fileID: 0}
   instantiationTarget: {fileID: 7178438142582358687}
   onPlaybackComponentAdded:
     m_PersistentCalls:
       m_Calls: []
+  connectedOdinRooms:
+  - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  photonView: {fileID: 514420905}
 --- !u!114 &674250535690355230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,7 +759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceUser: {fileID: 1070322640664595568}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
+  voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
 --- !u!114 &2083264974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -770,6 +772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3001106345836885710
 GameObject:
@@ -782,7 +785,7 @@ GameObject:
   - component: {fileID: 1810139959340640886}
   - component: {fileID: 2844093388615658216}
   m_Layer: 0
-  m_Name: PushToTalk
+  m_Name: OdinPushToTalk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -925,6 +928,55 @@ RotationConstraint:
   m_Sources:
   - sourceTransform: {fileID: 2753487310897480878}
     weight: 1
+--- !u!1 &4139585757795616959
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7070602923581338638}
+  - component: {fileID: 6759813537705676269}
+  m_Layer: 0
+  m_Name: OdinHeadset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7070602923581338638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4139585757795616959}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4208676046665426373}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6759813537705676269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4139585757795616959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6d801349d7341f8a4aa50e098d15976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playbackComponentPrefab: {fileID: 4474646598376783118, guid: d5a1fa5b26b80ad46a174e501f5a66a4, type: 3}
+  instantiationTarget: {fileID: 7070602923581338638}
+  onPlaybackComponentAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
 --- !u!1 &5288867326517745186
 GameObject:
   m_ObjectHideFlags: 0
@@ -951,7 +1003,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5288867326517745186}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.151, z: -0.35}
+  m_LocalPosition: {x: 0, y: 0.151, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2753487309498945350}
@@ -968,7 +1020,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 1.36, z: 0.1}
+  m_Size: {x: 0.71, y: 1.33, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &913804789715294526
 MonoBehaviour:
@@ -1061,8 +1113,9 @@ GameObject:
   - component: {fileID: 1341873345618850193}
   - component: {fileID: 5456647179934602871}
   - component: {fileID: 8106907088053764915}
+  - component: {fileID: 5058897325947305873}
   m_Layer: 0
-  m_Name: Headset(Clone)
+  m_Name: Headset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2667,6 +2720,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6639016815256160874}
   m_Mesh: {fileID: 0}
+--- !u!114 &5058897325947305873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6639016815256160874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
+  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6767416847630222415
 GameObject:
   m_ObjectHideFlags: 0
