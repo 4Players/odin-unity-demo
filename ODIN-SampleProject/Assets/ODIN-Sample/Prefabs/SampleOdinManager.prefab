@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1257227337902900295, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: m_Name
-      value: SampeOdinManager
+      value: SampleOdinManager
       objectReference: {fileID: 0}
     - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: m_RootOrder
@@ -89,21 +89,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
---- !u!1 &7270835465501535659 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1257227337902900295, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
-  m_PrefabInstance: {fileID: 8472858383825447404}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &771159956
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7270835465501535659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb9a3125586fb5f4bb2a1df0246ed741, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pushToTalkButton: PushToTalk

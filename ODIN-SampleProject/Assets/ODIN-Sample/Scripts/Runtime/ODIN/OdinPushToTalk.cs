@@ -1,27 +1,39 @@
 using System;
+using ODIN_Sample.Scripts.Runtime.Data;
+using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
-    [RequireComponent(typeof(MicrophoneReader))]
     public class OdinPushToTalk : MonoBehaviour
     {
-        [SerializeField] private string pushToTalkButton = "PushToTalk";
-
-        private MicrophoneReader _microphoneReader;
-        
-        private void Awake()
-        {
-            _microphoneReader = GetComponent<MicrophoneReader>();
-            Assert.IsNotNull(_microphoneReader);
-        }
+        [SerializeField] private OdinPushToTalkData[] pushToTalkSettings;
 
         private void Update()
         {
-            if (_microphoneReader)
-                _microphoneReader.RedirectCapturedAudio = Input.GetButton(pushToTalkButton);
+            foreach (OdinPushToTalkData pushToTalkData in pushToTalkSettings)
+            {
+                if (OdinHandler.Instance.Rooms.Contains(pushToTalkData.connectedRoom))
+                {
+                    Room roomToCheck = OdinHandler.Instance.Rooms[pushToTalkData.connectedRoom];
+
+                    if (null != roomToCheck.MicrophoneMedia)
+                    {
+                        bool isPushToTalkPressed = Input.GetButton(pushToTalkData.pushToTalkButton);
+                        roomToCheck.MicrophoneMedia.SetMute(!isPushToTalkPressed);
+                    }
+                }
+            }
+            
         }
+    }
+
+    [Serializable]
+    public class OdinPushToTalkData
+    {
+        public StringVariable connectedRoom;
+        public string pushToTalkButton;
     }
 }

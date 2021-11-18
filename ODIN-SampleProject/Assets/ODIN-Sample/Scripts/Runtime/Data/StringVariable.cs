@@ -8,6 +8,8 @@ namespace ODIN_Sample.Scripts.Runtime.Data
         [field: SerializeField]
         public string Value { get; set; } = "default";
 
+        public static implicit operator string(StringVariable v) => v.Value;
+        
         public override string ToString()
         {
             return Value;
