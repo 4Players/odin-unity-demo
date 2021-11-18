@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7497f29558364cb4a41588605ce52b3a, type: 3}
-  m_Name: CurrentRoomName
+  m_Name: Scene_LobbyName
   m_EditorClassIdentifier: 
-  <RoomName>k__BackingField: default
+  <Value>k__BackingField: Lobby

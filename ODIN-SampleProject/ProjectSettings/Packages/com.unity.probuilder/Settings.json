@@ -197,6 +197,11 @@
                 "type": "System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "WeldVertices.weldDistance",
                 "value": "{\"m_Value\":0.009999999776482582}"
+            },
+            {
+                "type": "UnityEditor.ProBuilder.Actions.MirrorObjects+MirrorSettings, Unity.ProBuilder.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                "key": "MirrorObjects.mirrorAxes",
+                "value": "{\"m_Value\":9}"
             }
         ]
     }

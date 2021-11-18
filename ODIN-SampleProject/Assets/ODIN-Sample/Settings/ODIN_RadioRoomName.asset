@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ad497cd0d4c4967813f33b83094b052, type: 3}
-  m_Name: AOData_Person
+  m_Script: {fileID: 11500000, guid: 7497f29558364cb4a41588605ce52b3a, type: 3}
+  m_Name: ODIN_RadioRoomName
   m_EditorClassIdentifier: 
-  effect:
-    volumeMultiplier: 0.6
-    cutoffFrequency: 3000
-    lowpassResonanceQ: 1
+  <Value>k__BackingField: Radio

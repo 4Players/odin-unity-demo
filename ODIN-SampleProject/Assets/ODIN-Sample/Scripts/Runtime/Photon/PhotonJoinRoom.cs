@@ -25,7 +25,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             {
                 JoinPhotonRoom();
             }
-            else
+            else if(!PhotonNetwork.IsConnected)
             {
                 PhotonNetwork.ConnectUsingSettings();
             }

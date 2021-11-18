@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.Data;
 using ODIN_Sample.Scripts.Runtime.Photon;
 using OdinNative.Unity.Audio;
 using Photon.Pun;
@@ -8,12 +9,20 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
+    
+    /// <summary>
+    /// Indicates whether this remote player is currently talking in the room, given by <see cref="odinRoomName"/>, by changing the
+    /// color of a mesh. Requires to be put on the same gameobject as the mesh which should change its color.
+    /// </summary>
     [RequireComponent(typeof(Renderer))]
-    public class OdinVoiceIndicator : MonoBehaviourPunCallbacks
+    public class OdinRemoteVoiceIndicator : MonoBehaviour
     {
+        /// <summary>
+        /// The name of the ODIN room, for which this indicator should signal voice activity.
+        /// </summary>
+        [SerializeField] private StringVariable odinRoomName;
         [SerializeField] private OdinVoiceUser voiceUser;
         [SerializeField] private Color voiceOnColor = Color.green;
-
 
         private List<PlaybackComponent> _playbackComponents = new List<PlaybackComponent>();
         private int _numActivePlaybacks = 0;
@@ -23,33 +32,22 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void Awake()
         {
+            Assert.IsNotNull(odinRoomName);
+            
             Assert.IsNotNull(voiceUser);
             _renderer = GetComponent<Renderer>();
             Assert.IsNotNull(_renderer);
             _originalColor = _renderer.material.color;
         }
 
-        public override void OnEnable()
+        public void OnEnable()
         {
-            base.OnEnable();   
             voiceUser.onPlaybackComponentAdded.AddListener(OnPlaybackAdded);
         }
 
-        public override void OnDisable()
+        public void OnDisable()
         {
-            base.OnDisable();
             voiceUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackAdded);
-        }
-
-        private void Update()
-        {
-            if (photonView && photonView.IsMine)
-            {
-                bool isVoiceOn = false;
-                if (OdinHandler.Instance)
-                    isVoiceOn = OdinHandler.Instance.Microphone.RedirectCapturedAudio;
-                SetFeedbackColor(isVoiceOn);
-            }
         }
 
         private void OnDestroy()
@@ -65,8 +63,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnPlaybackAdded(PlaybackComponent playback)
         {
-            _playbackComponents.Add(playback);
-            playback.OnPlaybackPlayingStatusChanged += OnPlaybackPlayingStatusChanged;
+            if (playback.RoomName == odinRoomName.Value)
+            {
+                _playbackComponents.Add(playback);
+                playback.OnPlaybackPlayingStatusChanged += OnPlaybackPlayingStatusChanged;
+            }
         }
 
 
