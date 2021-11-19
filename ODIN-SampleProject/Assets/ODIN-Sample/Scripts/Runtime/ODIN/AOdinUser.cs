@@ -18,29 +18,52 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         [SerializeField] protected Transform instantiationTarget;
 
-        [SerializeField] protected OdinPlaybackRegistry playbackRegistry;
+        /// <summary>
+        /// Called when a new playbackcomponent was created by this script
+        /// </summary>
+        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
+        
+        /// <summary>
+        /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
+        /// </summary>
+        private Dictionary<(string, ulong, int), PlaybackComponent> _registeredRemoteMedia =
+            new Dictionary<(string, ulong, int), PlaybackComponent>();
 
         protected virtual void Awake()
         {
             Assert.IsNotNull(playbackComponentPrefab);
             Assert.IsNotNull(instantiationTarget);
-            Assert.IsNotNull(playbackRegistry);
         }
 
-        protected void SpawnPlaybackComponent(string roomName, ulong peerId, int mediaId)
+        protected PlaybackComponent RemovePlaybackComponent(string roomName, ulong peerId, int mediaId)
         {
-            if (!playbackRegistry.ContainsComponent(roomName, peerId, mediaId))
+            var dictionaryKey = (roomName, peerId, mediaId);
+            if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out PlaybackComponent toRemove))
+            {
+                _registeredRemoteMedia.Remove(dictionaryKey);
+                return toRemove;
+            }
+            return null;
+        }
+
+        protected PlaybackComponent SpawnPlaybackComponent(string roomName, ulong peerId, int mediaId)
+        {
+            PlaybackComponent spawned = null;
+            var dictionaryKey = (roomName, peerId, mediaId);
+            if (!_registeredRemoteMedia.ContainsKey(dictionaryKey))
             {
                 Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
-                PlaybackComponent playbackComponent = Instantiate(playbackComponentPrefab.gameObject, parentTransform)
+                spawned = Instantiate(playbackComponentPrefab.gameObject, parentTransform)
                     .GetComponent<PlaybackComponent>();
 
-                playbackComponent.RoomName = roomName;
-                playbackComponent.PeerId = peerId;
-                playbackComponent.MediaId = mediaId;
+                spawned.RoomName = roomName;
+                spawned.PeerId = peerId;
+                spawned.MediaId = mediaId;
 
-                playbackRegistry.AddComponent(roomName, peerId, mediaId, playbackComponent);
+                _registeredRemoteMedia.Add(dictionaryKey, spawned);
             }
+
+            return spawned;
         }
     }
 }

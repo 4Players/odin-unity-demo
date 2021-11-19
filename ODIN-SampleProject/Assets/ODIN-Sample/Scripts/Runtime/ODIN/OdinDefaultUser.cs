@@ -16,6 +16,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     public class OdinDefaultUser : AOdinUser
     {
         [SerializeField] private StringVariable odinRoomName;
+        [SerializeField] private OdinPlaybackRegistry odinPlaybackRegistry;
 
         protected override void Awake()
         {
@@ -45,7 +46,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (odinRoomName == mediaRoomName && localPeerId != mediaPeerId)
             {
                 int mediaId = mediaAddedEventArgs.Media.Id;
-                SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
+                PlaybackComponent spawnedComponent = SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
+                if(odinPlaybackRegistry)
+                    odinPlaybackRegistry.AddComponent(mediaRoomName, mediaPeerId, mediaId, spawnedComponent);
             }
         }
         
@@ -55,9 +58,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
             int mediaId = mediaRemovedArgs.MediaId;
 
-            PlaybackComponent removedComponent = playbackRegistry.RemoveComponent(mediaRoomName, mediaPeerId, mediaId);
-            if(removedComponent)
+            PlaybackComponent removedComponent = RemovePlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
+            if (removedComponent)
+            {
                 Destroy(removedComponent.gameObject);
+            }
+
+            if (odinPlaybackRegistry)
+                odinPlaybackRegistry.RemoveComponent(mediaRoomName, mediaPeerId, mediaId);
         }
     }
 }

@@ -380,7 +380,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playbackComponentPrefab: {fileID: 1106984047728189001, guid: 7a4cfbae9051d514bba40fbe578d208a, type: 3}
   instantiationTarget: {fileID: 7178438142582358687}
-  playbackRegistry: {fileID: 11400000, guid: 4abd158bad078eb44bcd636a602e3d91, type: 2}
+  onPlaybackComponentAdded:
+    m_PersistentCalls:
+      m_Calls: []
   connectedOdinRooms:
   - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   photonView: {fileID: 514420905}
@@ -757,7 +759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
-  playbackRegistry: {fileID: 11400000, guid: 4abd158bad078eb44bcd636a602e3d91, type: 2}
+  odinUser: {fileID: 1070322640664595568}
 --- !u!114 &2083264974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -971,8 +973,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playbackComponentPrefab: {fileID: 4474646598376783118, guid: d5a1fa5b26b80ad46a174e501f5a66a4, type: 3}
   instantiationTarget: {fileID: 7070602923581338638}
-  playbackRegistry: {fileID: 11400000, guid: 730500805facf3c4d9d495f95db03d0a, type: 2}
+  onPlaybackComponentAdded:
+    m_PersistentCalls:
+      m_Calls: []
   odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
+  odinPlaybackRegistry: {fileID: 11400000, guid: 730500805facf3c4d9d495f95db03d0a, type: 2}
 --- !u!1 &5288867326517745186
 GameObject:
   m_ObjectHideFlags: 0

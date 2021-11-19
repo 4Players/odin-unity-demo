@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using OdinNative.Unity.Audio;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
@@ -11,7 +11,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <summary>
         /// Called when a new playbackcomponent was created by this script
         /// </summary>
-        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
+        public Action<PlaybackComponent> onPlaybackComponentAdded;
+        public Action<PlaybackComponent> onPlaybackComponentRemoved;
         
         /// <summary>
         /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
@@ -25,7 +26,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             var dictionaryKey = (roomName, peerId, mediaId);
             _registeredRemoteMedia[dictionaryKey] = toAdd;
-            onPlaybackComponentAdded.Invoke(toAdd);
+            onPlaybackComponentAdded?.Invoke(toAdd);
         }
 
         public bool ContainsComponent(string roomName, ulong peerId, int mediaId)
@@ -39,6 +40,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out PlaybackComponent toRemove))
             {
                 _registeredRemoteMedia.Remove(dictionaryKey);
+                onPlaybackComponentRemoved.Invoke(toRemove);
                 return toRemove;
             }
             return null;

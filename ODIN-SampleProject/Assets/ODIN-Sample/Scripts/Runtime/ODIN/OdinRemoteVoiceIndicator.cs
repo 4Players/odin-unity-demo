@@ -22,7 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         [SerializeField] private StringVariable odinRoomName;
         [SerializeField] private Color voiceOnColor = Color.green;
-        [SerializeField] private OdinPlaybackRegistry playbackRegistry;
+        [SerializeField] private AOdinUser odinUser;
         
 
         private List<PlaybackComponent> _playbackComponents = new List<PlaybackComponent>();
@@ -35,7 +35,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             Assert.IsNotNull(odinRoomName);
             
-            Assert.IsNotNull(playbackRegistry);
+            Assert.IsNotNull(odinUser);
             _renderer = GetComponent<Renderer>();
             Assert.IsNotNull(_renderer);
             _originalColor = _renderer.material.color;
@@ -43,12 +43,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         public void OnEnable()
         {
-            playbackRegistry.onPlaybackComponentAdded.AddListener(OnPlaybackAdded);
+            odinUser.onPlaybackComponentAdded.AddListener(OnPlaybackAdded);
         }
 
         public void OnDisable()
         {
-            playbackRegistry.onPlaybackComponentAdded.RemoveListener(OnPlaybackAdded);
+            odinUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackAdded);
         }
 
         private void OnDestroy()
