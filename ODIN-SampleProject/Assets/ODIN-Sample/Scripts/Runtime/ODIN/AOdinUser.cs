@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OdinNative.Unity.Audio;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Events;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
@@ -15,23 +17,19 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// Reference to the transform the <see cref="playbackComponentPrefab"/> should be instantiated on.
         /// </summary>
         [SerializeField] protected Transform instantiationTarget;
-        
-        /// <summary>
-        /// Called when a new playbackcomponent was created by this script
-        /// </summary>
-        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
-        
-        /// <summary>
-        /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
-        /// </summary>
-        protected Dictionary<(string, ulong, int), PlaybackComponent> registeredRemoteMedia =
-            new Dictionary<(string, ulong, int), PlaybackComponent>();
-        
+
+        [SerializeField] protected OdinPlaybackRegistry playbackRegistry;
+
+        protected virtual void Awake()
+        {
+            Assert.IsNotNull(playbackComponentPrefab);
+            Assert.IsNotNull(instantiationTarget);
+            Assert.IsNotNull(playbackRegistry);
+        }
+
         protected void SpawnPlaybackComponent(string roomName, ulong peerId, int mediaId)
         {
-            var dictionaryKey = (roomName, peerId, mediaId);
-
-            if (!registeredRemoteMedia.ContainsKey(dictionaryKey))
+            if (!playbackRegistry.ContainsComponent(roomName, peerId, mediaId))
             {
                 Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
                 PlaybackComponent playbackComponent = Instantiate(playbackComponentPrefab.gameObject, parentTransform)
@@ -41,8 +39,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 playbackComponent.PeerId = peerId;
                 playbackComponent.MediaId = mediaId;
 
-                registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
-                onPlaybackComponentAdded.Invoke(playbackComponent);
+                playbackRegistry.AddComponent(roomName, peerId, mediaId, playbackComponent);
             }
         }
     }

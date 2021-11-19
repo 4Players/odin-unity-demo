@@ -17,20 +17,22 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     {
         [SerializeField] private StringVariable odinRoomName;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             Assert.IsNotNull(odinRoomName);
-            Assert.IsNotNull(playbackComponentPrefab);
         }
 
         private void OnEnable()
         {
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+            OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
         }
 
         private void OnDisable()
         {
             OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
+            OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
         }
 
         private void OnMediaAdded(object arg0, MediaAddedEventArgs mediaAddedEventArgs)
@@ -47,6 +49,15 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
         
-        
+        private void OnMediaRemoved(object arg0, MediaRemovedEventArgs mediaRemovedArgs)
+        {
+            string mediaRoomName = mediaRemovedArgs.Peer.RoomName;
+            ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
+            int mediaId = mediaRemovedArgs.MediaId;
+
+            PlaybackComponent removedComponent = playbackRegistry.RemoveComponent(mediaRoomName, mediaPeerId, mediaId);
+            if(removedComponent)
+                Destroy(removedComponent.gameObject);
+        }
     }
 }

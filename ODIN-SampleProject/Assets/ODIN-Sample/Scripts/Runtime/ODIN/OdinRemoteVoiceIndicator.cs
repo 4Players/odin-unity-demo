@@ -21,8 +21,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// The name of the ODIN room, for which this indicator should signal voice activity.
         /// </summary>
         [SerializeField] private StringVariable odinRoomName;
-        [SerializeField] private OdinDistanceVoiceUser voiceUser;
         [SerializeField] private Color voiceOnColor = Color.green;
+        [SerializeField] private OdinPlaybackRegistry playbackRegistry;
+        
 
         private List<PlaybackComponent> _playbackComponents = new List<PlaybackComponent>();
         private int _numActivePlaybacks = 0;
@@ -34,7 +35,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             Assert.IsNotNull(odinRoomName);
             
-            Assert.IsNotNull(voiceUser);
+            Assert.IsNotNull(playbackRegistry);
             _renderer = GetComponent<Renderer>();
             Assert.IsNotNull(_renderer);
             _originalColor = _renderer.material.color;
@@ -42,12 +43,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         public void OnEnable()
         {
-            voiceUser.onPlaybackComponentAdded.AddListener(OnPlaybackAdded);
+            playbackRegistry.onPlaybackComponentAdded.AddListener(OnPlaybackAdded);
         }
 
         public void OnDisable()
         {
-            voiceUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackAdded);
+            playbackRegistry.onPlaybackComponentAdded.RemoveListener(OnPlaybackAdded);
         }
 
         private void OnDestroy()
