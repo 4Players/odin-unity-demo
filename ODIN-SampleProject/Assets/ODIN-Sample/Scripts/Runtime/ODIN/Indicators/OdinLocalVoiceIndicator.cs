@@ -1,11 +1,10 @@
-﻿using System;
-using ODIN_Sample.Scripts.Runtime.Data;
+﻿using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin.Room;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin
+namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     [RequireComponent(typeof(Renderer))]
     public class OdinLocalVoiceIndicator : MonoBehaviourPunCallbacks

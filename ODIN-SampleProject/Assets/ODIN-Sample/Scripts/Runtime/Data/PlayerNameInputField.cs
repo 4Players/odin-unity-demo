@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ODIN_Sample.Scripts.Runtime.Photon
+namespace ODIN_Sample.Scripts.Runtime.Data
 {
     /// <summary>
     /// Player name input field. Let the user input his name, will appear above the player in the game.
@@ -12,26 +12,22 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     {
         #region Private Constants
 
-
         // Store the PlayerPref Key to avoid typos
         const string playerNamePrefKey = "PlayerName";
-
 
         #endregion
 
 
         #region MonoBehaviour CallBacks
 
-
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
-        void Start () {
-
-
+        void Start()
+        {
             string defaultName = string.Empty;
             InputField _inputField = this.GetComponent<InputField>();
-            if (_inputField!=null)
+            if (_inputField != null)
             {
                 if (PlayerPrefs.HasKey(playerNamePrefKey))
                 {
@@ -41,15 +37,13 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             }
 
 
-            PhotonNetwork.NickName =  defaultName;
+            PhotonNetwork.NickName = defaultName;
         }
-
 
         #endregion
 
 
         #region Public Methods
-
 
         /// <summary>
         /// Sets the name of the player, and save it in the PlayerPrefs for future sessions.
@@ -63,12 +57,12 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                 Debug.LogError("Player Name is null or empty");
                 return;
             }
+
             PhotonNetwork.NickName = value;
 
 
-            PlayerPrefs.SetString(playerNamePrefKey,value);
+            PlayerPrefs.SetString(playerNamePrefKey, value);
         }
-
 
         #endregion
     }

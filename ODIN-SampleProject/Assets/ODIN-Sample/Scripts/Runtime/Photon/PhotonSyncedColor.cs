@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
-    public class RandomizedColor : MonoBehaviourPunCallbacks
+    public class PhotonSyncedColor : MonoBehaviourPunCallbacks
     {
         [SerializeField]
         private Renderer capsuleRenderer = null;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ODIN_Sample.Scripts.Runtime.Audio
+namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
 {
     [Serializable]
     public class AudioObstacleEffect : IComparable<AudioObstacleEffect>

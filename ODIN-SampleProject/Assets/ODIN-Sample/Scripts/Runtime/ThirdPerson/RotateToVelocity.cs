@@ -12,7 +12,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         [SerializeField] private GameObject target;
         [SerializeField] private CharacterController characterController;
         [SerializeField] private float rotationSpeed = 5.0f;
-    
+
         private void Awake()
         {
             Assert.IsNotNull(characterController);
@@ -21,8 +21,6 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 
         void Update()
         {
-            Transform targetTransform = target.transform;
-            
             Vector3 movementDirection = characterController.velocity;
             movementDirection.y = 0.0f;
             if (movementDirection.sqrMagnitude > 0.1f)

@@ -836,8 +836,9 @@ GameObject:
   - component: {fileID: 7856108277496924185}
   - component: {fileID: 6942348817801856013}
   - component: {fileID: 7663716378265911341}
+  - component: {fileID: 2784359670887783181}
   m_Layer: 0
-  m_Name: OcclusionAudioListener
+  m_Name: AudioListenerBehavior
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -928,6 +929,21 @@ RotationConstraint:
   m_Sources:
   - sourceTransform: {fileID: 2753487310897480878}
     weight: 1
+--- !u!114 &2784359670887783181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292872340452153005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0881f492f9bc4a3da5a22df89b8e9410, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  directionalSettings: {fileID: 11400000, guid: 245c7b8610bcca44bb127f091c54c651, type: 2}
+  audioListener: {fileID: 4558789485580523338}
+  includeInactiveAudioSourcesInSearch: 1
 --- !u!1 &4139585757795616959
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,7 +1011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2110512895940090328
 Transform:
   m_ObjectHideFlags: 0

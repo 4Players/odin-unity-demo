@@ -21,12 +21,13 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             _playerNameInput.onEndEdit.AddListener(SetPlayerName);
             Assert.IsNotNull(playerName);
         }
+
         private void Start()
         {
             string savedName = PlayerPrefs.GetString(PlayerNameKey, "Player");
             _playerNameInput.text = savedName;
         }
-        
+
         public void UpdatePlayerName()
         {
             SetPlayerName(_playerNameInput.text);

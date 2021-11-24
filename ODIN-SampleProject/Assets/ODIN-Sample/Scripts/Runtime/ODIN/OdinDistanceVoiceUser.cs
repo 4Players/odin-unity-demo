@@ -1,24 +1,14 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using ODIN_Sample.Scripts.Runtime.Data;
-using ODIN_Sample.Scripts.Runtime.Odin;
-using OdinNative.Odin;
 using OdinNative.Odin.Media;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
-using OdinNative.Unity;
-using OdinNative.Unity.Audio;
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 using Room = OdinNative.Odin.Room.Room;
 
-namespace ODIN_Sample.Scripts.Runtime.Photon
+namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     /// <summary>
     /// Automatically creates a PlaybackComponent on a remote player for each room the owning (local) player is connected to.
@@ -35,15 +25,14 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         [SerializeField] private PhotonView photonView;
         
-
         /// <summary>
         /// Contains all pairs of roomname to peer ids associated to the player owning the photonView
         /// </summary>
-        private Dictionary<string, ulong> roomToPeerIds = new Dictionary<string, ulong>();
+        private readonly Dictionary<string, ulong> _roomToPeerIds = new Dictionary<string, ulong>();
         
-        private void Awake()
+        protected override void Awake()
         {
-            Assert.IsNotNull(playbackComponentPrefab);
+            base.Awake();
             Assert.IsTrue(connectedOdinRooms.Length > 0);
             if (null == photonView)
                 photonView = GetComponentInParent<PhotonView>();
@@ -132,7 +121,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             if (!photonView.IsMine)
             {
                 Debug.Log($"OnUpdatePeerId: {roomId}, Peer: {peerId}");
-                roomToPeerIds[roomId] = (ulong)peerId;
+                _roomToPeerIds[roomId] = (ulong)peerId;
                 UpdateAllPlaybacks();
             }
         }
@@ -143,9 +132,9 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// </summary>
         private void UpdateAllPlaybacks()
         {
-            foreach (string roomId in roomToPeerIds.Keys)
+            foreach (string roomId in _roomToPeerIds.Keys)
             {
-                ulong peerId = roomToPeerIds[roomId];
+                ulong peerId = _roomToPeerIds[roomId];
                 if (OdinHandler.Instance.Rooms.Contains(roomId))
                 {
                     UpdateRoomPlayback(roomId, peerId);
@@ -168,37 +157,8 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                 foreach (MediaStream mediaStream in peer.Medias)
                 {
                     SpawnPlaybackComponent(roomId, peer.Id, mediaStream.Id);
-                    // TrySpawnOdinPlayback(roomId, peer.Id, mediaStream.Id);
                 }
             }
         }
-
-        // private PlaybackComponent TrySpawnOdinPlayback(string roomName, ulong peerId, int mediaId)
-        // {
-        //     // Skip, if we've already created the Playback component for this media
-        //     var dictionaryKey = (roomName, peerId, mediaId);
-        //     if (registeredRemoteMedia.ContainsKey(dictionaryKey))
-        //         return null;
-        //     
-        //     // Create and initialize the Playback Component
-        //     Debug.Log($"New Odin Sound spawned: {roomName} peerId: {peerId} mediaId: {mediaId}");
-        //     PlaybackComponent playbackComponent =
-        //         Instantiate(playbackComponentPrefab.gameObject).GetComponent<PlaybackComponent>();
-        //     playbackComponent.RoomName = roomName;
-        //     playbackComponent.PeerId = peerId;
-        //     playbackComponent.MediaId = mediaId;
-        //
-        //     Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
-        //     playbackComponent.transform.SetParent(parentTransform);
-        //     playbackComponent.transform.localPosition = Vector3.zero;
-        //     playbackComponent.transform.localRotation = Quaternion.identity;
-        //
-        //     // add to registered playback components
-        //     registeredRemoteMedia.Add(dictionaryKey, playbackComponent);
-        //     
-        //     // notify listeners, that a new playback component was registered
-        //     onPlaybackComponentAdded?.Invoke(playbackComponent);
-        //     return playbackComponent;
-        // }
     }
 }

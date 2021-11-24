@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.Audio
+namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
 {
     [CreateAssetMenu(fileName = "OcclusionSettings", menuName = "Odin-Sample/OcclusionSettings", order = 0)]
     public class OcclusionSettings : ScriptableObject

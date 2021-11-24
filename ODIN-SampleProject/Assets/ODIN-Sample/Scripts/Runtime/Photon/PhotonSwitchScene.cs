@@ -11,7 +11,7 @@ using Room = OdinNative.Odin.Room.Room;
 
 namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
-    public class SwitchSceneOnButton : MonoBehaviour, IMatchmakingCallbacks
+    public class PhotonSwitchScene : MonoBehaviour, IMatchmakingCallbacks
     {
         [SerializeField] private KeyCode loadKeyCode = KeyCode.L;
         [SerializeField] private StringVariable sceneToLoad;
@@ -55,7 +55,6 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         }
 
 
-
         public void OnFriendListUpdate(List<FriendInfo> friendList)
         {
         }
@@ -82,7 +81,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 
         public void OnLeftRoom()
         {
-            if(_wasSceneLoadRequested)
+            if (_wasSceneLoadRequested)
                 SceneManager.LoadScene(sceneToLoad.Value);
         }
     }

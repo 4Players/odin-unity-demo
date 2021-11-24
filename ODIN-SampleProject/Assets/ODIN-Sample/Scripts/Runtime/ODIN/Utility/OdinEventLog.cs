@@ -66,7 +66,5 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             Debug.Log($"OnMediaRemoved: {arg1.MediaId}, Peer: {arg1.Peer.Id}, Room: {arg1.Peer.RoomName}");
         }
-
-
     }
 }

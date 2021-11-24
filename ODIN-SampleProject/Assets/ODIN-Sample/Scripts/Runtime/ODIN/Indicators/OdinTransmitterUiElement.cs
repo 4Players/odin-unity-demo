@@ -1,9 +1,8 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin
+namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     public class OdinTransmitterUiElement : MonoBehaviour
     {

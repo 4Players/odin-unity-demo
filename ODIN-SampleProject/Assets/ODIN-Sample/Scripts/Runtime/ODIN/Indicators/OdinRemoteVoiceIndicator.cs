@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin
+namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     
     /// <summary>

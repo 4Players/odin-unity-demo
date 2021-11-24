@@ -5,14 +5,12 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 {
     public class LookAtCamera : MonoBehaviour
     {
-
         [SerializeField] private float rotationSpeed = 5.0f;
-        
         [SerializeField] private Camera targetCamera;
 
         private void OnEnable()
         {
-            if(null == targetCamera)
+            if (null == targetCamera)
                 targetCamera = Camera.main;
             var targetRotation = GetTargetRotation();
             transform.rotation = targetRotation;
@@ -20,8 +18,10 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 
         void Update()
         {
-            if(null == targetCamera)
+            if (null == targetCamera)
+            {
                 targetCamera = Camera.main;
+            }
             else
             {
                 var targetRotation = GetTargetRotation();
@@ -38,7 +38,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
                 Vector3 lookRotationForward = transform.position - targetCamera.transform.position;
                 targetRotation = Quaternion.LookRotation(lookRotationForward, Vector3.up);
             }
-            
+
             return targetRotation;
         }
     }

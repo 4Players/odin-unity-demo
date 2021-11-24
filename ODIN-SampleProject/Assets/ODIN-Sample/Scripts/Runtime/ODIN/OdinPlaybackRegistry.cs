@@ -11,13 +11,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <summary>
         /// Called when a new playbackcomponent was created by this script
         /// </summary>
-        public Action<PlaybackComponent> onPlaybackComponentAdded;
-        public Action<PlaybackComponent> onPlaybackComponentRemoved;
+        public Action<PlaybackComponent> OnPlaybackComponentAdded;
+        public Action<PlaybackComponent> OnPlaybackComponentRemoved;
         
         /// <summary>
         /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
         /// </summary>
-        private Dictionary<(string, ulong, int), PlaybackComponent> _registeredRemoteMedia =
+        private readonly Dictionary<(string, ulong, int), PlaybackComponent> _registeredRemoteMedia =
             new Dictionary<(string, ulong, int), PlaybackComponent>();
         
         
@@ -26,7 +26,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             var dictionaryKey = (roomName, peerId, mediaId);
             _registeredRemoteMedia[dictionaryKey] = toAdd;
-            onPlaybackComponentAdded?.Invoke(toAdd);
+            OnPlaybackComponentAdded?.Invoke(toAdd);
         }
 
         public bool ContainsComponent(string roomName, ulong peerId, int mediaId)
@@ -40,7 +40,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out PlaybackComponent toRemove))
             {
                 _registeredRemoteMedia.Remove(dictionaryKey);
-                onPlaybackComponentRemoved.Invoke(toRemove);
+                OnPlaybackComponentRemoved.Invoke(toRemove);
                 return toRemove;
             }
             return null;

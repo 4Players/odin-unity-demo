@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
-    public class PhotonLoadScene : MonoBehaviourPunCallbacks
+    public class PhotonLoadSceneOnJoin : MonoBehaviourPunCallbacks
     {
         [SerializeField] private string sceneToLoad;
 

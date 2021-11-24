@@ -5,7 +5,7 @@ using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin.UI
+namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     public class OdinTransmitterDisplay : MonoBehaviour
     {
@@ -28,14 +28,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.UI
 
         private void OnEnable()
         {
-            playbackRegistry.onPlaybackComponentAdded += OnPlaybackComponentAdded;
-            playbackRegistry.onPlaybackComponentRemoved += OnPlaybackComponentRemoved;
+            playbackRegistry.OnPlaybackComponentAdded += OnPlaybackComponentAdded;
+            playbackRegistry.OnPlaybackComponentRemoved += OnPlaybackComponentRemoved;
         }
         
         private void OnDisable()
         {
-            playbackRegistry.onPlaybackComponentAdded -= OnPlaybackComponentAdded;
-            playbackRegistry.onPlaybackComponentRemoved -= OnPlaybackComponentRemoved;
+            playbackRegistry.OnPlaybackComponentAdded -= OnPlaybackComponentAdded;
+            playbackRegistry.OnPlaybackComponentRemoved -= OnPlaybackComponentRemoved;
         }
 
         private void OnDestroy()
