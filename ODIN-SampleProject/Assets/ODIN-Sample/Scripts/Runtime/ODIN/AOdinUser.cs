@@ -61,6 +61,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 spawned.MediaId = mediaId;
 
                 _registeredRemoteMedia.Add(dictionaryKey, spawned);
+                onPlaybackComponentAdded.Invoke(spawned);
             }
 
             return spawned;

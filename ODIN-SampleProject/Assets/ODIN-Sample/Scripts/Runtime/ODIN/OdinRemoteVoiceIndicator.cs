@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ODIN_Sample.Scripts.Runtime.Data;
-using ODIN_Sample.Scripts.Runtime.Photon;
 using OdinNative.Unity.Audio;
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
 
