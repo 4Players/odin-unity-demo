@@ -54,6 +54,10 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
         {
             foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
             {
+                // only use audio source, if it's a 3d sound
+                if (!(audioSource.spatialBlend > 0.0f))
+                    return;
+                
                 if (!_audioSources.ContainsKey(audioSource))
                 {
                     AudioObstacleEffect originalEffect = new AudioObstacleEffect();

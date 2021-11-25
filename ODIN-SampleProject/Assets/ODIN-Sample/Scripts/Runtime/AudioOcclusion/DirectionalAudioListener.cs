@@ -40,13 +40,47 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
 
         private void Update()
         {
-            foreach (var audioSource in _audioSources.Keys)
-            {
-                Vector3 sourcePosition = audioSource.transform.position;
-                Vector3 listenerPosition = audioListener.transform.position;
+            var listenerTransform = audioListener.transform;
+            Vector3 listenerPosition = listenerTransform.position;
+            Vector3 listenerForwards = listenerTransform.forward;
 
+
+            List<AudioSource> dataToRemove = new List<AudioSource>();
+
+            foreach (AudioSource audioSource in _audioSources.Keys)
+            {
+                DirectionalAudioSourceData sourceData = _audioSources[audioSource];
+                if (null == sourceData || !sourceData.ConnectedSource)
+                {
+                    dataToRemove.Add(audioSource);
+                    Debug.LogError("Source Data or Connected Source in DirectionalAudioListener is invalid, removing AudioSource from List.");
+                }
                 
+                Vector3 sourcePosition = sourceData.ConnectedSource.transform.position;
+                Vector3 toSource = (sourcePosition - listenerPosition).normalized;
+
+                float signedAngle = Vector3.SignedAngle(listenerForwards, toSource, Vector3.up);
+
+                AudioLowPassFilter lowPassFilter = sourceData.GetLowPassFilter();
+                if (!lowPassFilter)
+                {
+                    lowPassFilter = sourceData.ConnectedSource.gameObject.AddComponent<AudioLowPassFilter>();
+                }
+
+                // if lowpass filter was disabled, enable and reset it
+                if (!lowPassFilter.enabled)
+                {
+                    lowPassFilter.enabled = true;
+                    lowPassFilter.cutoffFrequency = 22000;
+                }
                 
+                float lowPassFrequency = directionalSettings.angleToVolumeCurve.Evaluate(signedAngle);
+                lowPassFilter.cutoffFrequency = Mathf.Min(lowPassFilter.cutoffFrequency, lowPassFrequency);
+            }
+
+            foreach (var source in dataToRemove)
+            {
+                _audioSources.Remove(source);
             }
         }
 
@@ -55,6 +89,10 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
             foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(
                 includeInactiveAudioSourcesInSearch))
             {
+                // only use audio source, if it's a 3d sound
+                if (!(audioSource.spatialBlend > 0.0f))
+                    return;
+                
                 if (_audioSources.ContainsKey(audioSource))
                 {
                     var sourceData = _audioSources[audioSource];
@@ -62,7 +100,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
                 }
                 else
                 {
-                    _audioSources[audioSource] = new DirectionalAudioSourceData(1, audioSource.volume);
+                    _audioSources[audioSource] = new DirectionalAudioSourceData(1, audioSource);
                 }
 
                 Debug.Log(
@@ -78,7 +116,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
                 {
                     var sourceData = _audioSources[audioSource];
                     sourceData.Decrement();
-                    
+
                     Debug.Log(
                         $"Exited audio source Trigger: {audioSource.gameObject} with count: {sourceData.NumTriggersReceived}");
                     if (sourceData.NumTriggersReceived <= 0)
@@ -89,14 +127,25 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
         [Serializable]
         private class DirectionalAudioSourceData
         {
-            public DirectionalAudioSourceData(int numTriggersReceived, float originalVolume)
-            {
-                NumTriggersReceived = numTriggersReceived;
-                OriginalVolume = originalVolume;
-            }
-
             public int NumTriggersReceived { get; private set; }
             public float OriginalVolume { get; private set; }
+            public AudioSource ConnectedSource { get; private set; }
+
+            private AudioLowPassFilter _cachedLowPassFilter;
+
+            public DirectionalAudioSourceData(int numTriggersReceived, AudioSource connectedSource)
+            {
+                NumTriggersReceived = numTriggersReceived;
+                OriginalVolume = connectedSource.volume;
+                ConnectedSource = connectedSource;
+            }
+
+            public AudioLowPassFilter GetLowPassFilter()
+            {
+                if (!_cachedLowPassFilter && ConnectedSource)
+                    _cachedLowPassFilter = ConnectedSource.GetComponent<AudioLowPassFilter>();
+                return _cachedLowPassFilter;
+            }
 
             public int Increment()
             {
