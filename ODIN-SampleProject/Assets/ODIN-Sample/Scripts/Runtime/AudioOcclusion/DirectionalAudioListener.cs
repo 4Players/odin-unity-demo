@@ -53,7 +53,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
                 if (null == sourceData || !sourceData.ConnectedSource)
                 {
                     dataToRemove.Add(audioSource);
-                    Debug.LogError("Source Data or Connected Source in DirectionalAudioListener is invalid, removing AudioSource from List.");
+                    continue;
                 }
                 
                 Vector3 sourcePosition = sourceData.ConnectedSource.transform.position;

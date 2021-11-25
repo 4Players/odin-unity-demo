@@ -35,7 +35,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 {
                     Room pushToTalkRoom = OdinHandler.Instance.Rooms[pushToTalkData.connectedRoom];
                     // if the local microphone is the one, for which OnMediaAdded was called
-                    if (pushToTalkRoom.MicrophoneMedia.Id == mediaAddedEventArgs.Media.Id)
+                    if (null != pushToTalkRoom.MicrophoneMedia && pushToTalkRoom.MicrophoneMedia.Id == mediaAddedEventArgs.Media.Id)
                     {
                         // mute the microphone initially
                         pushToTalkRoom.MicrophoneMedia.SetMute(true);
