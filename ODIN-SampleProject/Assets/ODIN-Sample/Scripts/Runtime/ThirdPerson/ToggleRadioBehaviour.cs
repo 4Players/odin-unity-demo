@@ -12,11 +12,15 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         [SerializeField] private AudioSource toggleSource;
         [SerializeField] private Renderer feedbackMesh;
         [SerializeField] private int feedbackMaterialIndex = 1;
+        
+        [ColorUsage(true, true)]
         [SerializeField] private Color radioOffColor = Color.red;
 
         public UnityEvent<bool> onRadioToggled;
 
         private Color _originalColor;
+        
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         private void Awake()
         {
@@ -24,8 +28,8 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             Assert.IsNotNull(feedbackMesh, "Missing reference to feedback mesh.");
             Assert.IsTrue(feedbackMesh.materials.Length > feedbackMaterialIndex,
                 "Invalid feedbackMaterialIndex: feedbackMesh does not have that many material slots.");
-            
-            _originalColor = feedbackMesh.materials[feedbackMaterialIndex].color;
+
+            _originalColor = feedbackMesh.materials[feedbackMaterialIndex].GetColor(EmissionColor);
             UpdateFeedbackColor();
 
         }
@@ -54,11 +58,11 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         {
             if (toggleSource.gameObject.activeSelf)
             {
-                feedbackMesh.materials[feedbackMaterialIndex].color = _originalColor;
+                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColor, _originalColor);
             }
             else
             {
-                feedbackMesh.materials[feedbackMaterialIndex].color = radioOffColor;
+                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColor, radioOffColor);
             }
         }
     }

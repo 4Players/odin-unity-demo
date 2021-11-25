@@ -27,7 +27,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         {
             if (photonView && photonView.IsMine)
             {
-                
                 bool isVoiceOn = false;
 
                 if (OdinHandler.Instance && OdinHandler.Instance.Rooms.Contains(roomName))

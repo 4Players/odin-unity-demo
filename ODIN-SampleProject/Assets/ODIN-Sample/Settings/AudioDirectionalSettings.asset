@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e30079cea864320bda04ad1ed80c303, type: 3}
-  m_Name: DirectionSettings
+  m_Name: AudioDirectionalSettings
   m_EditorClassIdentifier: 
-  audioSourceDetectionRange: 20
+  audioSourceDetectionRange: 100
   angleToVolumeCurve:
     serializedVersion: 2
     m_Curve:

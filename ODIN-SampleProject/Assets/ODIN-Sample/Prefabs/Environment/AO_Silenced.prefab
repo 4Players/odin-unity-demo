@@ -80,6 +80,10 @@ PrefabInstance:
       value: Silenced
       objectReference: {fileID: 0}
     - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_fontSize
+      value: 42
+      objectReference: {fileID: 0}
+    - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_fontColor.b
       value: 0.9450981
       objectReference: {fileID: 0}
@@ -90,6 +94,10 @@ PrefabInstance:
     - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_fontColor.r
       value: 0.92549026
+      objectReference: {fileID: 0}
+    - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 42
       objectReference: {fileID: 0}
     - target: {fileID: 441444631649213147, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_fontColor32.rgba

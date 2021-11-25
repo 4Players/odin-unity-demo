@@ -6,7 +6,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
     /// <summary>
     /// Will make the target gameobject rotate in the direction of the velocity of characterController.
     /// </summary>
-    public class RotateToVelocity : MonoBehaviour
+    public class RotationInput : MonoBehaviour
     {
         [SerializeField] private string rotationalInputAxis = "Rotational";
         [SerializeField] private GameObject target;

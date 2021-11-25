@@ -267,6 +267,8 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
             return occlusionThicknessSum;
         }
 
+        
+        
         /// <summary>
         /// Get all hits
         /// </summary>
@@ -276,7 +278,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
         private List<RaycastHit> GetOccluderHits(Vector3 rayOrigin, Vector3 rayDirection)
         {
             Ray occluderRay = new Ray(rayOrigin, rayDirection);
-
+            
             // TODO: Improve performance by using Non-Alloc Raycast
             // Using two arrays with a fixed max size would only be problematic if numFoundHits > max size
             // but in that case we can just assume, that a max occlusion effect can be applied.

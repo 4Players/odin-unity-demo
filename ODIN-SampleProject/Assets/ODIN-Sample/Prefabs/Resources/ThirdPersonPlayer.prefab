@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 2083264975}
   - component: {fileID: 2083264974}
   m_Layer: 0
-  m_Name: TalkIndicator
+  m_Name: VoiceIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1117,7 +1117,7 @@ MonoBehaviour:
   rotationalInputAxis: Rotational
   target: {fileID: 2753487309498945351}
   characterController: {fileID: 2753487309664625879}
-  rotationSpeed: 7
+  rotationSpeed: 5
 --- !u!1 &6639016815256160874
 GameObject:
   m_ObjectHideFlags: 0
@@ -2786,7 +2786,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.534645}
-  m_SizeDelta: {x: 40, y: 5}
+  m_SizeDelta: {x: 40, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &7532378000523234432
 MeshRenderer:
@@ -2876,8 +2876,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

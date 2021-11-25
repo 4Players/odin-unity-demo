@@ -117,8 +117,8 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
                     var sourceData = _audioSources[audioSource];
                     sourceData.Decrement();
 
-                    Debug.Log(
-                        $"Exited audio source Trigger: {audioSource.gameObject} with count: {sourceData.NumTriggersReceived}");
+                    // Debug.Log(
+                    //     $"Exited audio source Trigger: {audioSource.gameObject} with count: {sourceData.NumTriggersReceived}");
                     if (sourceData.NumTriggersReceived <= 0)
                         _audioSources.Remove(audioSource);
                 }
