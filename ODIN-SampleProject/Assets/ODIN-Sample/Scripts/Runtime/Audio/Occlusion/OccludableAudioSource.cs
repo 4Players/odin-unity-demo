@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
     [RequireComponent(typeof(AudioSource), typeof(SphereCollider))]
     public class OccludableAudioSource : MonoBehaviour

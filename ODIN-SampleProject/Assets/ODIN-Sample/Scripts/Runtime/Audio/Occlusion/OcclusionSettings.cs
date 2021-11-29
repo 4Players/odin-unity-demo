@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
     [CreateAssetMenu(fileName = "OcclusionSettings", menuName = "Odin-Sample/OcclusionSettings", order = 0)]
     public class OcclusionSettings : ScriptableObject
@@ -14,7 +14,9 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
         /// </summary>
        public AnimationCurve occlusionCurve;
 
+        public float GetCutoffFrequency(float thickness)
+        {
+            return occlusionCurve.Evaluate(thickness);
+        }
     }
-    
-    
 }

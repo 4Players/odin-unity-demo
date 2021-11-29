@@ -4,17 +4,18 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio.Directional
 {
-    [RequireComponent(typeof(SphereCollider), typeof(Rigidbody)), DefaultExecutionOrder(100)]
+    [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
     public class DirectionalAudioListener : MonoBehaviour
     {
+        [SerializeField] private float audioSourceDetectionRange = 100.0f;
+        
         [FormerlySerializedAs("directionAudioSettings")] [FormerlySerializedAs("directionSettings")] [SerializeField]
-        private DirectionAudioSettings directionalSettings;
+        private DirectionalAudioEffectSettings directionalSettings;
 
         [SerializeField] private AudioListener audioListener;
         [SerializeField] private bool includeInactiveAudioSourcesInSearch = true;
-
 
         private readonly Dictionary<AudioSource, DirectionalAudioSourceData> _audioSources =
             new Dictionary<AudioSource, DirectionalAudioSourceData>();
@@ -31,7 +32,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
             detectorRigidBody.useGravity = false;
 
             Assert.IsNotNull(directionalSettings);
-            audioSourceDetector.radius = directionalSettings.audioSourceDetectionRange;
+            audioSourceDetector.radius = audioSourceDetectionRange;
 
             if (null == audioListener)
                 audioListener = GetComponent<AudioListener>();
@@ -61,31 +62,47 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
 
                 float signedAngle = Vector3.SignedAngle(listenerForwards, toSource, Vector3.up);
 
-                AudioLowPassFilter lowPassFilter = sourceData.GetLowPassFilter();
-                if (!lowPassFilter)
+                AudioEffectApplicator applicator = sourceData.GetApplicator();
+                if (!applicator)
                 {
-                    lowPassFilter = sourceData.ConnectedSource.gameObject.AddComponent<AudioLowPassFilter>();
-                }
-
-                // if lowpass filter was disabled, enable and reset it
-                if (!lowPassFilter.enabled)
-                {
-                    lowPassFilter.enabled = true;
-                    lowPassFilter.cutoffFrequency = 22000;
+                    applicator = audioSource.gameObject.AddComponent<AudioEffectApplicator>();
                 }
                 
-                float lowPassFrequency = directionalSettings.angleToVolumeCurve.Evaluate(signedAngle);
-                lowPassFilter.cutoffFrequency = Mathf.Min(lowPassFilter.cutoffFrequency, lowPassFrequency);
+                applicator.Apply(directionalSettings.GetAudioEffectData(signedAngle));
+
+
+                // AudioLowPassFilter lowPassFilter = sourceData.GetLowPassFilter();
+                // if (!lowPassFilter)
+                // {
+                //     lowPassFilter = sourceData.ConnectedSource.gameObject.AddComponent<AudioLowPassFilter>();
+                // }
+                //
+                // // if lowpass filter was disabled, enable and reset it
+                // if (!lowPassFilter.enabled)
+                // {
+                //     lowPassFilter.enabled = true;
+                //     lowPassFilter.cutoffFrequency = 22000;
+                // }
+                //
+                // float lowPassFrequency = directionalSettings.angleToCutOffFrequencyCurve.Evaluate(signedAngle);
+                // lowPassFilter.cutoffFrequency = Mathf.Min(lowPassFilter.cutoffFrequency, lowPassFrequency);
             }
 
+            // Remove destroyed audio sources from the audio sources container.
             foreach (var source in dataToRemove)
             {
                 _audioSources.Remove(source);
             }
         }
 
+        /// <summary>
+        /// Checks, whether we detected a new Audio source in range. Will ignore audio sources, that don't have
+        /// Spatial Blending enabled (e.g. 2D sounds)
+        /// </summary>
+        /// <param name="other">The collider of the object we detected.</param>
         private void OnTriggerEnter(Collider other)
         {
+            
             foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(
                 includeInactiveAudioSourcesInSearch))
             {
@@ -131,7 +148,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
             public float OriginalVolume { get; private set; }
             public AudioSource ConnectedSource { get; private set; }
 
-            private AudioLowPassFilter _cachedLowPassFilter;
+            private AudioEffectApplicator _cachedApplicator;
 
             public DirectionalAudioSourceData(int numTriggersReceived, AudioSource connectedSource)
             {
@@ -140,18 +157,32 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
                 ConnectedSource = connectedSource;
             }
 
-            public AudioLowPassFilter GetLowPassFilter()
+            public AudioEffectApplicator GetApplicator()
             {
-                if (!_cachedLowPassFilter && ConnectedSource)
-                    _cachedLowPassFilter = ConnectedSource.GetComponent<AudioLowPassFilter>();
-                return _cachedLowPassFilter;
+                if (!_cachedApplicator && ConnectedSource)
+                    _cachedApplicator = ConnectedSource.GetComponent<AudioEffectApplicator>();
+                return _cachedApplicator;
             }
 
+            /// <summary>
+            /// Increments the amount of triggers, that were found to be containing this audio source.
+            ///
+            /// Because an object can have multiple colliders in the hierarchy above the audio source, multiple
+            /// colliders could start the registration process of the audio source. 
+            /// </summary>
+            /// <returns>The amount of triggers, that are connected to this audio source data, after incrementing.</returns>
             public int Increment()
             {
                 return ++NumTriggersReceived;
             }
 
+            /// <summary>
+            /// Increments the amount of triggers, that were found to be containing this audio source.
+            ///
+            /// Because an object can have multiple colliders in the hierarchy above the audio source, multiple
+            /// colliders could start the registration process of the audio source. 
+            /// </summary>
+            /// <returns>The amount of triggers, that are connected to this audio source data, after decrementing.</returns>
             public int Decrement()
             {
                 return --NumTriggersReceived;

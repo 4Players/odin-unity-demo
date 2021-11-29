@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using ODIN_Sample.Scripts.Runtime.AudioOcclusion;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
     [RequireComponent(typeof(Collider))]
     public class AudioObstacle : MonoBehaviour

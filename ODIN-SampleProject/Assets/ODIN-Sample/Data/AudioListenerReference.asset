@@ -9,9 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e341df03f1143b88129fc056667315d, type: 3}
-  m_Name: VoicePlaybackRegistry
+  m_Script: {fileID: 11500000, guid: dd7e07ed8df849579620e2c0ab6b5e51, type: 3}
+  m_Name: AudioListenerReference
   m_EditorClassIdentifier: 
-  onPlaybackComponentAdded:
-    m_PersistentCalls:
-      m_Calls: []

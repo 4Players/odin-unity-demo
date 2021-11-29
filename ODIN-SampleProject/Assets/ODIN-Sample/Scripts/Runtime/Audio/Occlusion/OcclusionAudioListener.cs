@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.AudioOcclusion;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
     
     /// <summary>
@@ -270,7 +271,7 @@ namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
         
         
         /// <summary>
-        /// Get all hits
+        /// Get all hits. Ignores Triggers.
         /// </summary>
         /// <param name="rayOrigin"></param>
         /// <param name="rayDirection"></param>
