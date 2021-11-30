@@ -13,6 +13,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             {
                 Destroy(localPlayerOnly);
             }
+            else
+            {
+                localPlayerOnly.SetActive(true);
+            }
 
             if(null != info.Sender)
                 info.Sender.TagObject = this.gameObject;

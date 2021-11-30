@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using ODIN_Sample.Scripts.Runtime.Audio.Occlusion;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
@@ -29,6 +31,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             {
                 _lowPassFilter = gameObject.AddComponent<AudioLowPassFilter>();
             }
+            
+            
             _originalCutoffFrequency = _lowPassFilter.cutoffFrequency;
         }
 
@@ -45,7 +49,23 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void Update()
         {
-            //TODO
+            AudioEffectData toApply = null;
+            foreach (AudioEffectData effectData in _effectList)
+            {
+                toApply = AudioEffectData.GetCombinedEffect(toApply, effectData);
+            }
+
+            if (null != toApply)
+            {
+                _lowPassFilter.enabled = true;
+                _lowPassFilter.cutoffFrequency = toApply.cutoffFrequency;
+                _lowPassFilter.lowpassResonanceQ = toApply.lowpassResonanceQ;
+                _audioSource.volume = toApply.volume;
+
+                // Debug.Log($"Combined effect: {toApply}");
+            }
+            
+            _effectList.Clear();
         }
     }
 

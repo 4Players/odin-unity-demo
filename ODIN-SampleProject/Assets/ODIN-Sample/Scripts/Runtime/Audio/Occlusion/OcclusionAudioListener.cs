@@ -10,7 +10,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
     /// <summary>
     /// This component automatically detects Audio Sources inside the radius given by the <see cref="occlusionSettings"/>
     /// and applies audio occlusion effects to them, if required.
-    /// If Audio Source gameobjects have a <see cref="AudioObstacle"/> script attached, the <see cref="AudioObstacleEffect"/>
+    /// If Audio Source gameobjects have a <see cref="AudioObstacle"/> script attached, the <see cref="AudioEffectData"/>
     /// associated to the obstacle will be used, otherwise a fallback method based on detecting the thickness of objects
     /// with colliders between the <see cref="AudioListener"/> and <see cref="AudioSource"/> will be used.
     /// </summary>
@@ -22,8 +22,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
         [SerializeField] private bool includeInactiveSourcesInSearch = true;
         
 
-        private readonly Dictionary<AudioSource, AudioObstacleEffect> _audioSources =
-            new Dictionary<AudioSource, AudioObstacleEffect>();
+        private readonly Dictionary<AudioSource, AudioEffectData> _audioSources =
+            new Dictionary<AudioSource, AudioEffectData>();
 
         private Collider[] _collidersOnAudiolistener;
 
@@ -61,8 +61,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 
                 if (!_audioSources.ContainsKey(audioSource))
                 {
-                    AudioObstacleEffect originalEffect = new AudioObstacleEffect();
-                    originalEffect.volumeMultiplier = audioSource.volume;
+                    AudioEffectData originalEffect = new AudioEffectData();
+                    originalEffect.volume = audioSource.volume;
 
                     AudioLowPassFilter lowPassFilter = audioSource.GetComponent<AudioLowPassFilter>();
                     if (lowPassFilter)
@@ -108,7 +108,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 RemoveOriginCollisions(ref forwardHits, _collidersOnAudiolistener);
                 RemoveOriginCollisions(ref forwardHits, audioSourceColliders);
 
-                AudioObstacleEffect applicableEffect = null;
+                AudioEffectData applicableEffect = null;
                 var numHitAudioObstacles = TryRetrieveAudioObstacle(forwardHits, ref applicableEffect);
 
                 // Only check occlusion thickness, if we found occlusions that don't have an AudioObstacle component
@@ -117,16 +117,10 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                     TryRetrieveDefaultOcclusion(forwardHits, rayOrigins, toAudioSource, audioSourceColliders,
                         ref applicableEffect);
                 }
-
-                if (null != applicableEffect)
-                {
-                    // Debug.Log($"Audiosource: {audioSource.gameObject.name} Cutoff Frequency: {applicableEffect.cutoffFrequency}");
+                
+                if(null != applicableEffect)
                     ApplyOcclusionEffect(applicableEffect, audioSource);
-                }
-                else
-                {
-                    DeactivateOcclusionEffect(audioSource);
-                }
+                
             }
 
             foreach (AudioSource audioSource in toRemove)
@@ -155,7 +149,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
         /// <param name="applicableEffect">The effect that should be filled in.</param>
         private void TryRetrieveDefaultOcclusion(List<RaycastHit> forwardHits,
             Vector3[] rayOrigins, Vector3 toTarget, Collider[] targetColliders,
-            ref AudioObstacleEffect applicableEffect)
+            ref AudioEffectData applicableEffect)
         {
             Assert.IsTrue(rayOrigins.Length == 2);
             
@@ -169,15 +163,15 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 if (occlusionThicknessSum > 0.0f)
                 {
                     float thicknessCutoffFrequency =
-                        occlusionSettings.occlusionCurve.Evaluate(occlusionThicknessSum);
-                    AudioObstacleEffect thicknessEffect = new AudioObstacleEffect(thicknessCutoffFrequency);
+                        occlusionSettings.GetCutoffFrequency(occlusionThicknessSum);
+                    AudioEffectData thicknessEffect = new AudioEffectData(thicknessCutoffFrequency);
 
-                    applicableEffect = GetLargerEffect(applicableEffect, thicknessEffect);
+                    applicableEffect = AudioEffectData.GetCombinedEffect(applicableEffect, thicknessEffect);
                 }
             }
         }
 
-        private int TryRetrieveAudioObstacle(List<RaycastHit> forwardHits, ref AudioObstacleEffect applicableEffect)
+        private int TryRetrieveAudioObstacle(List<RaycastHit> forwardHits, ref AudioEffectData applicableEffect)
         {
             int numHitAudioObstacles = 0;
 
@@ -186,59 +180,24 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 AudioObstacle audioObstacle = hit.collider.GetComponent<AudioObstacle>();
                 if (audioObstacle)
                 {
-                    AudioObstacleEffect currentEffect = audioObstacle.settings.effect;
-                    applicableEffect = GetLargerEffect(applicableEffect, currentEffect);
+                    AudioEffectData currentEffect = audioObstacle.settings.effect;
+                    applicableEffect = AudioEffectData.GetCombinedEffect(applicableEffect, currentEffect);
                     numHitAudioObstacles++;
                 }
             }
 
             return numHitAudioObstacles;
         }
+        
 
-        private AudioObstacleEffect GetLargerEffect(AudioObstacleEffect first, AudioObstacleEffect second)
+        private void ApplyOcclusionEffect(AudioEffectData obstacleEffect, AudioSource source)
         {
-            if (null == first)
-                return second;
-            if (null == second)
-                return first;
-            if (first.CompareTo(second) < 0)
-                return first;
+            AudioEffectApplicator applicator = source.GetComponent<AudioEffectApplicator>();
+            if (!applicator)
+                applicator = source.gameObject.AddComponent<AudioEffectApplicator>();
+            Assert.IsNotNull(applicator);
 
-            return second;
-        }
-
-        private void ApplyOcclusionEffect(AudioObstacleEffect obstacleEffect, AudioSource source)
-        {
-            AudioLowPassFilter filter = source.GetComponent<AudioLowPassFilter>();
-            if (!filter)
-                filter = source.gameObject.AddComponent<AudioLowPassFilter>();
-            Assert.IsNotNull(filter);
-
-            if (obstacleEffect.cutoffFrequency < 0.0f)
-            {
-                filter.enabled = false;
-            }
-            else
-            {
-                filter.enabled = true;
-                filter.cutoffFrequency = obstacleEffect.cutoffFrequency;
-                filter.lowpassResonanceQ = obstacleEffect.lowpassResonanceQ;
-            }
-
-            AudioObstacleEffect originalEffect = _audioSources[source];
-            source.volume = originalEffect.volumeMultiplier * obstacleEffect.volumeMultiplier;
-        }
-
-        private void DeactivateOcclusionEffect(AudioSource audioSource)
-        {
-            AudioObstacleEffect originalEffect = _audioSources[audioSource];
-            audioSource.volume = originalEffect.volumeMultiplier;
-
-            AudioLowPassFilter filter = audioSource.GetComponent<AudioLowPassFilter>();
-            if (filter)
-            {
-                filter.enabled = false;
-            }
+            applicator.Apply(obstacleEffect);
         }
 
         private static float GetOccluderThickness(List<RaycastHit> forwardHits, List<RaycastHit> backwardsHits,

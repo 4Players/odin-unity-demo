@@ -26,7 +26,9 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Directional
                 Vector3 currentPosition = transform.position;
                 Vector3 toListener = listenerPosition - currentPosition;
                 float angle = Vector3.SignedAngle(toListener, transform.forward, Vector3.up);
-                _effectApplicator.Apply(directionalSettings.GetAudioEffectData(angle));
+
+                AudioEffectData effect = directionalSettings.GetAudioEffectData(angle);
+                _effectApplicator.Apply(effect);
             }
         }
     }

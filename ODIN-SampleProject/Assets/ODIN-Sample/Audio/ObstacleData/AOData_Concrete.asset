@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AOData_Concrete
   m_EditorClassIdentifier: 
   effect:
-    volumeMultiplier: 0.8
+    volume: 0.8
     cutoffFrequency: 400
     lowpassResonanceQ: 1

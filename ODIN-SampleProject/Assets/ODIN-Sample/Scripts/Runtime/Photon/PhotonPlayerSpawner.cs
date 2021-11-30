@@ -38,7 +38,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
                     }
                 }
                 _instantiatedPlayer = PhotonNetwork.Instantiate(playerPrefab.name, adjustedSpawnLocation, Quaternion.identity);
-                
             }
         }
     }

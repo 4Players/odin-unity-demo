@@ -69,23 +69,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Directional
                 }
                 
                 applicator.Apply(directionalSettings.GetAudioEffectData(signedAngle));
-
-
-                // AudioLowPassFilter lowPassFilter = sourceData.GetLowPassFilter();
-                // if (!lowPassFilter)
-                // {
-                //     lowPassFilter = sourceData.ConnectedSource.gameObject.AddComponent<AudioLowPassFilter>();
-                // }
-                //
-                // // if lowpass filter was disabled, enable and reset it
-                // if (!lowPassFilter.enabled)
-                // {
-                //     lowPassFilter.enabled = true;
-                //     lowPassFilter.cutoffFrequency = 22000;
-                // }
-                //
-                // float lowPassFrequency = directionalSettings.angleToCutOffFrequencyCurve.Evaluate(signedAngle);
-                // lowPassFilter.cutoffFrequency = Mathf.Min(lowPassFilter.cutoffFrequency, lowPassFrequency);
             }
 
             // Remove destroyed audio sources from the audio sources container.
@@ -119,9 +102,9 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Directional
                 {
                     _audioSources[audioSource] = new DirectionalAudioSourceData(1, audioSource);
                 }
-
-                Debug.Log(
-                    $"Entered audio source Trigger: {audioSource.gameObject} with count: {_audioSources[audioSource].NumTriggersReceived}");
+                //
+                // Debug.Log(
+                //     $"Entered audio source Trigger: {audioSource.gameObject} with count: {_audioSources[audioSource].NumTriggersReceived}");
             }
         }
 
