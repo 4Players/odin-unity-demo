@@ -24,6 +24,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         {
             _audioSource = GetComponent<AudioSource>();
             Assert.IsNotNull(_audioSource);
+            _audioSource.spatializePostEffects = true;
+            
             _originalVolume = _audioSource.volume;
 
             _lowPassFilter = GetComponent<AudioLowPassFilter>();
@@ -31,8 +33,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             {
                 _lowPassFilter = gameObject.AddComponent<AudioLowPassFilter>();
             }
-            
-            
             _originalCutoffFrequency = _lowPassFilter.cutoffFrequency;
         }
 
@@ -61,8 +61,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 _lowPassFilter.cutoffFrequency = toApply.cutoffFrequency;
                 _lowPassFilter.lowpassResonanceQ = toApply.lowpassResonanceQ;
                 _audioSource.volume = toApply.volume;
-
-                // Debug.Log($"Combined effect: {toApply}");
+            }
+            else
+            {
+                _lowPassFilter.enabled = false;
+                _audioSource.volume = _originalVolume;
             }
             
             _effectList.Clear();

@@ -4216,8 +4216,8 @@ AudioReverbZone:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 474066088}
   m_Enabled: 1
-  m_MinDistance: 4.78
-  m_MaxDistance: 6
+  m_MinDistance: 2.45
+  m_MaxDistance: 8.85
   m_ReverbPreset: 5
   m_Room: -1000
   m_RoomHF: -6000
@@ -6993,17 +6993,17 @@ AudioReverbZone:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 586585303}
   m_Enabled: 1
-  m_MinDistance: 4.78
-  m_MaxDistance: 6
-  m_ReverbPreset: 3
+  m_MinDistance: 4.71
+  m_MaxDistance: 10.04
+  m_ReverbPreset: 14
   m_Room: -1000
-  m_RoomHF: -454
-  m_DecayTime: 0.4
-  m_DecayHFRatio: 0.83
-  m_Reflections: -1646
-  m_ReflectionsDelay: 0.002
-  m_Reverb: 53
-  m_ReverbDelay: 0.003
+  m_RoomHF: -237
+  m_DecayTime: 2.7
+  m_DecayHFRatio: 0.79
+  m_Reflections: -1214
+  m_ReflectionsDelay: 0.013
+  m_Reverb: 395
+  m_ReverbDelay: 0.02
   m_HFReference: 5000
   m_Diffusion: 100
   m_Density: 100
@@ -11598,7 +11598,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh26498
+  m_Name: pb_Mesh70658
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -17358,7 +17358,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1015691962}
   m_LocalRotation: {x: -0, y: 0.7069904, z: -0, w: 0.7072231}
-  m_LocalPosition: {x: 9.999992, y: 0, z: -13.499996}
+  m_LocalPosition: {x: 9.88, y: 0, z: -13.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1991292553}
@@ -17372,8 +17372,8 @@ AudioReverbZone:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1015691962}
   m_Enabled: 1
-  m_MinDistance: 4.78
-  m_MaxDistance: 6
+  m_MinDistance: 3.25
+  m_MaxDistance: 9.18
   m_ReverbPreset: 11
   m_Room: -1000
   m_RoomHF: -1000
@@ -33853,7 +33853,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh26600
+  m_Name: pb_Mesh70892
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
