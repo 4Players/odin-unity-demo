@@ -1,8 +1,7 @@
-﻿using System;
-using OdinNative.Odin.Room;
+﻿using OdinNative.Odin.Room;
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin
+namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
     public class OdinEventLog : MonoBehaviour
     {

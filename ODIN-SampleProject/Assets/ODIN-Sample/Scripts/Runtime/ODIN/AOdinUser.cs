@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -34,6 +33,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(playbackComponentPrefab);
             Assert.IsNotNull(instantiationTarget);
         }
+
+        public abstract bool IsLocalUser();
 
         protected PlaybackComponent RemovePlaybackComponent(string roomName, ulong peerId, int mediaId)
         {

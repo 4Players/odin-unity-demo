@@ -61,12 +61,10 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         [PunRPC]
         private void PerformColorSync(string colorName)
         {
-            // Debug.Log($"Received PerformColorSync: {colorName}");
             if (!photonView.IsMine)
             {
                 ColorUtility.TryParseHtmlString("#" + colorName, out Color capsuleColor);
                 capsuleRenderer.material.color = capsuleColor;
-                // Debug.Log($"Successfully set remote capsule color.");
             }
         }
     }

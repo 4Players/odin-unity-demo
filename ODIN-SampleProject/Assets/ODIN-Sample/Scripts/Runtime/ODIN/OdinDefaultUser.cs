@@ -24,6 +24,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(odinRoomName);
         }
 
+        public override bool IsLocalUser()
+        {
+            return false;
+        }
+
         private void OnEnable()
         {
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);

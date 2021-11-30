@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using ODIN_Sample.Scripts.Runtime.Data;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.Odin
+namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
     public class OdinAutoJoin : MonoBehaviour
     {

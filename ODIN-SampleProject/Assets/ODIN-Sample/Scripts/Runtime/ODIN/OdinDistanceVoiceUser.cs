@@ -40,6 +40,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(photonView);
         }
 
+        public override bool IsLocalUser()
+        {
+            return photonView.IsMine;
+        }
+
         public void OnEnable()
         {
             if (OdinHandler.Instance)
