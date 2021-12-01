@@ -398,6 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf93ad0fbb3e8654a82a0f1e946fd27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  odinUser: {fileID: 1070322640664595568}
   capsuleRenderer: {fileID: 2753487309498945345}
 --- !u!114 &4642447983900790737
 MonoBehaviour:

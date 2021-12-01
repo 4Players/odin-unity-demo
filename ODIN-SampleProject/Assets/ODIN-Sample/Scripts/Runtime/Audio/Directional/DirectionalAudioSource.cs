@@ -1,5 +1,4 @@
-﻿using ODIN_Sample.Scripts.Runtime.AudioOcclusion;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Audio.Directional

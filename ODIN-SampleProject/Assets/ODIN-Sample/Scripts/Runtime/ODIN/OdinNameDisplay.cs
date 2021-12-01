@@ -19,9 +19,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         [SerializeField] private TMP_Text nameDisplay;
 
         [SerializeField] private int maxDisplayCharacters = 8;
-
-        private PlaybackComponent _connectedPlayback;
-
+        
         private void Awake()
         {
             Assert.IsNotNull(odinUser);
@@ -49,7 +47,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             if (added.RoomName == roomName)
             {
-                _connectedPlayback = added;
                 if (OdinHandler.Instance && null != OdinHandler.Instance.Rooms[roomName])
                 {
                     Room instanceRoom = OdinHandler.Instance.Rooms[roomName];

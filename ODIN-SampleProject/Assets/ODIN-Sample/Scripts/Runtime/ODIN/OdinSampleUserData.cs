@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
+    public static class UserDataExtension
+    {
+        public static OdinSampleUserData ToOdinSampleUserData(this UserData userData)
+        {
+            return OdinSampleUserData.FromUserData(userData);
+        }
+    }
+    
     [Serializable]
     public class OdinSampleUserData
     {
@@ -11,6 +19,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         public string name;
         public string seed;
+        public string color;
         public int muted;
         public string user;
         public string renderer;
@@ -23,6 +32,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         public OdinSampleUserData(string name)
         {
             this.name = name;
+            color = ColorUtility.ToHtmlStringRGB(Color.white);
             this.seed = SystemInfo.deviceUniqueIdentifier;
             this.muted = 0;
             this.user = string.Format("{0}.{1}", Application.companyName, Application.productName);
@@ -42,6 +52,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             return JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
         }
+        
 
         public static bool FromUserData(UserData userData, out OdinSampleUserData odinUserData)
         {

@@ -1,8 +1,7 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     [RequireComponent(typeof(AudioListener))]
     public class AudioListenerRegister : MonoBehaviour

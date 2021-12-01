@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.AudioOcclusion
+namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     [CreateAssetMenu(fileName = "AudioListenerReference", menuName = "Odin-Sample/AudioListenerReference", order = 0)]
     public class AudioListenerReference : ScriptableObject

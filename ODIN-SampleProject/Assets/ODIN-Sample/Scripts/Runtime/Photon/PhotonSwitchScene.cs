@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using ODIN_Sample.Scripts.Runtime.Data;
 using Photon.Pun;
 using Photon.Realtime;
@@ -9,7 +7,7 @@ using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 using Room = OdinNative.Odin.Room.Room;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.Photon
 {
     public class PhotonSwitchScene : MonoBehaviour, IMatchmakingCallbacks
     {

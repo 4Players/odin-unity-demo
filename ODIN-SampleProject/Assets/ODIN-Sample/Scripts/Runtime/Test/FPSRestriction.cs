@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.Test
 {
     public class FPSRestriction : MonoBehaviour
     {
