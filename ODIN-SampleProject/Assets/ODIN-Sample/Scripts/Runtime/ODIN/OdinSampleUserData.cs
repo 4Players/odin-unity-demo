@@ -18,7 +18,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         public static implicit operator UserData(OdinSampleUserData data) => data?.ToUserData() ?? null;
 
         public string name;
-        public string seed;
+        public string playerId;
         public string color;
         public int muted;
         public string user;
@@ -33,7 +33,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             this.name = name;
             color = ColorUtility.ToHtmlStringRGB(Color.white);
-            this.seed = SystemInfo.deviceUniqueIdentifier;
+            this.playerId = SystemInfo.deviceUniqueIdentifier;
             this.muted = 0;
             this.user = string.Format("{0}.{1}", Application.companyName, Application.productName);
             this.renderer = Application.unityVersion;

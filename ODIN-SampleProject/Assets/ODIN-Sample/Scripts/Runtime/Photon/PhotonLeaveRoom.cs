@@ -9,10 +9,10 @@ using Room = OdinNative.Odin.Room.Room;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
-    public class PhotonSwitchScene : MonoBehaviour, IMatchmakingCallbacks
+    public class PhotonLeaveRoom : MonoBehaviour, IMatchmakingCallbacks
     {
         [SerializeField] private KeyCode loadKeyCode = KeyCode.L;
-        [SerializeField] private StringVariable sceneToLoad;
+        [SerializeField] private OdinStringVariable sceneToLoad;
 
         private bool _wasSceneLoadRequested = false;
 
@@ -33,7 +33,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void Update()
         {
-            if (Input.GetKeyDown(loadKeyCode))
+            if (Input.GetKeyDown(loadKeyCode) && !_wasSceneLoadRequested)
             {
                 if (PhotonNetwork.IsConnectedAndReady)
                 {

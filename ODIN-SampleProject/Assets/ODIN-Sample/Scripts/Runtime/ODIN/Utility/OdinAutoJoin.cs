@@ -7,8 +7,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
     public class OdinAutoJoin : MonoBehaviour
     {
-        [SerializeField] private StringVariable[] refRoomNames;
-        [SerializeField] private StringVariable refPlayerName;
+        [SerializeField] private OdinStringVariable[] refRoomNames;
+        [SerializeField] private OdinStringVariable refPlayerName;
 
         private void Awake()
         {
@@ -18,7 +18,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
         IEnumerator Start()
         {
-            foreach (StringVariable refRoomName in refRoomNames)
+            foreach (OdinStringVariable refRoomName in refRoomNames)
             {
                 if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
                 {

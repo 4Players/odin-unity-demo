@@ -9,7 +9,7 @@ namespace ODIN_Sample.Scripts.Runtime.Test
 {
     public class AutoLoadScene : MonoBehaviour
     {
-        [SerializeField] private StringVariable sceneName;
+        [SerializeField] private OdinStringVariable sceneName;
 
         private void Awake()
         {

@@ -82,7 +82,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <summary>
         /// The room for which the push to talk button should work
         /// </summary>
-        public StringVariable connectedRoom;
+        public OdinStringVariable connectedRoom;
         /// <summary>
         /// The push to talk button. If this is pressed, the microphone data
         /// will be transmitted in the room given by <see cref="connectedRoom"/>.

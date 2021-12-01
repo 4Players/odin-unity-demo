@@ -20,7 +20,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <summary>
         /// Called when a new playbackcomponent was created by this script
         /// </summary>
-        public UnityEvent<PlaybackComponent> onPlaybackComponentAdded;
+        public Action<PlaybackComponent> OnPlaybackComponentAdded;
         
         /// <summary>
         /// Contains all constructed PlaybackComponents, identified by their (roomname, peerid, mediaid) combination.
@@ -33,9 +33,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(playbackComponentPrefab);
             Assert.IsNotNull(instantiationTarget);
         }
-
-        public abstract bool IsLocalUser();
-
+        
         protected PlaybackComponent RemovePlaybackComponent(string roomName, ulong peerId, int mediaId)
         {
             var dictionaryKey = (roomName, peerId, mediaId);
@@ -62,7 +60,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 spawned.MediaId = mediaId;
 
                 _registeredRemoteMedia.Add(dictionaryKey, spawned);
-                onPlaybackComponentAdded.Invoke(spawned);
+                OnPlaybackComponentAdded?.Invoke(spawned);
             }
 
             return spawned;

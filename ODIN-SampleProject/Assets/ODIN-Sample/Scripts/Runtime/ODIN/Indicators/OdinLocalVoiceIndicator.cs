@@ -9,7 +9,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
     [RequireComponent(typeof(Renderer))]
     public class OdinLocalVoiceIndicator : MonoBehaviourPunCallbacks
     {
-        [SerializeField] private StringVariable roomName;
+        [SerializeField] private OdinStringVariable roomName;
         [SerializeField] private Color voiceOnColor = Color.green;
         
         private Renderer _renderer;

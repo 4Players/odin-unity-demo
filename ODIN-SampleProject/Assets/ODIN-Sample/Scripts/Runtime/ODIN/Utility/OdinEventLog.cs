@@ -1,4 +1,5 @@
-﻿using OdinNative.Odin.Room;
+﻿using OdinNative.Odin.Peer;
+using OdinNative.Odin.Room;
 using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
@@ -12,14 +13,28 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
                 OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
                 OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+                OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
             
                 OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
                 OdinHandler.Instance.OnPeerLeft.AddListener(OnPeerLeft);
                 OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
             }
-            
         }
-        
+
+        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        {
+            Room room = sender as Room;
+            if (null != room)
+            {
+                Peer remotePeer = room.RemotePeers[peerUpdatedEventArgs.PeerId];
+                if (null != remotePeer)
+                {
+                    OdinSampleUserData userData = remotePeer.UserData.ToOdinSampleUserData();
+                    Debug.Log($"Updated Peer {remotePeer.Id} in Room {room.Config.Name} with Unique Id: {userData.playerId}");
+                }
+            }
+        }
+
         private void OnDisable()
         {
             if (OdinHandler.Instance)
@@ -32,13 +47,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 OdinHandler.Instance.OnPeerLeft.RemoveListener(OnPeerLeft);
                 OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
             }
-            
         }
         
         private void OnRoomJoined(RoomJoinedEventArgs arg0)
         {
             Debug.Log($"OnRoomJoined: {arg0.Room.Config.Name}, Peer:{arg0.Room.Self.Id}");
-            Debug.Log("Self User Data: " + arg0.Room.Self.UserData.ToString());
+            Debug.Log("Self User Data: " + arg0.Room.Self.UserData);
         }
         
         private void OnPeerJoined(object arg0, PeerJoinedEventArgs arg1)

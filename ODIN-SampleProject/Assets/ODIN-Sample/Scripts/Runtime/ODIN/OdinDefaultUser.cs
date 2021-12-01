@@ -15,18 +15,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     /// </summary>
     public class OdinDefaultUser : AOdinUser
     {
-        [SerializeField] private StringVariable odinRoomName;
+        [SerializeField] private OdinStringVariable odinRoomName;
         [SerializeField] private OdinPlaybackRegistry odinPlaybackRegistry;
 
         protected override void Awake()
         {
             base.Awake();
             Assert.IsNotNull(odinRoomName);
-        }
-
-        public override bool IsLocalUser()
-        {
-            return false;
         }
 
         private void OnEnable()

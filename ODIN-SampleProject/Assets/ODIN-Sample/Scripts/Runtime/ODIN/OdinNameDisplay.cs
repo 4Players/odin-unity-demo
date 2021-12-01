@@ -1,8 +1,8 @@
 using System;
 using ODIN_Sample.Scripts.Runtime.Data;
+using OdinNative.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
-using OdinNative.Unity.Audio;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,18 +11,20 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     public class OdinNameDisplay : MonoBehaviour
     {
-        [SerializeField] private AOdinUser odinUser;
+        [SerializeField] private AOdinMultiplayerAdapter odinAdapter;
+
         /// <summary>
         /// Room, for which the name should be displayed.
         /// </summary>
-        [SerializeField] private StringVariable roomName;
+        [SerializeField] private OdinStringVariable roomName;
+
         [SerializeField] private TMP_Text nameDisplay;
 
         [SerializeField] private int maxDisplayCharacters = 8;
-        
+
         private void Awake()
         {
-            Assert.IsNotNull(odinUser);
+            Assert.IsNotNull(odinAdapter);
             Assert.IsNotNull(roomName);
             Assert.IsNotNull(nameDisplay);
             nameDisplay.text = "";
@@ -30,7 +32,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void Start()
         {
-            if (odinUser.IsLocalUser())
+            if (odinAdapter.IsLocalUser())
             {
                 OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
                 DisplayName(userData);
@@ -39,44 +41,49 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnEnable()
         {
-            if(!odinUser.IsLocalUser())
-                odinUser.onPlaybackComponentAdded.AddListener(OnPlaybackComponentAdded);
+            if (!odinAdapter.IsLocalUser())
+            {
+                OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
+                OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
+            }
         }
 
-        private void OnPlaybackComponentAdded(PlaybackComponent added)
+        private void OnRoomJoined(RoomJoinedEventArgs roomJoinedEventArgs)
         {
-            if (added.RoomName == roomName)
+            foreach (Peer remotePeer in roomJoinedEventArgs.Room.RemotePeers)
             {
-                if (OdinHandler.Instance && null != OdinHandler.Instance.Rooms[roomName])
+                OdinSampleUserData userData = remotePeer.UserData.ToOdinSampleUserData();
+                if (userData.playerId == odinAdapter.GetUniqueUserId())
                 {
-                    Room instanceRoom = OdinHandler.Instance.Rooms[roomName];
-                    Peer displayedPeer = instanceRoom.RemotePeers[added.PeerId];
-                    if (null != displayedPeer)
-                    {
-                        OdinSampleUserData displayedPeerUserData = OdinSampleUserData.FromUserData(displayedPeer.UserData);
-                        if (null != displayedPeerUserData)
-                        {
-                            DisplayName(displayedPeerUserData);
-                            odinUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackComponentAdded);
-                        }
-                    }
+                    DisplayName(userData);
                 }
-                
+            }
+        }
+
+        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        {
+            OdinSampleUserData displayedPeerUserData =
+                new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
+            if (null != displayedPeerUserData && displayedPeerUserData.playerId == odinAdapter.GetUniqueUserId())
+            {
+                DisplayName(displayedPeerUserData);
             }
         }
 
         private void OnDisable()
         {
-            if(!odinUser.IsLocalUser())
-                odinUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackComponentAdded);
+            if (!odinAdapter.IsLocalUser())
+            {
+                OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
+                OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
+            }
         }
 
         private void DisplayName(OdinSampleUserData userData)
         {
-            if(null != userData)
+            if (null != userData)
                 nameDisplay.text = AdjustName(userData.name);
         }
-        
 
         private string AdjustName(string displayedName)
         {

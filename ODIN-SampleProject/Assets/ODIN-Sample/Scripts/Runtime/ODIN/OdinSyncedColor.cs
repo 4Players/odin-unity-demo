@@ -1,6 +1,6 @@
+using System;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
-using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
@@ -9,7 +9,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     public class OdinSyncedColor : MonoBehaviour
     {
-        [SerializeField] private AOdinUser odinUser;
+        [SerializeField] private AOdinMultiplayerAdapter odinAdapter;
 
         [SerializeField] private Renderer capsuleRenderer = null;
         private static string ColorKey => "PlayerColor";
@@ -19,82 +19,73 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         private void Awake()
         {
             Assert.IsNotNull(capsuleRenderer);
-            Assert.IsNotNull(odinUser);
+            Assert.IsNotNull(odinAdapter);
 
-            if (capsuleRenderer && odinUser.IsLocalUser())
+            if (capsuleRenderer && odinAdapter.IsLocalUser())
             {
-                if (PlayerPrefs.HasKey(ColorKey))
-                {
-                    string playerColorString = PlayerPrefs.GetString(ColorKey);
-                    ColorUtility.TryParseHtmlString("#" + playerColorString, out _currentColor);
-                }
-                else
-                {
-                    Random.InitState(SystemInfo.deviceUniqueIdentifier.GetHashCode());
-                    _currentColor = Random.ColorHSV();
-                    PlayerPrefs.SetString(ColorKey, GetHtmlStringRGB());
-                    PlayerPrefs.Save();
-                }
-
+                InitializeColor();
                 UpdateCapsuleColor();
                 if (OdinHandler.Instance.HasConnections)
                 {
                     foreach (Room room in OdinHandler.Instance.Rooms)
                     {
-                        UpdateColorInRoom(room);
+                        SendColorUpdateInRoom(room);
                     }
                 }
-                
-                OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
-            }
-            else
-            {
-                odinUser.onPlaybackComponentAdded.AddListener(OnPlaybackComponentAdded);
             }
         }
 
-        private void UpdateColorInRoom(Room room)
+        private void OnEnable()
         {
-            OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
-            userData.color = GetHtmlStringRGB();
-            room.UpdateUserData(userData.ToUserData());
-        }
-        
-        private void OnRoomJoined(RoomJoinedEventArgs roomJoinedEventArgs)
-        {
-            if (odinUser.IsLocalUser())
-            {
-                UpdateColorInRoom(roomJoinedEventArgs.Room);
-                OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
-            }
+            OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
         }
 
-        private void OnPlaybackComponentAdded(PlaybackComponent added)
+        private void OnDisable()
         {
-            if (added)
+            OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
+        }
+
+        private void OnPeerJoined(object arg0, PeerJoinedEventArgs peerJoinedEventArgs)
+        {
+            string joinedRoom = peerJoinedEventArgs.Peer.RoomName;
+            Room remoteRoom = OdinHandler.Instance.Rooms[joinedRoom];
+            if (null != remoteRoom)
             {
-                Room remoteRoom = OdinHandler.Instance.Rooms[added.RoomName];
-                if (null != remoteRoom)
+                Peer remotePeer = peerJoinedEventArgs.Peer;
+                if (null != remotePeer)
                 {
-                    Peer remotePeer = remoteRoom.RemotePeers[added.PeerId];
-                    if (null != remotePeer)
+                    OdinSampleUserData odinSampleUserData = remotePeer.UserData.ToOdinSampleUserData();
+                    if (odinSampleUserData.playerId == odinAdapter.GetUniqueUserId())
                     {
-                        OdinSampleUserData odinSampleUserData = remotePeer.UserData.ToOdinSampleUserData();
                         _currentColor = GetColorFromHtmlStringRGB(odinSampleUserData.color);
                         UpdateCapsuleColor();
                     }
                 }
             }
         }
-        
 
-        private void OnDestroy()
+        private void InitializeColor()
         {
-            OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
-            odinUser.onPlaybackComponentAdded.RemoveListener(OnPlaybackComponentAdded);
+            if (PlayerPrefs.HasKey(ColorKey))
+            {
+                string playerColorString = PlayerPrefs.GetString(ColorKey);
+                ColorUtility.TryParseHtmlString("#" + playerColorString, out _currentColor);
+            }
+            else
+            {
+                Random.InitState(SystemInfo.deviceUniqueIdentifier.GetHashCode());
+                _currentColor = Random.ColorHSV();
+                PlayerPrefs.SetString(ColorKey, GetHtmlStringRGB());
+                PlayerPrefs.Save();
+            }
         }
 
-        
+        private void SendColorUpdateInRoom(Room room)
+        {
+            OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
+            userData.color = GetHtmlStringRGB();
+            room.UpdateUserData(userData.ToUserData());
+        }
 
         private Color GetColorFromHtmlStringRGB(string htmlStringRGB)
         {

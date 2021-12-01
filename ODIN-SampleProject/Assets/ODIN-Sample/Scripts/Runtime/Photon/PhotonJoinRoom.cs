@@ -11,7 +11,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     {
         [SerializeField] private bool autoJoin = false;
         
-        [SerializeField] private StringVariable roomName;
+        [SerializeField] private OdinStringVariable roomName;
 
         private void Awake()
         {

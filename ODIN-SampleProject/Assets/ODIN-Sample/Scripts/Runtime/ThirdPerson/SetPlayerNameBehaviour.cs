@@ -9,7 +9,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
     [RequireComponent(typeof(InputField))]
     public class SetPlayerNameBehaviour : MonoBehaviour
     {
-        [SerializeField] private StringVariable playerName;
+        [SerializeField] private OdinStringVariable playerName;
 
         private InputField _playerNameInput = null;
 
@@ -18,14 +18,20 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         private void Awake()
         {
             _playerNameInput = GetComponent<InputField>();
-            _playerNameInput.onEndEdit.AddListener(SetPlayerName);
             Assert.IsNotNull(playerName);
-        }
-
-        private void Start()
-        {
+            
             string savedName = PlayerPrefs.GetString(PlayerNameKey, "Player");
             _playerNameInput.text = savedName;
+        }
+
+        private void OnEnable()
+        {
+            _playerNameInput.onEndEdit.AddListener(SetPlayerName);
+        }
+
+        private void OnDisable()
+        {
+            _playerNameInput.onEndEdit.RemoveListener(SetPlayerName);
         }
 
         public void UpdatePlayerName()
