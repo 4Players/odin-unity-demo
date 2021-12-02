@@ -30,7 +30,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 if (null != remotePeer)
                 {
                     OdinSampleUserData userData = remotePeer.UserData.ToOdinSampleUserData();
-                    Debug.Log($"Updated Peer {remotePeer.Id} in Room {room.Config.Name} with Unique Id: {userData.playerId}");
+                    Debug.Log($"Updated Peer {remotePeer.Id} in Room {room.Config.Name} with Unique Id: {userData.uniqueUserId}");
                 }
             }
         }

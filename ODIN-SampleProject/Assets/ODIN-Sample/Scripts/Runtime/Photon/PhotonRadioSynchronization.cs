@@ -39,7 +39,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         private void UpdateRadioAudioSourceState(bool newActive)
         {
             toggleBehaviour.SetRadio(newActive);
-            Debug.Log("Received Update Radio Audio Source State");
+            // Debug.Log("Received Update Radio Audio Source State");
         }
     }
 }

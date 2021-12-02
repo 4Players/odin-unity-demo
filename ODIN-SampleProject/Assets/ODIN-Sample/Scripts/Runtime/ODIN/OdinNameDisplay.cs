@@ -6,12 +6,13 @@ using OdinNative.Odin.Room;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     public class OdinNameDisplay : MonoBehaviour
     {
-        [SerializeField] private AOdinMultiplayerAdapter odinAdapter;
+        [FormerlySerializedAs("odinAdapter")] [SerializeField] private AOdinMultiplayerAdapter multiplayerAdapter;
 
         /// <summary>
         /// Room, for which the name should be displayed.
@@ -24,7 +25,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void Awake()
         {
-            Assert.IsNotNull(odinAdapter);
+            Assert.IsNotNull(multiplayerAdapter);
             Assert.IsNotNull(roomName);
             Assert.IsNotNull(nameDisplay);
             nameDisplay.text = "";
@@ -32,7 +33,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void Start()
         {
-            if (odinAdapter.IsLocalUser())
+            if (multiplayerAdapter.IsLocalUser())
             {
                 OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
                 DisplayName(userData);
@@ -41,7 +42,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnEnable()
         {
-            if (!odinAdapter.IsLocalUser())
+            if (!multiplayerAdapter.IsLocalUser())
             {
                 OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
                 OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
@@ -53,7 +54,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             foreach (Peer remotePeer in roomJoinedEventArgs.Room.RemotePeers)
             {
                 OdinSampleUserData userData = remotePeer.UserData.ToOdinSampleUserData();
-                if (userData.playerId == odinAdapter.GetUniqueUserId())
+                // Debug.Log($"OdinNameDisplay - OnRoomJoined - Name: {userData.name} ID: {userData.uniqueUserId}");
+                if (userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
                 {
                     DisplayName(userData);
                 }
@@ -62,17 +64,19 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
         {
-            OdinSampleUserData displayedPeerUserData =
+            OdinSampleUserData userData =
                 new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
-            if (null != displayedPeerUserData && displayedPeerUserData.playerId == odinAdapter.GetUniqueUserId())
+            
+            // Debug.Log($"OdinNameDisplay - OnPeerUpdated - Name: {userData.name} ID: {userData.uniqueUserId}");
+            if (null != userData && userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
             {
-                DisplayName(displayedPeerUserData);
+                DisplayName(userData);
             }
         }
 
         private void OnDisable()
         {
-            if (!odinAdapter.IsLocalUser())
+            if (!multiplayerAdapter.IsLocalUser())
             {
                 OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
                 OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);

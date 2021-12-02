@@ -1,13 +1,11 @@
-using System;
 using System.Text;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
-using OdinNative.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ODIN_Sample.Scripts.Runtime.Test
+namespace ODIN_Sample.Scripts.Runtime.GameLogic.Test
 {
     public class OdinPeerIdDisplay : MonoBehaviour
     {
@@ -16,8 +14,8 @@ namespace ODIN_Sample.Scripts.Runtime.Test
 
         private StringBuilder displayBuilder = new StringBuilder();
 
-        private float smoothedFPS = 0.0f;
-        private float alpha = 0.03f;
+        private float _smoothedFPS = 0.0f;
+        private const float Alpha = 0.03f;
 
         // Update is called once per frame
         void Update()
@@ -25,9 +23,9 @@ namespace ODIN_Sample.Scripts.Runtime.Test
             if (Time.smoothDeltaTime > 0.0f)
             {
                 float fps = 1.0f / Time.smoothDeltaTime;
-                smoothedFPS = alpha * fps + smoothedFPS * (1 - alpha);
+                _smoothedFPS = Alpha * fps + _smoothedFPS * (1 - Alpha);
 
-                displayBuilder.AppendLine($"FPS: {Mathf.RoundToInt(smoothedFPS)}");
+                displayBuilder.AppendLine($"FPS: {Mathf.RoundToInt(_smoothedFPS)}");
             }
 
             if (OdinHandler.Instance)
@@ -37,17 +35,19 @@ namespace ODIN_Sample.Scripts.Runtime.Test
                     foreach (Peer peer in room.RemotePeers)
                     {
                         OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
-
                         if (null != room.Self && peer.Id == room.Self.Id)
                         {
-                            displayBuilder.AppendLine(
-                                $"Current Name: {fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}");
+                            displayBuilder.Append("Current Name: ");
+
                         }
                         else
                         {
-                            displayBuilder.AppendLine(
-                                $"Remote Name: {fromUserData.name},Room: {room.Config.Name}, Remote peer Id: {peer.Id}");
+                            displayBuilder.Append("Remote Name:");
+
                         }
+
+                        displayBuilder.AppendLine(
+                            $"{fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}, Unique Id: {fromUserData.uniqueUserId}");
                     }
 
                     if (null != room.MicrophoneMedia)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.Test
+namespace ODIN_Sample.Scripts.Runtime.GameLogic.Test
 {
     public class FPSRestriction : MonoBehaviour
     {

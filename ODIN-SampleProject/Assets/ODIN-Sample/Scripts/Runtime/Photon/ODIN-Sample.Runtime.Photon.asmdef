@@ -1,0 +1,20 @@
+{
+    "name": "ODIN-Sample.Runtime.Photon",
+    "rootNamespace": "",
+    "references": [
+        "GUID:08f68d9b784fad24b81a48412d8f14fe",
+        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
+        "GUID:831409e8f9d13b5479a3baef9822ad34",
+        "GUID:9c9b4fe8b39ae5b41a7700da7b05a2c7",
+        "GUID:57f1b02dffeb4ac49aa75bc225fe7ee2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
-    public class PhotonOdinAdapter : AOdinMultiplayerAdapter
+    public class PhotonToOdinAdapter : AOdinMultiplayerAdapter
     {
         [SerializeField] private PhotonView photonView;
 
@@ -26,11 +26,13 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             return photonView.IsMine;
         }
 
-        public override void OnUpdateUniqueUserId(Room newRoom)
+        protected override void OnUpdateUniqueUserId(Room newRoom)
         {
             OdinSampleUserData userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
-            userData.playerId = photonView.ViewID.ToString();
+            userData.uniqueUserId = photonView.ViewID.ToString();
             newRoom.UpdateUserData(userData.ToUserData());
+
+            // Debug.Log($"PhotonToOdinAdapter: Updating Id to: {userData.uniqueUserId}");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
         IEnumerator Start()
         {
+            // Bug: We have to disperse the Join Room Calls over multiple frames. If called in the same frame, build will crash.
             foreach (OdinStringVariable refRoomName in refRoomNames)
             {
                 if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))

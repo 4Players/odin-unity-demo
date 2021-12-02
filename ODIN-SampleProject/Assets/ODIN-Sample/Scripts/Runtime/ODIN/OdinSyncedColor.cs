@@ -1,66 +1,63 @@
-using System;
-using OdinNative.Odin.Peer;
+using System.Collections;
+using OdinNative.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Random = UnityEngine.Random;
+using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     public class OdinSyncedColor : MonoBehaviour
     {
-        [SerializeField] private AOdinMultiplayerAdapter odinAdapter;
+        [FormerlySerializedAs("odinAdapter")] [SerializeField]
+        private AOdinMultiplayerAdapter multiplayerAdapter;
 
-        [SerializeField] private Renderer capsuleRenderer = null;
-        private static string ColorKey => "PlayerColor";
+        [SerializeField] private Renderer capsuleRenderer;
 
         private Color _currentColor;
+        private static string ColorKey => "PlayerColor";
 
         private void Awake()
         {
             Assert.IsNotNull(capsuleRenderer);
-            Assert.IsNotNull(odinAdapter);
+            Assert.IsNotNull(multiplayerAdapter);
 
-            if (capsuleRenderer && odinAdapter.IsLocalUser())
+            if (capsuleRenderer && multiplayerAdapter.IsLocalUser())
             {
                 InitializeColor();
                 UpdateCapsuleColor();
-                if (OdinHandler.Instance.HasConnections)
-                {
-                    foreach (Room room in OdinHandler.Instance.Rooms)
-                    {
-                        SendColorUpdateInRoom(room);
-                    }
-                }
             }
         }
 
         private void OnEnable()
         {
             OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
+            OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
         }
+
 
         private void OnDisable()
         {
             OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
+            OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
         }
 
-        private void OnPeerJoined(object arg0, PeerJoinedEventArgs peerJoinedEventArgs)
+        private void OnPeerJoined(object sender, PeerJoinedEventArgs arg1)
         {
-            string joinedRoom = peerJoinedEventArgs.Peer.RoomName;
-            Room remoteRoom = OdinHandler.Instance.Rooms[joinedRoom];
-            if (null != remoteRoom)
+            // Debug.Log("SyncColor: OnPeerJoined");
+            if (multiplayerAdapter.IsLocalUser() && sender is Room room) StartCoroutine(SendColorUpdateInRoom(room));
+        }
+
+        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        {
+            var updatedPeer =
+                new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
+            if (!multiplayerAdapter.IsLocalUser() && null != updatedPeer &&
+                updatedPeer.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
             {
-                Peer remotePeer = peerJoinedEventArgs.Peer;
-                if (null != remotePeer)
-                {
-                    OdinSampleUserData odinSampleUserData = remotePeer.UserData.ToOdinSampleUserData();
-                    if (odinSampleUserData.playerId == odinAdapter.GetUniqueUserId())
-                    {
-                        _currentColor = GetColorFromHtmlStringRGB(odinSampleUserData.color);
-                        UpdateCapsuleColor();
-                    }
-                }
+                // Debug.Log($"SyncColor: Received a color update: {updatedPeer.color} = {_currentColor}");
+                _currentColor = GetColorFromHtmlStringRGB(updatedPeer.color);
+                UpdateCapsuleColor();
             }
         }
 
@@ -68,7 +65,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             if (PlayerPrefs.HasKey(ColorKey))
             {
-                string playerColorString = PlayerPrefs.GetString(ColorKey);
+                var playerColorString = PlayerPrefs.GetString(ColorKey);
                 ColorUtility.TryParseHtmlString("#" + playerColorString, out _currentColor);
             }
             else
@@ -80,16 +77,20 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
-        private void SendColorUpdateInRoom(Room room)
+        private IEnumerator SendColorUpdateInRoom(Room room)
         {
-            OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
+            yield return new WaitForSeconds(1.0f);
+            var userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
             userData.color = GetHtmlStringRGB();
+            userData.uniqueUserId = multiplayerAdapter.GetUniqueUserId();
             room.UpdateUserData(userData.ToUserData());
+
+            // Debug.Log($"ColorSync: Sending color update: {userData.color}");
         }
 
         private Color GetColorFromHtmlStringRGB(string htmlStringRGB)
         {
-            ColorUtility.TryParseHtmlString("#" + htmlStringRGB, out Color result);
+            ColorUtility.TryParseHtmlString("#" + htmlStringRGB, out var result);
             return result;
         }
 

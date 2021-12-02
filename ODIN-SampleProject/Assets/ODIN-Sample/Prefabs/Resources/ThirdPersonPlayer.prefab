@@ -74,7 +74,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2223098752554558151}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c490bedfb4c4402a97408fb7d243bd5f, type: 3}
   m_Name: 
@@ -422,7 +422,6 @@ GameObject:
   - component: {fileID: 2753487310897480875}
   - component: {fileID: 2753487310897480872}
   - component: {fileID: 2083264975}
-  - component: {fileID: 2083264974}
   m_Layer: 0
   m_Name: VoiceIndicator
   m_TagString: Untagged
@@ -724,20 +723,6 @@ MonoBehaviour:
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
   odinUser: {fileID: 8506675492331546689}
---- !u!114 &2083264974
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2753487310897480879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3001106345836885710
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,6 +733,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1810139959340640886}
   - component: {fileID: 2844093388615658216}
+  - component: {fileID: 8783286779862688165}
   m_Layer: 0
   m_Name: OdinPushToTalk
   m_TagString: Untagged
@@ -786,6 +772,21 @@ MonoBehaviour:
     pushToTalkButton: VoicePushToTalk
   - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
     pushToTalkButton: RadioPushToTalk
+--- !u!114 &8783286779862688165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3001106345836885710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  indicationTarget: {fileID: 2753487310897480875}
+  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,7 +1018,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playbackComponentPrefab: {fileID: 1106984047728189001, guid: 7a4cfbae9051d514bba40fbe578d208a, type: 3}
   instantiationTarget: {fileID: 7178438142582358687}
-  odinAdapter: {fileID: 1608805246826064242}
+  multiplayerAdapter: {fileID: 1608805246826064242}
   connectedOdinRooms:
   - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
 --- !u!114 &1749791214617125237
@@ -1032,7 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf93ad0fbb3e8654a82a0f1e946fd27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  odinAdapter: {fileID: 1608805246826064242}
+  multiplayerAdapter: {fileID: 1608805246826064242}
   capsuleRenderer: {fileID: 2753487309498945345}
 --- !u!114 &2381487234558694510
 MonoBehaviour:
@@ -1046,7 +1047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4adb0d8c12081c843be571371e1b2e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  odinAdapter: {fileID: 1608805246826064242}
+  multiplayerAdapter: {fileID: 1608805246826064242}
   roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   nameDisplay: {fileID: 3365217353357214695}
   maxDisplayCharacters: 8
@@ -2805,6 +2806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  indicationTarget: {fileID: 0}
   roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
   voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6767416847630222415

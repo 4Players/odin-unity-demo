@@ -1,0 +1,17 @@
+{
+    "name": "ODIN-Sample.Runtime.Odin",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9c9b4fe8b39ae5b41a7700da7b05a2c7",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -8,12 +8,25 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     {
         protected virtual void OnEnable()
         {
-            OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
+            if (IsLocalUser())
+            {
+                if (OdinHandler.Instance.HasConnections)
+                {
+                    foreach (Room instanceRoom in OdinHandler.Instance.Rooms)
+                    {
+                        OnUpdateUniqueUserId(instanceRoom);
+                    }
+                }
+                
+                OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
+            }
         }
-
         protected void OnDisable()
         {
-            OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
+            if (IsLocalUser())
+            {
+                OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
+            }
         }
 
         private void OnRoomJoined(RoomJoinedEventArgs roomJoinedEventArgs)
@@ -25,6 +38,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         public abstract string GetUniqueUserId();
         public abstract bool IsLocalUser();
 
-        public abstract void OnUpdateUniqueUserId(Room newRoom);
+        protected abstract void OnUpdateUniqueUserId(Room newRoom);
     }
 }
