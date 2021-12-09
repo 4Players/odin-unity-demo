@@ -43,10 +43,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
             MicrophoneStream microphoneStream = OdinHandler.Instance.Rooms[mediaRoomName].MicrophoneMedia;
             ulong localPeerId = microphoneStream?.GetPeerId() ?? 0;
+            // Debug.Log($"OnMedia Added for {mediaRoomName} and peer {mediaPeerId}");
             if (odinRoomName == mediaRoomName && localPeerId != mediaPeerId)
             {
+                
                 ushort mediaId = mediaAddedEventArgs.Media.Id;
+                // Debug.Log($"Trying to spawn playback component for {mediaRoomName} with peer {mediaPeerId} and media {mediaId}");
                 PlaybackComponent spawnedComponent = SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
+                // Debug.Log($"After spawning component: {spawnedComponent}");
                 if(odinPlaybackRegistry)
                     odinPlaybackRegistry.AddComponent(mediaRoomName, mediaPeerId, mediaId, spawnedComponent);
             }
@@ -58,11 +62,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
             int mediaId = mediaRemovedArgs.MediaId;
 
-            PlaybackComponent removedComponent = RemovePlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
-            if (removedComponent)
-            {
-                Destroy(removedComponent.gameObject);
-            }
+            DestroyPlaybackAudioSource(mediaRoomName, mediaPeerId, mediaId);
 
             if (odinPlaybackRegistry)
                 odinPlaybackRegistry.RemoveComponent(mediaRoomName, mediaPeerId, mediaId);

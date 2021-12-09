@@ -33,6 +33,17 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(playbackComponentPrefab);
             Assert.IsNotNull(instantiationTarget);
         }
+
+        protected bool DestroyPlaybackAudioSource(string roomName, ulong peerId, int mediaId)
+        {
+            PlaybackComponent removed = RemovePlaybackComponent(roomName, peerId, mediaId);
+            if(removed)
+            {
+                Destroy(removed.gameObject);
+                return true;
+            }
+            return false;
+        }
         
         protected PlaybackComponent RemovePlaybackComponent(string roomName, ulong peerId, int mediaId)
         {
@@ -54,6 +65,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
                 spawned = Instantiate(playbackComponentPrefab.gameObject, parentTransform)
                     .GetComponent<PlaybackComponent>();
+                
+                Debug.Log($"Spawned PlaybackComponent for {dictionaryKey}: {spawned}");
+
 
                 spawned.RoomName = roomName;
                 spawned.PeerId = peerId;
