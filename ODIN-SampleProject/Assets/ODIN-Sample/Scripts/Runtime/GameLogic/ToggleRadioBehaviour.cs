@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     public class ToggleRadioBehaviour : MonoBehaviour
     {
@@ -20,7 +19,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
 
         private Color _originalColor;
         
-        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int EmissionColorPropertyId = Shader.PropertyToID("_EmissionColor");
 
         private void Awake()
         {
@@ -29,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             Assert.IsTrue(feedbackMesh.materials.Length > feedbackMaterialIndex,
                 "Invalid feedbackMaterialIndex: feedbackMesh does not have that many material slots.");
 
-            _originalColor = feedbackMesh.materials[feedbackMaterialIndex].GetColor(EmissionColor);
+            _originalColor = feedbackMesh.materials[feedbackMaterialIndex].GetColor(EmissionColorPropertyId);
             UpdateFeedbackColor();
 
         }
@@ -40,6 +39,11 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
             {
                 ToggleRadio();
             }
+        }
+
+        public bool IsRadioActive()
+        {
+            return toggleSource.gameObject.activeSelf;
         }
 
         public void ToggleRadio()
@@ -58,11 +62,11 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         {
             if (toggleSource.gameObject.activeSelf)
             {
-                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColor, _originalColor);
+                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColorPropertyId, _originalColor);
             }
             else
             {
-                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColor, radioOffColor);
+                feedbackMesh.materials[feedbackMaterialIndex].SetColor(EmissionColorPropertyId, radioOffColor);
             }
         }
     }

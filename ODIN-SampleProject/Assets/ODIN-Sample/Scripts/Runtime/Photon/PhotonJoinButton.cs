@@ -8,8 +8,15 @@ using UnityEngine.UI;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
+    /// <summary>
+    /// Sets the button interactable state of the <see cref="joinButton"/>. The button should only be interactable, if
+    /// we're connected to the PhotonNetwork.
+    /// </summary>
     public class PhotonJoinButton : MonoBehaviour, IConnectionCallbacks
     {
+        /// <summary>
+        /// Reference to a button, that will only be interactable, if we're connected to the PhotonNetwork.
+        /// </summary>
         [SerializeField] private Button joinButton;
 
         private void Awake()
@@ -35,7 +42,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             joinButton.interactable = true;
         }
 
-        #region UnusedCallbacks
+        #region Unused Photon Callbacks
         public void OnConnected()
         {
         }

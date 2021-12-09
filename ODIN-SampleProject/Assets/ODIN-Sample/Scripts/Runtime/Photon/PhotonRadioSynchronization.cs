@@ -1,4 +1,5 @@
 ﻿using System;
+using ODIN_Sample.Scripts.Runtime.GameLogic;
 using ODIN_Sample.Scripts.Runtime.ThirdPerson;
 using Photon.Pun;
 using Photon.Realtime;
@@ -7,15 +8,19 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
+    /// <summary>
+    /// Synchronises the radio on/off state over the PhotonNetwork.
+    /// </summary>
     public class PhotonRadioSynchronization : MonoBehaviourPunCallbacks
     {
-        [SerializeField] private AudioSource radioAudioSource;
+        /// <summary>
+        /// The 
+        /// </summary>
         [SerializeField] private ToggleRadioBehaviour toggleBehaviour;
         
 
         private void Awake()
         {
-            Assert.IsNotNull(radioAudioSource);
             Assert.IsNotNull(toggleBehaviour);
         }
 
@@ -23,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             if (photonView.IsMine)
             {
-                SendRadioSynchronizationUpdate(radioAudioSource.enabled);
+                SendRadioSynchronizationUpdate(toggleBehaviour.IsRadioActive());
             }
         }
 
@@ -31,7 +36,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             if (PhotonNetwork.IsConnectedAndReady)
             {
-                photonView.RPC("UpdateRadioAudioSourceState", RpcTarget.Others, radioAudioSource.gameObject.activeSelf);
+                photonView.RPC("UpdateRadioAudioSourceState", RpcTarget.Others, toggleBehaviour.IsRadioActive());
             }
         }
 

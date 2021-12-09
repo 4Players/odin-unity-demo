@@ -1,11 +1,10 @@
 using System.Text;
-using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ODIN_Sample.Scripts.Runtime.GameLogic.Test
+namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
     public class OdinPeerIdDisplay : MonoBehaviour
     {

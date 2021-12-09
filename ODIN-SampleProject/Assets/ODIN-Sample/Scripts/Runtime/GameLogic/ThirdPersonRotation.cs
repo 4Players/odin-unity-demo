@@ -1,22 +1,29 @@
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     /// <summary>
     /// Will make the target gameobject rotate in the direction of the velocity of characterController.
     /// </summary>
-    public class RotationInput : MonoBehaviour
+    public class ThirdPersonRotation : MonoBehaviour
     {
         [SerializeField] private string rotationalInputAxis = "Rotational";
-        [SerializeField] private GameObject target;
+        [FormerlySerializedAs("target")] [SerializeField] private GameObject rotationTarget;
         [SerializeField] private CharacterController characterController;
+        
         [SerializeField] private float rotationSpeed = 5.0f;
+        
+        /// <summary>
+        /// Maximum angle in degrees that the user can turn using the <see cref="rotationalInputAxis"/> in one frame.
+        /// </summary>
+        private static int MaxFrameRotation => 30;
 
         private void Awake()
         {
             Assert.IsNotNull(characterController);
-            Assert.IsNotNull(target);
+            Assert.IsNotNull(rotationTarget);
         }
 
         void Update()
@@ -33,17 +40,18 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
                 float customRotation = Input.GetAxis(rotationalInputAxis);
                 if (Mathf.Abs(customRotation) > 0.01f)
                 {
-                    Quaternion deltaRotation = Quaternion.AngleAxis(customRotation * 30, Vector3.up);
-                    Quaternion targetRotation = target.transform.rotation * deltaRotation;
+                    Quaternion deltaRotation = Quaternion.AngleAxis(customRotation * MaxFrameRotation, Vector3.up);
+                    Quaternion targetRotation = rotationTarget.transform.rotation * deltaRotation;
                     RotateTowards(targetRotation);
                 }
             }
         }
 
+
         private void RotateTowards(Quaternion targetRotation)
         {
             float lerpValue = Time.deltaTime * rotationSpeed;
-            target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, lerpValue);
+            rotationTarget.transform.rotation = Quaternion.Lerp(rotationTarget.transform.rotation, targetRotation, lerpValue);
         }
     }
 }

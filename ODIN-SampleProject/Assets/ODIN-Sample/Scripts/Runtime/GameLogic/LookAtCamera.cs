@@ -1,28 +1,26 @@
-using System;
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     public class LookAtCamera : MonoBehaviour
     {
         [SerializeField] private float rotationSpeed = 5.0f;
-        [SerializeField] private Camera targetCamera;
 
+        private Camera _current;
+        
         private void OnEnable()
         {
-            if (null == targetCamera)
-                targetCamera = Camera.main;
-            var targetRotation = GetTargetRotation();
-            transform.rotation = targetRotation;
+            transform.rotation = GetTargetRotation();
         }
 
         void Update()
         {
-            if (null == targetCamera)
+            if (!_current || !_current.enabled || !_current.gameObject.activeInHierarchy)
             {
-                targetCamera = Camera.main;
+                _current = Camera.main;
             }
-            else
+
+            if (_current)
             {
                 var targetRotation = GetTargetRotation();
                 float deltaSpeed = rotationSpeed * Time.deltaTime;
@@ -33,9 +31,9 @@ namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
         private Quaternion GetTargetRotation()
         {
             Quaternion targetRotation = Quaternion.identity;
-            if (targetCamera)
+            if (_current)
             {
-                Vector3 lookRotationForward = transform.position - targetCamera.transform.position;
+                Vector3 lookRotationForward = transform.position - _current.transform.position;
                 targetRotation = Quaternion.LookRotation(lookRotationForward, Vector3.up);
             }
 

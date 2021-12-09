@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
+    /// <summary>
+    /// Automatically loads the scene given by <see cref="sceneToLoad"/> using the Photon Load method, which allows
+    /// us to load the Photon-Synchronised version of the scene. 
+    /// </summary>
     public class PhotonLoadSceneOnJoin : MonoBehaviourPunCallbacks
     {
         [SerializeField] private string sceneToLoad;
@@ -18,7 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
-            Debug.Log($"Entered room: {newPlayer.NickName}");
+            Debug.Log($"Entered Photon room: {newPlayer.NickName}");
         }
 
         private void LoadScene()

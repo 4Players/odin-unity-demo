@@ -1,4 +1,3 @@
-using System;
 using ODIN_Sample.Scripts.Runtime.Data;
 using Photon.Pun;
 using Photon.Realtime;
@@ -7,10 +6,21 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
-    public class PhotonJoinRoom : MonoBehaviourPunCallbacks
+    /// <summary>
+    ///     Initialises Photon Connection. Can also initialise automatically connecting to a room given by
+    ///     <see cref="roomName" />.
+    /// </summary>
+    public class PhotonInitialiseConnection : MonoBehaviourPunCallbacks
     {
-        [SerializeField] private bool autoJoin = false;
-        
+        /// <summary>
+        /// If true, we'll automatically join the room given by <see cref="roomName"/>.
+        /// </summary>
+        [SerializeField] private bool autoJoin;
+
+        /// <summary>
+        /// Room to join, if <see cref="autoJoin"/> is set to true or if <see cref="JoinPhotonRoom"/> is called on
+        /// this script.
+        /// </summary>
         [SerializeField] private OdinStringVariable roomName;
 
         private void Awake()
@@ -22,22 +32,20 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             PhotonNetwork.AutomaticallySyncScene = true;
             if (PhotonNetwork.IsConnected && autoJoin)
-            {
                 JoinPhotonRoom();
-            }
-            else if(!PhotonNetwork.IsConnected)
-            {
-                PhotonNetwork.ConnectUsingSettings();
-            }
+            else if (!PhotonNetwork.IsConnected) PhotonNetwork.ConnectUsingSettings();
         }
 
         public override void OnConnectedToMaster()
         {
             Debug.Log("Connected to Master");
-            if(autoJoin)
+            if (autoJoin)
                 JoinPhotonRoom();
         }
-        
+
+        /// <summary>
+        /// Connect to the photon room given by <see cref="roomName"/>.
+        /// </summary>
         public void JoinPhotonRoom()
         {
             PhotonNetwork.JoinOrCreateRoom(roomName.Value, new RoomOptions(), TypedLobby.Default);
@@ -45,7 +53,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            Debug.LogError($"Could not join room {roomName.Value}, joining room with null roomName");
+            Debug.LogError($"Could not join room {roomName.Value} given by reference, joining room with null roomName");
             OnFailedToJoinAnyRoom();
         }
 
@@ -57,7 +65,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         public override void OnJoinedRoom()
         {
-            Debug.Log($"Joined Photon {roomName.Value} room.");
+            Debug.Log($"Joined Photon room {roomName.Value}.");
         }
     }
 }

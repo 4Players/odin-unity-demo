@@ -3,8 +3,15 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
+    /// <summary>
+    /// Initialises the player's state: if we belong to a remote player, destroy the local-only behaviours, otherwise
+    /// enable the local-only behaviours.
+    /// </summary>
     public class PhotonInitialisePlayer : MonoBehaviour, IPunInstantiateMagicCallback
     {
+        /// <summary>
+        /// Reference to the root object, which contains all the local-only behaviour scripts.
+        /// </summary>
         [SerializeField] private GameObject localPlayerOnly;
         
         public void OnPhotonInstantiate(PhotonMessageInfo info)
