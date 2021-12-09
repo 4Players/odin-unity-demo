@@ -45,7 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             ulong localPeerId = microphoneStream?.GetPeerId() ?? 0;
             if (odinRoomName == mediaRoomName && localPeerId != mediaPeerId)
             {
-                int mediaId = mediaAddedEventArgs.Media.Id;
+                ushort mediaId = mediaAddedEventArgs.Media.Id;
                 PlaybackComponent spawnedComponent = SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
                 if(odinPlaybackRegistry)
                     odinPlaybackRegistry.AddComponent(mediaRoomName, mediaPeerId, mediaId, spawnedComponent);

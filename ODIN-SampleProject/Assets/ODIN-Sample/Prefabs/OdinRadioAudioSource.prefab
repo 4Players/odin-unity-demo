@@ -143,9 +143,9 @@ MonoBehaviour:
   PlaybackSource: {fileID: 7222832203153821865}
   AutoDestroyAudioSource: 1
   OverrideChannels: 0
-  Channels: 0
+  Channels: 1
   OverrideSampleRate: 0
-  SampleRate: 0
+  SampleRate: 48000
   CheckPlayingStatusInUpdate: 0
   CheckPlayingStatusAsInvoke: 1
   PlayingStatusDelay: 0.2

@@ -734,6 +734,7 @@ GameObject:
   - component: {fileID: 1810139959340640886}
   - component: {fileID: 2844093388615658216}
   - component: {fileID: 8783286779862688165}
+  - component: {fileID: 310909151100373091}
   m_Layer: 0
   m_Name: OdinPushToTalk
   m_TagString: Untagged
@@ -786,6 +787,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicationTarget: {fileID: 2753487310897480875}
   roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &310909151100373091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3001106345836885710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  indicationTarget: {fileID: 5456647179934602871}
+  roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
   voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
@@ -1187,7 +1203,6 @@ GameObject:
   - component: {fileID: 1341873345618850193}
   - component: {fileID: 5456647179934602871}
   - component: {fileID: 8106907088053764915}
-  - component: {fileID: 5058897325947305873}
   m_Layer: 0
   m_Name: Headset
   m_TagString: Untagged
@@ -2794,21 +2809,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6639016815256160874}
   m_Mesh: {fileID: 0}
---- !u!114 &5058897325947305873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6639016815256160874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 0}
-  roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6767416847630222415
 GameObject:
   m_ObjectHideFlags: 0

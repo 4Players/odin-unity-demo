@@ -38,12 +38,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
             _originalColor = _renderer.material.color;
         }
 
-        public void OnEnable()
+        private void OnEnable()
         {
             odinUser.OnPlaybackComponentAdded += OnPlaybackAdded;
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             odinUser.OnPlaybackComponentAdded -= OnPlaybackAdded;
         }

@@ -45,7 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             return null;
         }
 
-        protected PlaybackComponent SpawnPlaybackComponent(string roomName, ulong peerId, int mediaId)
+        protected PlaybackComponent SpawnPlaybackComponent(string roomName, ulong peerId, ushort mediaId)
         {
             PlaybackComponent spawned = null;
             var dictionaryKey = (roomName, peerId, mediaId);
