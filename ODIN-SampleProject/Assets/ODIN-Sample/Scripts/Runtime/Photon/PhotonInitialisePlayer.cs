@@ -14,6 +14,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// </summary>
         [SerializeField] private GameObject localPlayerOnly;
         
+        /// <summary>
+        /// Initialises the player's state: if we belong to a remote player, destroy the local-only behaviours, otherwise
+        /// enable the local-only behaviours.
+        /// </summary>
         public void OnPhotonInstantiate(PhotonMessageInfo info)
         {
             if (!info.photonView.IsMine)

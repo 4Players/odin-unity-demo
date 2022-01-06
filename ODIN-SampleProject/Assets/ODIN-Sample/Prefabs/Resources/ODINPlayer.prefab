@@ -28,8 +28,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9126928160679134696}
-  - {fileID: 8576628410682350378}
-  - {fileID: 2753487309756592919}
   - {fileID: 2309341422395066622}
   - {fileID: 1007562410489983024}
   - {fileID: 1810139959340640886}
@@ -64,7 +62,9 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 8576628410682350378}
+  - {fileID: 2753487309756592919}
   m_Father: {fileID: 4208676046665426373}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -116,7 +116,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4251494949255509700
 MonoBehaviour:
@@ -611,14 +611,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2753487309756592916}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2753487309432113953}
   - {fileID: 2647094765472730317}
-  m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 2
+  m_Father: {fileID: 9126928160679134696}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2753487310897480879
 GameObject:
@@ -965,7 +965,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2844093388615658216
 MonoBehaviour:
@@ -1027,9 +1027,9 @@ GameObject:
   - component: {fileID: 371299471331831029}
   - component: {fileID: 7856108277496924185}
   - component: {fileID: 6942348817801856013}
-  - component: {fileID: 7663716378265911341}
   - component: {fileID: 2784359670887783181}
   - component: {fileID: 3872096263995398148}
+  - component: {fileID: 7663716378265911341}
   m_Layer: 0
   m_Name: AudioListenerBehavior
   m_TagString: Untagged
@@ -1049,7 +1049,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!81 &4558789485580523338
 AudioListener:
@@ -1103,25 +1103,6 @@ MonoBehaviour:
   occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
   audioListener: {fileID: 4558789485580523338}
   includeInactiveSourcesInSearch: 1
---- !u!1818360609 &7663716378265911341
-RotationConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3292872340452153005}
-  m_Enabled: 1
-  m_Weight: 1
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_RotationOffset: {x: 0, y: 0, z: 0}
-  m_AffectRotationX: 1
-  m_AffectRotationY: 1
-  m_AffectRotationZ: 1
-  m_IsContraintActive: 1
-  m_IsLocked: 1
-  m_Sources:
-  - sourceTransform: {fileID: 2753487310897480878}
-    weight: 1
 --- !u!114 &2784359670887783181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1151,6 +1132,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   listenerReference: {fileID: 11400000, guid: f45a8489b2e0b7747b6a82c4e9d0c171, type: 2}
+--- !u!1818360609 &7663716378265911341
+RotationConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292872340452153005}
+  m_Enabled: 1
+  m_Weight: 1
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_RotationOffset: {x: 0, y: 0, z: 0}
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_IsContraintActive: 1
+  m_IsLocked: 1
+  m_Sources:
+  - sourceTransform: {fileID: 2753487310897480878}
+    weight: 1
 --- !u!1 &4139585757795616959
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,7 +1180,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6759813537705676269
 MonoBehaviour:
@@ -3332,8 +3332,8 @@ Transform:
   m_Children:
   - {fileID: 4577963499434920850}
   - {fileID: 8553438995367805489}
-  m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 1
+  m_Father: {fileID: 9126928160679134696}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1818360609 &4368867348222531051
 RotationConstraint:

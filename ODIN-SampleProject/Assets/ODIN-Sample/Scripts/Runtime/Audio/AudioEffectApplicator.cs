@@ -5,10 +5,17 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Audio
 {
+    /// <summary>
+    /// Script containing the behaviour for applying and removing both occlusion or direction effects on the connected
+    /// audio source. Multiple effects added during one frame will be occumulated according
+    /// to the <see cref="AudioEffectData"/>'s <see cref="AudioEffectData.GetCombinedEffect"/> implementation.
+    /// </summary>
+    /// <remarks>
+    /// This script is usually added automatically by the directional or occlusion system.
+    /// </remarks>
     [RequireComponent(typeof(AudioSource))]
     public class AudioEffectApplicator : MonoBehaviour
     {
-
         private AudioSource _audioSource;
         private AudioLowPassFilter _lowPassFilter;
 
@@ -33,12 +40,20 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             _originalCutoffFrequency = _lowPassFilter.cutoffFrequency;
         }
 
+        /// <summary>
+        /// Resets effects on the audio source to values applied at scene start.
+        /// </summary>
         public void Reset()
         {
             _audioSource.volume = _originalVolume;
             _lowPassFilter.cutoffFrequency = _originalCutoffFrequency;
         }
 
+        /// <summary>
+        /// Applies the effect to the audio source. Multiple effects added during one frame will be occumulated according
+        /// to the <see cref="AudioEffectData"/>'s <see cref="AudioEffectData.GetCombinedEffect"/> implementation.
+        /// </summary>
+        /// <param name="effectData"></param>
         public void Apply(AudioEffectData effectData)
         {
             _effectList.Add(effectData);

@@ -32486,7 +32486,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "<b>C</b>: \t\t\tVoice\n<b>V</b>: \t\t\tRadio\n<b>WASD</b>: \tMove\n<b>QE</b>:
-    \t\t\tRotate\n<b>Shift</b>: \t\tSprint\n<b>F1</b>: \t\t\tView"
+    \t\t\tRotate\n<b>Shift</b>: \t\tSprint\n<b>1</b>: \t\t\tView"
 --- !u!222 &1842639106
 CanvasRenderer:
   m_ObjectHideFlags: 0

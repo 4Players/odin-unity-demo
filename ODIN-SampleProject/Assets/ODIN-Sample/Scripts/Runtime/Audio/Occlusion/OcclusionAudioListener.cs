@@ -5,21 +5,38 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
-    
     /// <summary>
-    /// This component automatically detects Audio Sources inside the radius given by the <see cref="occlusionSettings"/>
-    /// and applies audio occlusion effects to them, if required.
-    /// If Audio Source gameobjects have a <see cref="AudioObstacle"/> script attached, the <see cref="AudioEffectData"/>
-    /// associated to the obstacle will be used, otherwise a fallback method based on detecting the thickness of objects
-    /// with colliders between the <see cref="AudioListener"/> and <see cref="AudioSource"/> will be used.
+    ///     <para>
+    ///         This component automatically detects Audio Sources inside the radius given by the <see cref="occlusionSettings"/>
+    ///         and applies audio occlusion effects to them, if required.
+    ///     </para>
+    ///     <para>
+    ///         If Audio Source gameobjects have a <see cref="AudioObstacle"/> script attached, the <see cref="AudioEffectData"/>
+    ///         associated to the obstacle will be used, otherwise a fallback method based on detecting the thickness of objects
+    ///         with colliders between the <see cref="AudioListener"/> and <see cref="AudioSource"/> will be used.
+    ///     </para>
     /// </summary>
+    /// <remarks>
+    /// Only audio sources with colliders in the parent hierarchy can be detected!
+    /// </remarks>
     [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
     public class OcclusionAudioListener : MonoBehaviour
     {
+        /// <summary>
+        /// Reference to the audio occlusion settings object.
+        /// </summary>
         [SerializeField] private OcclusionSettings occlusionSettings;
+
+        /// <summary>
+        /// Reference to the audio listener. If null, will try to retrieve audio listener from the same game object.
+        /// </summary>
         [SerializeField] private AudioListener audioListener;
+
+        /// <summary>
+        /// Whether to search for inactive audio sources on objects in range.
+        /// </summary>
         [SerializeField] private bool includeInactiveSourcesInSearch = true;
-        
+
 
         private readonly Dictionary<AudioSource, AudioEffectData> _audioSources =
             new Dictionary<AudioSource, AudioEffectData>();
@@ -28,11 +45,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
         private void Awake()
         {
-            SphereCollider audioSourceDetector = GetComponent<SphereCollider>();
+            var audioSourceDetector = GetComponent<SphereCollider>();
             Assert.IsNotNull(audioSourceDetector);
             audioSourceDetector.isTrigger = true;
 
-            Rigidbody detectorRigidBody = GetComponent<Rigidbody>();
+            var detectorRigidBody = GetComponent<Rigidbody>();
             Assert.IsNotNull(detectorRigidBody);
             detectorRigidBody.isKinematic = true;
             detectorRigidBody.useGravity = false;
@@ -52,18 +69,18 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
         private void OnTriggerEnter(Collider other)
         {
-            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
+            foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
             {
                 // only use audio source, if it's a 3d sound
                 if (!(audioSource.spatialBlend > 0.0f))
                     return;
-                
+
                 if (!_audioSources.ContainsKey(audioSource))
                 {
-                    AudioEffectData originalEffect = new AudioEffectData();
+                    var originalEffect = new AudioEffectData();
                     originalEffect.volume = audioSource.volume;
 
-                    AudioLowPassFilter lowPassFilter = audioSource.GetComponent<AudioLowPassFilter>();
+                    var lowPassFilter = audioSource.GetComponent<AudioLowPassFilter>();
                     if (lowPassFilter)
                     {
                         originalEffect.cutoffFrequency = lowPassFilter.cutoffFrequency;
@@ -77,17 +94,15 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
         private void OnTriggerExit(Collider other)
         {
-            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
-            {
+            foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
                 _audioSources.Remove(audioSource);
-            }
         }
 
         private void Update()
         {
-            List<AudioSource> toRemove = new List<AudioSource>();
+            var toRemove = new List<AudioSource>();
             // iterate backwards in case we remove an audio source from the list
-            foreach (AudioSource audioSource in _audioSources.Keys)
+            foreach (var audioSource in _audioSources.Keys)
             {
                 // Remove already destroyed audiosources from our list
                 if (!audioSource)
@@ -98,8 +113,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
                 // Determine ray origins and ray direction
                 Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
-                Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
-                Collider[] audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
+                var toAudioSource = rayOrigins[1] - rayOrigins[0];
+                var audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
 
                 // Get all hits from audio listener to audio source
                 var forwardHits = GetOccluderHits(rayOrigins[0], toAudioSource);
@@ -112,20 +127,14 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
                 // Only check occlusion thickness, if we found occlusions that don't have an AudioObstacle component
                 if (numHitAudioObstacles != forwardHits.Count)
-                {
                     TryRetrieveDefaultOcclusion(forwardHits, rayOrigins, toAudioSource, audioSourceColliders,
                         ref applicableEffect);
-                }
-                
-                if(null != applicableEffect)
+
+                if (null != applicableEffect)
                     ApplyOcclusionEffect(applicableEffect, audioSource);
-                
             }
 
-            foreach (AudioSource audioSource in toRemove)
-            {
-                _audioSources.Remove(audioSource);
-            }
+            foreach (var audioSource in toRemove) _audioSources.Remove(audioSource);
         }
 
         /// <summary>
@@ -151,19 +160,19 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
             ref AudioEffectData applicableEffect)
         {
             Assert.IsTrue(rayOrigins.Length == 2);
-            
+
             var backwardsHits = GetOccluderHits(rayOrigins[1], -toTarget);
             RemoveOriginCollisions(ref backwardsHits, _collidersOnAudiolistener);
             RemoveOriginCollisions(ref backwardsHits, targetColliders);
 
             if (forwardHits.Count == backwardsHits.Count)
             {
-                float occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toTarget);
+                var occlusionThicknessSum = GetOccluderThickness(forwardHits, backwardsHits, toTarget);
                 if (occlusionThicknessSum > 0.0f)
                 {
-                    float thicknessCutoffFrequency =
+                    var thicknessCutoffFrequency =
                         occlusionSettings.GetCutoffFrequency(occlusionThicknessSum);
-                    AudioEffectData thicknessEffect = new AudioEffectData(thicknessCutoffFrequency);
+                    var thicknessEffect = new AudioEffectData(thicknessCutoffFrequency);
 
                     applicableEffect = AudioEffectData.GetCombinedEffect(applicableEffect, thicknessEffect);
                 }
@@ -172,14 +181,14 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
         private int TryRetrieveAudioObstacle(List<RaycastHit> forwardHits, ref AudioEffectData applicableEffect)
         {
-            int numHitAudioObstacles = 0;
+            var numHitAudioObstacles = 0;
 
-            foreach (RaycastHit hit in forwardHits)
+            foreach (var hit in forwardHits)
             {
-                AudioObstacle audioObstacle = hit.collider.GetComponent<AudioObstacle>();
+                var audioObstacle = hit.collider.GetComponent<AudioObstacle>();
                 if (audioObstacle)
                 {
-                    AudioEffectData currentEffect = audioObstacle.settings.effect;
+                    var currentEffect = audioObstacle.settings.effect;
                     applicableEffect = AudioEffectData.GetCombinedEffect(applicableEffect, currentEffect);
                     numHitAudioObstacles++;
                 }
@@ -187,11 +196,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
             return numHitAudioObstacles;
         }
-        
+
 
         private void ApplyOcclusionEffect(AudioEffectData obstacleEffect, AudioSource source)
         {
-            AudioEffectApplicator applicator = source.GetComponent<AudioEffectApplicator>();
+            var applicator = source.GetComponent<AudioEffectApplicator>();
             if (!applicator)
                 applicator = source.gameObject.AddComponent<AudioEffectApplicator>();
             Assert.IsNotNull(applicator);
@@ -202,32 +211,29 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
         private static float GetOccluderThickness(List<RaycastHit> forwardHits, List<RaycastHit> backwardsHits,
             Vector3 toAudioSource)
         {
-            float occlusionThicknessSum = 0.0f;
+            var occlusionThicknessSum = 0.0f;
 
             if (forwardHits.Count == backwardsHits.Count)
-            {
-                for (int forwardsIndex = 0; forwardsIndex < forwardHits.Count; ++forwardsIndex)
+                for (var forwardsIndex = 0; forwardsIndex < forwardHits.Count; ++forwardsIndex)
                 {
-                    int backwardsIndex = backwardsHits.Count - 1 - forwardsIndex;
+                    var backwardsIndex = backwardsHits.Count - 1 - forwardsIndex;
                     var forwardHit = forwardHits[forwardsIndex];
                     var backwardHit = backwardsHits[backwardsIndex];
                     if (forwardHit.collider == backwardHit.collider)
                     {
-                        float occlusionThickness = toAudioSource.magnitude - forwardHit.distance -
-                                                   backwardHit.distance;
+                        var occlusionThickness = toAudioSource.magnitude - forwardHit.distance -
+                                                 backwardHit.distance;
                         //make every occluding object at least a millimeter thick.
                         occlusionThickness = Mathf.Max(occlusionThickness, 0.001f);
 
                         occlusionThicknessSum += occlusionThickness;
                     }
                 }
-            }
 
             return occlusionThicknessSum;
         }
 
-        
-        
+
         /// <summary>
         /// Get all hits. Ignores Triggers.
         /// </summary>
@@ -236,15 +242,15 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
         /// <returns></returns>
         private List<RaycastHit> GetOccluderHits(Vector3 rayOrigin, Vector3 rayDirection)
         {
-            Ray occluderRay = new Ray(rayOrigin, rayDirection);
-            
+            var occluderRay = new Ray(rayOrigin, rayDirection);
+
             // TODO: Improve performance by using Non-Alloc Raycast
             // Using two arrays with a fixed max size would only be problematic if numFoundHits > max size
             // but in that case we can just assume, that a max occlusion effect can be applied.
-            List<RaycastHit> occludingHits = new List<RaycastHit>(
+            var occludingHits = new List<RaycastHit>(
                 Physics.RaycastAll(
                     occluderRay,
-                    rayDirection.magnitude + Single.Epsilon,
+                    rayDirection.magnitude + float.Epsilon,
                     occlusionSettings.audioSourceDetectionLayer,
                     QueryTriggerInteraction.Ignore));
             // Sort by distance
@@ -265,17 +271,12 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
         /// <param name="collidersToRemove">All colliders which should not be present in the hits list</param>
         private void RemoveOriginCollisions(ref List<RaycastHit> hits, Collider[] collidersToRemove)
         {
-            foreach (Collider toRemove in collidersToRemove)
-            {
-                for (int i = hits.Count - 1; i >= 0; i--)
+            foreach (var toRemove in collidersToRemove)
+                for (var i = hits.Count - 1; i >= 0; i--)
                 {
-                    RaycastHit occludingHit = hits[i];
-                    if (toRemove == occludingHit.collider)
-                    {
-                        hits.RemoveAt(i);
-                    }
+                    var occludingHit = hits[i];
+                    if (toRemove == occludingHit.collider) hits.RemoveAt(i);
                 }
-            }
         }
     }
 }

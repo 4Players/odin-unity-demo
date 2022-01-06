@@ -28,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             Assert.IsNotNull(roomName);
         }
 
-        public void Start()
+        private void Start()
         {
             PhotonNetwork.AutomaticallySyncScene = true;
             if (PhotonNetwork.IsConnected && autoJoin)
@@ -38,7 +38,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         public override void OnConnectedToMaster()
         {
-            Debug.Log("Connected to Master");
+            // Debug.Log("Connected to Master");
             if (autoJoin)
                 JoinPhotonRoom();
         }

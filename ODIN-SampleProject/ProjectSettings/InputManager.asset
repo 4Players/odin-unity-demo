@@ -569,8 +569,8 @@ InputManager:
     m_Name: ToggleViews
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: f1
-    positiveButton: 
+    negativeButton: 
+    positiveButton: 1
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
