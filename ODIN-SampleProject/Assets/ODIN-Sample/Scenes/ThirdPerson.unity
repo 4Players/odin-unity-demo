@@ -9176,15 +9176,15 @@ PrefabInstance:
       objectReference: {fileID: 2040152548}
     - target: {fileID: 7472651482258080772, guid: b7fa5f07b63fdb540a8a2c9375f63ceb, type: 3}
       propertyPath: m_SelectedEdges.Array.size
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7472651482258080772, guid: b7fa5f07b63fdb540a8a2c9375f63ceb, type: 3}
       propertyPath: m_SelectedFaces.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7472651482258080772, guid: b7fa5f07b63fdb540a8a2c9375f63ceb, type: 3}
       propertyPath: m_SelectedVertices.Array.size
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7472651482258080783, guid: b7fa5f07b63fdb540a8a2c9375f63ceb, type: 3}
       propertyPath: m_Name
@@ -25855,7 +25855,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh45884
+  m_Name: pb_Mesh38908
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
