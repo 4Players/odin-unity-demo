@@ -31,8 +31,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             OdinSampleUserData userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
             userData.uniqueUserId = photonView.ViewID.ToString();
             newRoom.UpdateUserData(userData.ToUserData());
-
-            // Debug.Log($"PhotonToOdinAdapter: Updating Id to: {userData.uniqueUserId}");
         }
     }
 }

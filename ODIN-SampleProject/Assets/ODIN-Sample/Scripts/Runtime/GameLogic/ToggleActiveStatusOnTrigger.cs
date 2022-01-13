@@ -1,10 +1,12 @@
-using System;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.ThirdPerson
+namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [RequireComponent(typeof(Collider))]
     public class ToggleActiveStatusOnTrigger : MonoBehaviour
     {

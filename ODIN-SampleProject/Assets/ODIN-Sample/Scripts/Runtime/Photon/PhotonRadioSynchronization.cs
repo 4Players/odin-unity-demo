@@ -1,6 +1,5 @@
 ﻿using System;
 using ODIN_Sample.Scripts.Runtime.GameLogic;
-using ODIN_Sample.Scripts.Runtime.ThirdPerson;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;

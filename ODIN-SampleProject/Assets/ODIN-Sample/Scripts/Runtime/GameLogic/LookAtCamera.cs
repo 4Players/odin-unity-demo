@@ -2,8 +2,14 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// Turns the current game object towards an active main camera.
+    /// </summary>
     public class LookAtCamera : MonoBehaviour
     {
+        /// <summary>
+        /// Rotation speed towards the target camera
+        /// </summary>
         [SerializeField] private float rotationSpeed = 5.0f;
 
         private Camera _current;
@@ -11,6 +17,15 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         private void OnEnable()
         {
             transform.rotation = GetTargetRotation();
+        }
+
+        /// <summary>
+        /// Set the target camera, at which the game object should look at.
+        /// </summary>
+        /// <param name="newTarget">The new target camera.</param>
+        public void SetCamera(Camera newTarget)
+        {
+            _current = newTarget;
         }
 
         void Update()
@@ -28,6 +43,10 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             }
         }
 
+        /// <summary>
+        /// Retrieves the rotation for this object to look at the current target camera.
+        /// </summary>
+        /// <returns>Target rotation as quaternion.</returns>
         private Quaternion GetTargetRotation()
         {
             Quaternion targetRotation = Quaternion.identity;

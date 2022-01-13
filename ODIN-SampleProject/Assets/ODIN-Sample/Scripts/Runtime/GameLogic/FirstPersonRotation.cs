@@ -4,15 +4,38 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// Defines the rotation behavior when in first person mode. Also handles hiding / showing the mouse.
+    /// </summary>
     public class FirstPersonRotation : MonoBehaviour
     {
+        /// <summary>
+        /// The name of the axis used for horizontal view rotation.
+        /// </summary>
         [SerializeField] private string mouseXAxis = "Mouse X";
+        /// <summary>
+        /// The name of the axis used for vertical view rotation.
+        /// </summary>
         [SerializeField] private string mouseYAxis = "Mouse Y";
+        /// <summary>
+        /// The rotation speed.
+        /// </summary>
         [SerializeField] private float rotationSpeed = 200.0f;
+        /// <summary>
+        /// The max angle the player can look up or down.
+        /// </summary>
         [Range(0.0f, 89.9f)]
         [SerializeField] private float clampPitch = 89.0f;
         
+        /// <summary>
+        /// The object which should be turned around the local up axis. Can be different from the <see cref="pitchTarget"/>,
+        /// if e.g. you want a visible mesh to actually yaw, but not pitch.
+        /// </summary>
         [SerializeField] private GameObject yawTarget;
+        /// <summary>
+        /// The object which should be turned around the local right axis. Can be different from the <see cref="yawTarget"/>,
+        /// if e.g. you want a visible mesh to actually pitch, but not yaw.
+        /// </summary>
         [SerializeField] private GameObject pitchTarget;
 
         private float _currentYaw;
@@ -31,7 +54,6 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             
             Vector3 pitchEuler = pitchTarget.transform.rotation.eulerAngles;
             _currentPitch = pitchEuler.x;
-
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

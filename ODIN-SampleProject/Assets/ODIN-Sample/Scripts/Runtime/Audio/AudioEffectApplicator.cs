@@ -7,7 +7,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     /// <summary>
     /// Script containing the behaviour for applying and removing both occlusion or direction effects on the connected
-    /// audio source. Multiple effects added during one frame will be occumulated according
+    /// audio source. Multiple effects added during one frame will be accumulated according
     /// to the <see cref="AudioEffectData"/>'s <see cref="AudioEffectData.GetCombinedEffect"/> implementation.
     /// </summary>
     /// <remarks>

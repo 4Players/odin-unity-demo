@@ -5,8 +5,7 @@ using UnityEngine.Serialization;
 namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 {
     /// <summary>
-    /// Data component, containing settings for overwriting the default occlusion behavior of objects.
-    /// E.g. can be used to make sound coming through a brick wall sound more like the real world effect.
+    /// Data component, containing settings for overwriting the default occlusion behavior of objects. 
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class AudioObstacle : MonoBehaviour
