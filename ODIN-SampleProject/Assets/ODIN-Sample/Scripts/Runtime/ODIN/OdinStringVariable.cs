@@ -12,8 +12,17 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <summary>
         /// The variable's string value.
         /// </summary>
-        [field: SerializeField]
-        public string Value { get; set; } = "default";
+        [SerializeField]
+        private string value = "default";
+        
+        /// <summary>
+        /// The variable's string value.
+        /// </summary>
+        public string Value
+        {
+            get => value;
+            set => this.value = value;
+        }
 
         public static implicit operator string(OdinStringVariable v) => v.Value;
         

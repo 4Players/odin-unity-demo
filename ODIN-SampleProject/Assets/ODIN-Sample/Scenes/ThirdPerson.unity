@@ -22669,8 +22669,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1338686298}
   - component: {fileID: 1338686299}
+  - component: {fileID: 1338686300}
   m_Layer: 0
-  m_Name: SwitchToLobby
+  m_Name: LoadLobbyLogic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22702,8 +22703,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f29559fb41c62e40b5a2316d7d0c878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadKeyCode: 108
+  leaveRoomsButton: {fileID: 11400000, guid: 64876066c53f9574e8337c2872455e1c, type: 2}
   sceneToLoad: {fileID: 11400000, guid: 33789366664c8ee4989923a1a503f355, type: 2}
+--- !u!114 &1338686300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338686297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2771dbf3bc04cc19397b0d76e93fd19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leaveRoomsButton: {fileID: 11400000, guid: 64876066c53f9574e8337c2872455e1c, type: 2}
 --- !u!1 &1343085399
 GameObject:
   m_ObjectHideFlags: 0
@@ -32506,7 +32520,7 @@ GameObject:
   - component: {fileID: 1880256989}
   - component: {fileID: 1880256990}
   m_Layer: 0
-  m_Name: AutoSwitchToLobby
+  m_Name: AutoJoinLobbyIfNotConnected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
     /// <summary>
-    ///     Initialises Photon Connection. Can also initialise automatically connecting to a room given by
+    ///     Initialises Photon Connection. Can also automatically join the Photon room given by
     ///     <see cref="roomName" />.
     /// </summary>
     public class PhotonInitialiseConnection : MonoBehaviourPunCallbacks

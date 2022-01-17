@@ -27,7 +27,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// The detection range for audio sources.
         /// </summary>
         [SerializeField] private float audioSourceDetectionRange = 100.0f;
-        
+
         /// <summary>
         /// The settings file, containing data which manipulates audio sources in range based on distance and
         /// angle between source and listener.
@@ -39,6 +39,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// Reference to the audio listener. If null, will try to get the audio listener on this gameobject.
         /// </summary>
         [SerializeField] private AudioListener audioListener;
+
         /// <summary>
         /// Whether to search for inactive audio sources on objects in the detection range.
         /// </summary>
@@ -49,11 +50,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void Awake()
         {
-            SphereCollider audioSourceDetector = GetComponent<SphereCollider>();
+            var audioSourceDetector = GetComponent<SphereCollider>();
             Assert.IsNotNull(audioSourceDetector);
             audioSourceDetector.isTrigger = true;
 
-            Rigidbody detectorRigidBody = GetComponent<Rigidbody>();
+            var detectorRigidBody = GetComponent<Rigidbody>();
             Assert.IsNotNull(detectorRigidBody);
             detectorRigidBody.isKinematic = true;
             detectorRigidBody.useGravity = false;
@@ -68,41 +69,35 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
         private void Update()
         {
-            Transform listenerTransform = audioListener.transform;
-            Vector3 listenerPosition = listenerTransform.position;
-            Vector3 listenerForwards = listenerTransform.forward;
-            
+            var listenerTransform = audioListener.transform;
+            var listenerPosition = listenerTransform.position;
+            var listenerForwards = listenerTransform.forward;
+
             // store audio sources that should be removed and remove all at the end of the update.
-            List<AudioSource> dataToRemove = new List<AudioSource>();
-            foreach (AudioSource audioSource in _audioSources.Keys)
+            var dataToRemove = new List<AudioSource>();
+            foreach (var audioSource in _audioSources.Keys)
             {
-                DirectionalAudioSourceData sourceData = _audioSources[audioSource];
+                var sourceData = _audioSources[audioSource];
                 if (null == sourceData || !sourceData.ConnectedSource)
                 {
                     dataToRemove.Add(audioSource);
                     continue;
                 }
-                
-                Vector3 sourcePosition = sourceData.ConnectedSource.transform.position;
-                Vector3 toSource = (sourcePosition - listenerPosition).normalized;
+
+                var sourcePosition = sourceData.ConnectedSource.transform.position;
+                var toSource = (sourcePosition - listenerPosition).normalized;
 
                 // determine angle between audio listener and audio source
-                float signedAngle = Vector3.SignedAngle(listenerForwards, toSource, Vector3.up);
-                
-                AudioEffectApplicator applicator = sourceData.GetApplicator();
-                if (!applicator)
-                {
-                    applicator = audioSource.gameObject.AddComponent<AudioEffectApplicator>();
-                }
-                
+                var signedAngle = Vector3.SignedAngle(listenerForwards, toSource, Vector3.up);
+
+                var applicator = sourceData.GetApplicator();
+                if (!applicator) applicator = audioSource.gameObject.AddComponent<AudioEffectApplicator>();
+
                 applicator.Apply(directionalSettings.GetAudioEffectData(signedAngle));
             }
 
             // Remove destroyed audio sources from the audio sources container.
-            foreach (AudioSource source in dataToRemove)
-            {
-                _audioSources.Remove(source);
-            }
+            foreach (var source in dataToRemove) _audioSources.Remove(source);
         }
 
         /// <summary>
@@ -112,14 +107,13 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// <param name="other">The collider of the object we detected.</param>
         private void OnTriggerEnter(Collider other)
         {
-            
-            foreach (AudioSource audioSource in other.GetComponentsInChildren<AudioSource>(
+            foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(
                 includeInactiveAudioSourcesInSearch))
             {
                 // only use audio source, if it's a 3d sound
                 if (!(audioSource.spatialBlend > 0.0f))
                     return;
-                
+
                 if (_audioSources.ContainsKey(audioSource))
                 {
                     var sourceData = _audioSources[audioSource];
@@ -166,10 +160,12 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             /// The number of triggers, that entered the detection range and are connected to the <see cref="ConnectedSource"/>.
             /// </summary>
             public int NumTriggersEntered { get; private set; }
+
             /// <summary>
             /// The original volume of the audio source, before being affected by the directional audio listener
             /// </summary>
             public float OriginalVolume { get; private set; }
+
             /// <summary>
             /// The Audio Source being affected.
             /// </summary>

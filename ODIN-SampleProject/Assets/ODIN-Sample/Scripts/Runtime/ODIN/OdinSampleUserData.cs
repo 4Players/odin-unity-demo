@@ -40,7 +40,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         public string uniqueUserId;
         /// <summary>
-        /// The player's capsule color.
+        /// The player's capsule color as an html rgb string. Can be converted by using:
+        /// <code>
+        ///     ColorUtility.TryParseHtmlString("#" + color, out var result);
+        /// </code>
         /// </summary>
         public string color;
         public int muted;

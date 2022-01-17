@@ -14,6 +14,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         /// ODIN room names, which should be automatically joined.
         /// </summary>
         [SerializeField] private OdinStringVariable[] refRoomNames;
+        /// <summary>
+        /// Reference to the current player name.
+        /// </summary>
         [SerializeField] private OdinStringVariable refPlayerName;
 
         private void Awake()

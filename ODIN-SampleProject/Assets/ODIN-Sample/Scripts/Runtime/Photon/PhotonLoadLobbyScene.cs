@@ -14,8 +14,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     /// <remarks>
     ///     Used for faster prototyping: we don't have to switch to the lobby scene in the editor to start playmode.
     /// </remarks>
-    public class PhotonLobbySceneLoader : MonoBehaviour
+    public class PhotonLoadLobbyScene : MonoBehaviour
     {
+        /// <summary>
+        /// The lobby scene name.
+        /// </summary>
         [SerializeField] private OdinStringVariable sceneName;
 
         private void Awake()

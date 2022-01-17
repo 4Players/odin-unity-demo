@@ -9,14 +9,14 @@ using UnityEngine.SceneManagement;
 namespace ODIN_Sample.Scripts.Runtime.Photon
 {
     /// <summary>
-    ///     Leave the photon room and all ODIN rooms on keypress and return to scene given by <see cref="sceneToLoad" />.
+    ///     Utility Behaviour: Leave the photon room on keypress and return to scene given by <see cref="sceneToLoad" />.
     /// </summary>
     public class PhotonLeaveRoom : MonoBehaviour, IMatchmakingCallbacks
     {
         /// <summary>
-        /// Load the scene given by <see cref="sceneToLoad"/> when pressing this button.
+        /// Leave the Photon Room and load scene <see cref="sceneToLoad"/> when pressing this Unity button.
         /// </summary>
-        [SerializeField] private KeyCode loadKeyCode = KeyCode.L;
+        [SerializeField] private OdinStringVariable leaveRoomsButton;
         /// <summary>
         /// Reference to the name of the Unity scene we should load.
         /// </summary>
@@ -27,17 +27,15 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         private void Awake()
         {
             Assert.IsNotNull(sceneToLoad);
+            Assert.IsNotNull(leaveRoomsButton);
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(loadKeyCode) && !_wasSceneLoadRequested)
+            if (Input.GetButtonDown(leaveRoomsButton) && !_wasSceneLoadRequested)
             {
+                // Leave the photon room
                 if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
-
-                if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
-                    foreach (var room in OdinHandler.Instance.Rooms)
-                        OdinHandler.Instance.LeaveRoom(room.Config.Name);
 
                 _wasSceneLoadRequested = true;
             }
@@ -53,6 +51,9 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             PhotonNetwork.RemoveCallbackTarget(this);
         }
         
+        /// <summary>
+        /// Load lobby scene after successfully leaving the photon room.
+        /// </summary>
         public void OnLeftRoom()
         {
             if (_wasSceneLoadRequested)

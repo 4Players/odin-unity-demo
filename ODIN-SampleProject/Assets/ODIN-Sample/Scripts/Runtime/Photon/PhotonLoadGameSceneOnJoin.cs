@@ -8,8 +8,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     /// Automatically loads the scene given by <see cref="sceneToLoad"/> using the Photon Load method, which allows
     /// us to load the Photon-Synchronised version of the scene. 
     /// </summary>
-    public class PhotonLoadSceneOnJoin : MonoBehaviourPunCallbacks
+    public class PhotonLoadGameSceneOnJoin : MonoBehaviourPunCallbacks
     {
+        /// <summary>
+        /// The unity scene to load on join.
+        /// </summary>
         [SerializeField] private string sceneToLoad;
 
         public override void OnJoinedRoom()

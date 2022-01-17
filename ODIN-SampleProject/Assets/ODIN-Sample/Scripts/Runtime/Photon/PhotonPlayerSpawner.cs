@@ -11,11 +11,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     public class PhotonPlayerSpawner : MonoBehaviour
     {
         /// <summary>
-        /// Prefab of the player object. Has to be located in a resources folder!.
+        /// Prefab of the player object. Has to be located in a resources folder! (Photon requirement)
         /// </summary>
         [SerializeField] private GameObject playerPrefab;
         /// <summary>
-        /// The location at which we should spawn the player
+        /// The location at which we should spawn the player.
         /// </summary>
         [SerializeField] private Vector3 spawnLocation;
 

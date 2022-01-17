@@ -13,16 +13,19 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     public class PhotonRadioSynchronization : MonoBehaviourPunCallbacks
     {
         /// <summary>
-        /// The 
+        /// The game logic behaviour for toggling the radio.
         /// </summary>
         [SerializeField] private ToggleRadioBehaviour toggleBehaviour;
         
-
         private void Awake()
         {
             Assert.IsNotNull(toggleBehaviour);
         }
 
+        /// <summary>
+        /// Inform joining players about the current state of the radio.
+        /// </summary>
+        /// <param name="newPlayer"></param>
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             if (photonView.IsMine)
@@ -31,6 +34,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             }
         }
 
+        /// <summary>
+        /// Send the radio state update using a Photon RPC.
+        /// </summary>
+        /// <param name="newSourceActive"></param>
         public void SendRadioSynchronizationUpdate(bool newSourceActive)
         {
             if (PhotonNetwork.IsConnectedAndReady)
