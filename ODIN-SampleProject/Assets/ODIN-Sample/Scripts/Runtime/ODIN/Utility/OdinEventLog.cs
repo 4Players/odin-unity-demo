@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
+    /// <summary>
+    /// Utility script for displaying messages for relevant ODIN events, like OnRoomJoined or OnPeerLeft.
+    /// </summary>
     public class OdinEventLog : MonoBehaviour
     {
         private void OnEnable()

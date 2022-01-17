@@ -1,12 +1,19 @@
 using System;
-using ODIN_Sample.Scripts.Runtime.Data;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
+    /// <summary>
+    /// Applies the push to talk settings for ODIN rooms. 
+    /// </summary>
     public class OdinPushToTalk : MonoBehaviour
     {
+        /// <summary>
+        /// The list of settings for different rooms. Allows definition of different push-to-talk buttons for different
+        /// ODIN rooms.
+        /// </summary>
         [SerializeField] private OdinPushToTalkData[] pushToTalkSettings;
 
         private void OnEnable()
@@ -25,7 +32,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// show or for some data to be sent on accident.
         /// </summary>
         /// <param name="arg0"></param>
-        /// <param name="mediaAddedEventArgs"></param>
+        /// <param name="mediaAddedEventArgs">Event arguments.</param>
         private void OnMediaAdded(object arg0, MediaAddedEventArgs mediaAddedEventArgs)
         {
             // check if the added media is one of the rooms for which the user has provided push to talk data
@@ -76,11 +83,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         }
     }
 
+    /// <summary>
+    /// Data container for storing push to talk settings.
+    /// </summary>
     [Serializable]
     public class OdinPushToTalkData
     {
         /// <summary>
-        /// The room for which the push to talk button should work
+        /// The room for which the push to talk button should work.
         /// </summary>
         public OdinStringVariable connectedRoom;
         /// <summary>

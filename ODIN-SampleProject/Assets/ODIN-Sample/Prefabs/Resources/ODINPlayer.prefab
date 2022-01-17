@@ -931,9 +931,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  odinUser: {fileID: 8506675492331546689}
+  indicationTarget: {fileID: 2753487310897480875}
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
-  odinUser: {fileID: 8506675492331546689}
 --- !u!1 &3001106345836885710
 GameObject:
   m_ObjectHideFlags: 0

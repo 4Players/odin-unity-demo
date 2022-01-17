@@ -4,21 +4,44 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
+    /// <summary>
+    /// Extension class for converting user data.
+    /// </summary>
     public static class UserDataExtension
     {
+        /// <summary>
+        /// Converts user data into the Sample projects User Data definition.
+        /// </summary>
+        /// <param name="userData">The Odin native user data object.</param>
+        /// <returns>The converted user data.</returns>
         public static OdinSampleUserData ToOdinSampleUserData(this UserData userData)
         {
             return OdinSampleUserData.FromUserData(userData);
         }
     }
     
+    /// <summary>
+    /// User data definition for the Sample Project. Most important are the <see cref="name"/> and <see cref="uniqueUserId"/>
+    /// properties. The <see cref="name"/> is used for displaying the user name using only ODIN functionality. The <see cref="uniqueUserId"/>
+    /// is required for connecting ODIN users with their in-game representation, using the Multiplayer Solution used in
+    /// your project. This could be e.g. a photon views unique id.
+    /// </summary>
     [Serializable]
     public class OdinSampleUserData
     {
         public static implicit operator UserData(OdinSampleUserData data) => data?.ToUserData() ?? null;
 
+        /// <summary>
+        /// The player's name
+        /// </summary>
         public string name;
+        /// <summary>
+        /// The player's unique user id, used for identification of a user in multiplayer scenes.
+        /// </summary>
         public string uniqueUserId;
+        /// <summary>
+        /// The player's capsule color.
+        /// </summary>
         public string color;
         public int muted;
         public string user;
@@ -27,7 +50,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         public string revision;
         public string version;
         public string buildno;
-
+        
         public OdinSampleUserData() : this("Unity Player") { }
         public OdinSampleUserData(string name)
         {
@@ -43,32 +66,29 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             this.buildno = Application.buildGUID;
         }
 
+        /// <summary>
+        /// Converts this user data back into Odins base UserData definition for network synchronization.
+        /// </summary>
+        /// <returns></returns>
         public UserData ToUserData()
         {
             return new UserData(this.ToJson());
         }
 
+        /// <summary>
+        /// Converts the given Odin base UserData definition into an OdinSampleUserData object.
+        /// </summary>
+        /// <param name="userData">The Odin base UserData object.</param>
+        /// <returns>The converted OdinSampleUserData object.</returns>
         public static OdinSampleUserData FromUserData(UserData userData)
         {
             return JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
         }
-        
 
-        public static bool FromUserData(UserData userData, out OdinSampleUserData odinUserData)
-        {
-            try
-            {
-                odinUserData = JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
-                return true;
-            }
-            catch(Exception e)
-            {
-                Debug.LogException(e);
-                odinUserData = null;
-                return false;
-            }
-        }
-
+        /// <summary>
+        /// Converts this object into Json format.
+        /// </summary>
+        /// <returns>The resulting Json object.</returns>
         public string ToJson()
         {
             return JsonUtility.ToJson(this);

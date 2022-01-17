@@ -26,11 +26,5 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             return photonView.IsMine;
         }
 
-        protected override void OnUpdateUniqueUserId(Room newRoom)
-        {
-            OdinSampleUserData userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
-            userData.uniqueUserId = photonView.ViewID.ToString();
-            newRoom.UpdateUserData(userData.ToUserData());
-        }
     }
 }

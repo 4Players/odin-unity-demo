@@ -1,4 +1,3 @@
-using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
@@ -8,13 +7,21 @@ using UnityEngine.Serialization;
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     /// <summary>
-    ///     Automatically creates a PlaybackComponent on a remote player for each room the owning (local) player is connected
-    ///     to.
-    ///     Will only use rooms listed in <see cref="connectedOdinRooms" />.
+    ///     Automatically creates the PlaybackComponents for a single remote player. The remote player will be
+    ///     identified by the id provided by the referenced <see cref="AOdinMultiplayerAdapter"/>.
+    ///     Will only spawn PlaybackComponents for rooms listed in <see cref="connectedOdinRooms" />.
     /// </summary>
+    /// <remarks>
+    ///     This script is only required for users, whose transmission should be played as 3D audio, e.g. in-game voice
+    ///     on a player's character. For 2D voice, which can be heard everywhere, the <see cref="OdinDefaultUser"/> script
+    ///     is sufficient and easier to setup.
+    /// </remarks>
     [DisallowMultipleComponent]
     public class Odin3dAudioVoiceUser : AOdinUser
     {
+        /// <summary>
+        /// Reference to the Multiplayer Adapter, which represents the currently transmitting player in your game.
+        /// </summary>
         [FormerlySerializedAs("odinAdapter")] [SerializeField]
         private AOdinMultiplayerAdapter multiplayerAdapter;
 
@@ -60,7 +67,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        ///     If this is a remote player and we register, that a new media has been added, request the peer id for the room
+        ///     If this is a remote player and we register that a new media has been added, request the peer id for the room
         ///     in which the media has been created from the actual owner of the Photon View (= the actual player).
         /// </summary>
         /// <param name="obj"></param>

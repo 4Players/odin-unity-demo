@@ -6,9 +6,18 @@ using UnityEngine.UI;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
+    /// <summary>
+    /// Utility script for displaying useful ODIN debugging data, like the Peer and room data for each connected user. 
+    /// </summary>
     public class OdinPeerIdDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// Text on which the data should be displayed.
+        /// </summary>
         [SerializeField] private Text display;
+        /// <summary>
+        /// Whether to log the output using Debug.Log.
+        /// </summary>
         [SerializeField] private bool logOutput = false;
 
         private StringBuilder displayBuilder = new StringBuilder();

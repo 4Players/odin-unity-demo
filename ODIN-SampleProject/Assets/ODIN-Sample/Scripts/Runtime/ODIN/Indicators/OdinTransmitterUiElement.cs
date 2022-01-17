@@ -4,12 +4,15 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
+    /// <summary>
+    /// UI element used to display <see cref="OdinSampleUserData"/> like the player's name.
+    /// </summary>
     public class OdinTransmitterUiElement : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI text;
 
         private (string, ulong, int) _key;
-        
+
         private void Awake()
         {
             Assert.IsNotNull(text);

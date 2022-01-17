@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin.Media;
 using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
@@ -10,12 +9,19 @@ using UnityEngine.Assertions;
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     /// <summary>
-    /// Used to automatically spawn playback components for other users, independent of their position. Could be used
-    /// e.g. for playing audio from radio units / headsets
+    /// Used to automatically spawn audio playback components for all ODIN users connected to the room with name
+    /// <see cref="odinRoomName"/>, independent of their position. Could be used e.g. for playing audio from headsets or
+    /// "voice of god" transmissions.
     /// </summary>
     public class OdinDefaultUser : AOdinUser
     {
+        /// <summary>
+        /// The room for which the Playback Components should be spawned.
+        /// </summary>
         [SerializeField] private OdinStringVariable odinRoomName;
+        /// <summary>
+        /// The registry, in which all spawned components should be stored. 
+        /// </summary>
         [SerializeField] private OdinPlaybackRegistry odinPlaybackRegistry;
 
         protected override void Awake()
@@ -52,7 +58,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 PlaybackComponent spawnedComponent = SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
                 // Debug.Log($"After spawning component: {spawnedComponent}");
                 if(odinPlaybackRegistry)
-                    odinPlaybackRegistry.AddComponent(mediaRoomName, mediaPeerId, mediaId, spawnedComponent);
+                    odinPlaybackRegistry.AddComponent(spawnedComponent);
             }
         }
         

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -8,24 +7,35 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     
     /// <summary>
-    /// Indicates whether this remote player is currently talking in the room, given by <see cref="odinRoomName"/>, by changing the
-    /// color of a mesh. Requires to be put on the same gameobject as the mesh which should change its color.
+    /// Behaviour for displaying feedback on whether the remote player represented by the <see cref="odinUser"/> script
+    /// is currently transmitting in the ODIN room with the name <see cref="odinRoomName"/>, by changing the color of a
+    /// mesh.
     /// </summary>
-    [RequireComponent(typeof(Renderer))]
     public class OdinRemoteVoiceIndicator : MonoBehaviour
     {
+        
+        /// <summary>
+        /// Reference to the remote player for which the indicator should check for transmissions.
+        /// </summary>
+        [SerializeField] private AOdinUser odinUser;
+        /// <summary>
+        /// This renderers color will be switched to <see cref="voiceOnColor"/>, if the remote player is transmitting. The
+        /// color will return back to the original color of the main materials' initial color.
+        /// </summary>
+        [SerializeField] private Renderer indicationTarget;
         /// <summary>
         /// The name of the ODIN room, for which this indicator should signal voice activity.
         /// </summary>
         [SerializeField] private OdinStringVariable odinRoomName;
+        /// <summary>
+        /// The color the <see cref="indicationTarget"/> should display when the remote player is transmitting.
+        /// </summary>
         [SerializeField] private Color voiceOnColor = Color.green;
-        [SerializeField] private AOdinUser odinUser;
         
 
         private List<PlaybackComponent> _playbackComponents = new List<PlaybackComponent>();
         private int _numActivePlaybacks = 0;
 
-        private Renderer _renderer;
         private Color _originalColor;
 
         private void Awake()
@@ -33,9 +43,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
             Assert.IsNotNull(odinRoomName);
             
             Assert.IsNotNull(odinUser);
-            _renderer = GetComponent<Renderer>();
-            Assert.IsNotNull(_renderer);
-            _originalColor = _renderer.material.color;
+            
+            if(null == indicationTarget)
+                indicationTarget = GetComponent<Renderer>();
+            Assert.IsNotNull(indicationTarget);
+            
+            _originalColor = indicationTarget.material.color;
         }
 
         private void OnEnable()
@@ -90,11 +103,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         {
             if (isVoiceOn)
             {
-                _renderer.material.color = voiceOnColor;
+                indicationTarget.material.color = voiceOnColor;
             }
             else
             {
-                _renderer.material.color = _originalColor;
+                indicationTarget.material.color = _originalColor;
             }
         }
     }

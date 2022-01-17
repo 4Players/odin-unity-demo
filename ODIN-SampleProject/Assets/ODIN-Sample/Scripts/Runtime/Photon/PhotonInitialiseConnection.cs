@@ -1,4 +1,4 @@
-using ODIN_Sample.Scripts.Runtime.Data;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;

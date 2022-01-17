@@ -1,14 +1,27 @@
-﻿using ODIN_Sample.Scripts.Runtime.Data;
-using OdinNative.Odin.Room;
+﻿using OdinNative.Odin.Room;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
+    /// <summary>
+    /// Behaviour for showing visual feedback, when the local player's voice is transmitting to an ODIN room with the name
+    /// <see cref="roomName"/>. 
+    /// </summary>
     public class OdinLocalVoiceIndicator : MonoBehaviour
     {
+        /// <summary>
+        /// This renderers color will be switched to <see cref="voiceOnColor"/>, if the local player is transmitting. The
+        /// color will return back to the original color of the renderers material.
+        /// </summary>
         [SerializeField] private Renderer indicationTarget;
+        /// <summary>
+        /// The name of the ODIN room on which the indicator should be listening for transmissions.
+        /// </summary>
         [SerializeField] private OdinStringVariable roomName;
+        /// <summary>
+        /// The color the <see cref="indicationTarget"/> should display when the local player is transmitting.
+        /// </summary>
         [SerializeField] private Color voiceOnColor = Color.green;
         
         private Color _originalColor;

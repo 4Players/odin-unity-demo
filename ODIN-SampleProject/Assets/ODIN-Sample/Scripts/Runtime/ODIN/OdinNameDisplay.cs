@@ -1,5 +1,4 @@
 using System;
-using ODIN_Sample.Scripts.Runtime.Data;
 using OdinNative.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
@@ -10,17 +9,31 @@ using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
+    /// <summary>
+    /// UI Behaviour for displaying the name of an ODIN user. Uses the <see cref="OdinSampleUserData"/> to read the name
+    /// of the user identified by the connected <see cref="AOdinMultiplayerAdapter"/> for the given room name.
+    /// Requires only ODIN dependencies for synchronizing names.
+    /// </summary>
     public class OdinNameDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// The Adapter used to identify the user, for which the name should be displayed.
+        /// </summary>
         [FormerlySerializedAs("odinAdapter")] [SerializeField] private AOdinMultiplayerAdapter multiplayerAdapter;
 
         /// <summary>
-        /// Room, for which the name should be displayed.
+        /// ODIN room, for which the name should be displayed.
         /// </summary>
         [SerializeField] private OdinStringVariable roomName;
 
+        /// <summary>
+        /// UI component for visualizing the name.
+        /// </summary>
         [SerializeField] private TMP_Text nameDisplay;
 
+        /// <summary>
+        /// The maximum number of name characters that will be displayed. Names with more characters will be cut off.
+        /// </summary>
         [SerializeField] private int maxDisplayCharacters = 8;
 
         private void Awake()
@@ -89,14 +102,19 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 nameDisplay.text = AdjustName(userData.name);
         }
 
-        private string AdjustName(string displayedName)
+        /// <summary>
+        /// Shortens the name if necessary and returns the cut-off version for display.
+        /// </summary>
+        /// <param name="fullName">The full name</param>
+        /// <returns>The truncated version, if <c>fullName.Length</c> > <see cref="maxDisplayCharacters"/>, the full name otherwise.</returns>
+        private string AdjustName(string fullName)
         {
-            if (string.IsNullOrEmpty(displayedName)) displayedName = "Player";
+            if (string.IsNullOrEmpty(fullName)) fullName = "Player";
 
-            if (displayedName.Length > maxDisplayCharacters)
-                displayedName = displayedName.Substring(0, maxDisplayCharacters) + "...";
+            if (fullName.Length > maxDisplayCharacters)
+                fullName = fullName.Substring(0, maxDisplayCharacters) + "...";
 
-            return displayedName;
+            return fullName;
         }
     }
 }

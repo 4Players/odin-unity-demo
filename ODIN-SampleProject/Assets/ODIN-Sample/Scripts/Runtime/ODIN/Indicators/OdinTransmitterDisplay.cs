@@ -7,8 +7,14 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
+    /// <summary>
+    /// Displays transmissions of all players in a room using UI.
+    /// </summary>
     public class OdinTransmitterDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// Reference to a scriptable object containing references to all ODIN <c>PlaybackComponent</c>s.
+        /// </summary>
         [SerializeField] private OdinPlaybackRegistry playbackRegistry;
 
         private HashSet<PlaybackComponent> _playbackComponents = new HashSet<PlaybackComponent>();

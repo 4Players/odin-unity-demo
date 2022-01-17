@@ -5,9 +5,9 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     /// <summary>
     /// Base movement behavior for both the first and third person movement behavior. Inherit from this to implement
-    /// your own movement behavior.
+    /// your own movement behavior or adjust the settings, if only simple changes are required.
     /// </summary>
-    public abstract class OdinSampleMovement : MonoBehaviour
+    public class OdinSampleMovement : MonoBehaviour
     {
         /// <summary>
         /// The name of the axis used for left/right movement.

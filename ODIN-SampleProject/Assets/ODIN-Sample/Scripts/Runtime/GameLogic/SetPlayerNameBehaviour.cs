@@ -1,4 +1,4 @@
-using ODIN_Sample.Scripts.Runtime.Data;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
