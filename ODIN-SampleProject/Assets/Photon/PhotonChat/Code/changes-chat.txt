@@ -3,6 +3,10 @@ Photon Chat C# Client - Changelog
 Exit Games GmbH - www.photonengine.com - forum.photonengine.com
 
 
+Version 4.1.6.11 (22. November 2021)
+    Added: CustomAuthenticationType.Epic to authenticate via Epic Online Services (EOS).
+    Added: CustomAuthenticationType.FacebookGaming to authenticate via Facebook Gaming services.
+
 Version 4.1.6.10 (21. October 2021 - rev6243)
     Fixed: The ChatPeer.ConfigUnitySockets(), which used a surplus typeof() for Xbox configuration.
 

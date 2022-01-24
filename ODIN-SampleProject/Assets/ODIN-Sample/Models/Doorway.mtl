@@ -1,0 +1,5 @@
+newmtl M_Concrete
+map_Kd GridBox_Default.png
+Kd 0.5843138 0.6470588 0.6509804
+d 1
+

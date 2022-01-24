@@ -11,6 +11,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </summary>
     public class FirstPersonMeshVisibility : MonoBehaviour
     {
+        
         /// <summary>
         /// The root of the player mesh - this object and all children will be hidden from the first person camera view.
         /// </summary>
