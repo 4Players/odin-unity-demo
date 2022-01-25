@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6941d3016dbaed945993dc20cd7c8455
+guid: 224bcdcf454619f4fb35fb88e8ffab30
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BordersMat
-    second: {fileID: 2100000, guid: f3029088ec9ad4a4c95289d2e6afb295, type: 2}
+      name: M_RadioInner
+    second: {fileID: 2100000, guid: d8218d3eb4f5de84ebe2bf9e18af61e4, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_Border
-    second: {fileID: 2100000, guid: f3029088ec9ad4a4c95289d2e6afb295, type: 2}
+      name: M_RadioOuter
+    second: {fileID: 2100000, guid: ecf02d5f5350d7f47ad1d9f36276bfb3, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

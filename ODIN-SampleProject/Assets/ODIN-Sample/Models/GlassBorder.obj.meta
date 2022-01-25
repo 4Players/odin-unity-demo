@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: GlassBorderMat
+    second: {fileID: 2100000, guid: d3b353a389b5c9b4184937b265860e92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: M_Glass
     second: {fileID: 2100000, guid: d3b353a389b5c9b4184937b265860e92, type: 2}
   materials:
