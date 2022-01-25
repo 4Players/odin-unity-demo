@@ -16,7 +16,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// <summary>
         /// Leave the Photon Room and load scene <see cref="sceneToLoad"/> when pressing this Unity button.
         /// </summary>
-        [SerializeField] private KeyCode leaveRoomsButton = KeyCode.L;
+        [SerializeField] private OdinStringVariable leaveRoomsButton;
         /// <summary>
         /// Reference to the name of the Unity scene we should load.
         /// </summary>

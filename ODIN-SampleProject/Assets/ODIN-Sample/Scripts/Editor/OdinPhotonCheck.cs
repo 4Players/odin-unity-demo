@@ -6,7 +6,7 @@ namespace ODIN_Sample.Scripts.Editor
 {
     public static class OdinPhotonCheck
     {
-        private static string IsFirstStartupKey => "ODIN-Sample.isFirstStartup";
+        private static string IsFirstStartupKey => "ODIN-Sample.OdinPhotonCheck.isFirstStartup";
 
         private static string PhotonAssetStoreUrl =>
             "https://assetstore.unity.com/packages/tools/network/pun-2-free-119922";

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -17,9 +18,9 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// </summary>
         [SerializeField] private SampleViewState currentViewState;
         /// <summary>
-        /// The name of the button for toggling the view state.
+        /// The button for toggling the view state.
         /// </summary>
-        [SerializeField] private string toggleViewButtonName;
+        [SerializeField] private OdinStringVariable toggleViewButtonName;
         /// <summary>
         /// Settings for the view states between which we'll be switching.
         /// </summary>
@@ -37,7 +38,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void Update()
         {
-            if (Input.GetButtonDown(toggleViewButtonName))
+            if (Input.GetKeyDown(toggleViewButtonName))
             {
                 currentViewState.SwitchToNextState();
 

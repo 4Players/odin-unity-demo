@@ -3,7 +3,9 @@ guid: 3f29559fb41c62e40b5a2316d7d0c878
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - leaveRoomsButton: {fileID: 11400000, guid: 2c17dc881cfa7f7489af135570468e2a, type: 2}
+  - sceneToLoad: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

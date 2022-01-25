@@ -12,7 +12,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         /// <summary>
         /// Leave all ODIN rooms when pressing this Unity button.
         /// </summary>
-        [SerializeField] private KeyCode leaveRoomsButton = KeyCode.L;
+        [SerializeField] private OdinStringVariable leaveRoomsButton;
 
         private void Update()
         {
