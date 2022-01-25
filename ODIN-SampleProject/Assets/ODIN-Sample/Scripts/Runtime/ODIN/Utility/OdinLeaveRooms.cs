@@ -12,16 +12,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         /// <summary>
         /// Leave all ODIN rooms when pressing this Unity button.
         /// </summary>
-        [SerializeField] private OdinStringVariable leaveRoomsButton;
-
-        private void Awake()
-        {
-            Assert.IsNotNull(leaveRoomsButton);
-        }
+        [SerializeField] private KeyCode leaveRoomsButton = KeyCode.L;
 
         private void Update()
         {
-            if (Input.GetButtonDown(leaveRoomsButton))
+            if (Input.GetKeyDown(leaveRoomsButton))
             {
                 if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
                     foreach (var room in OdinHandler.Instance.Rooms)

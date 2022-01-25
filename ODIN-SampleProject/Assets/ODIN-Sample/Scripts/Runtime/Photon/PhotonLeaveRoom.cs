@@ -16,7 +16,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// <summary>
         /// Leave the Photon Room and load scene <see cref="sceneToLoad"/> when pressing this Unity button.
         /// </summary>
-        [SerializeField] private OdinStringVariable leaveRoomsButton;
+        [SerializeField] private KeyCode leaveRoomsButton = KeyCode.L;
         /// <summary>
         /// Reference to the name of the Unity scene we should load.
         /// </summary>
@@ -27,12 +27,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         private void Awake()
         {
             Assert.IsNotNull(sceneToLoad);
-            Assert.IsNotNull(leaveRoomsButton);
         }
 
         private void Update()
         {
-            if (Input.GetButtonDown(leaveRoomsButton) && !_wasSceneLoadRequested)
+            if (Input.GetKeyDown(leaveRoomsButton) && !_wasSceneLoadRequested)
             {
                 // Leave the photon room
                 if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
