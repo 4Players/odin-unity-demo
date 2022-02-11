@@ -27,12 +27,11 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         private void Awake()
         {
             Assert.IsNotNull(sceneToLoad);
-            Assert.IsNotNull(leaveRoomsButton);
         }
 
         private void Update()
         {
-            if (Input.GetButtonDown(leaveRoomsButton) && !_wasSceneLoadRequested)
+            if (Input.GetKeyDown(leaveRoomsButton) && !_wasSceneLoadRequested)
             {
                 // Leave the photon room
                 if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();

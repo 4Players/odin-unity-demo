@@ -14,7 +14,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "PHOTON_UNITY_NETWORKING"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

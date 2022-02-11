@@ -1,3 +1,15 @@
-﻿fileFormatVersion: 2
+fileFormatVersion: 2
 guid: 27eb2a7cff624f9eb21379471eb646f5
-timeCreated: 1639063542
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - horizontalMovement: {fileID: 11400000, guid: 0b31976b872490d4ab5431d826459718, type: 2}
+  - verticalMovement: {fileID: 11400000, guid: e6ac6945a6878504da35c00614d6ddcd, type: 2}
+  - sprintButton: {fileID: 11400000, guid: f5ccb927f122fea40b07a538608f0c24, type: 2}
+  - characterController: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

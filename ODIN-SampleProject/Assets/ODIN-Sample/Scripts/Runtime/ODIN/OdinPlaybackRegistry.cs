@@ -74,7 +74,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out var toRemove))
             {
                 _registeredRemoteMedia.Remove(dictionaryKey);
-                OnPlaybackComponentRemoved.Invoke(toRemove);
+                OnPlaybackComponentRemoved?.Invoke(toRemove);
                 return toRemove;
             }
 

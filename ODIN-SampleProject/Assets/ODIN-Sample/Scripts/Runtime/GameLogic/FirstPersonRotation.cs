@@ -1,4 +1,5 @@
 using System;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,11 +13,11 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// <summary>
         /// The name of the axis used for horizontal view rotation.
         /// </summary>
-        [SerializeField] private string mouseXAxis = "Mouse X";
+        [SerializeField] private OdinStringVariable mouseXAxis;
         /// <summary>
         /// The name of the axis used for vertical view rotation.
         /// </summary>
-        [SerializeField] private string mouseYAxis = "Mouse Y";
+        [SerializeField] private OdinStringVariable mouseYAxis;
         /// <summary>
         /// The rotation speed.
         /// </summary>
@@ -45,6 +46,8 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         {
             Assert.IsNotNull(yawTarget);
             Assert.IsNotNull(pitchTarget);
+            Assert.IsNotNull(mouseXAxis);
+            Assert.IsNotNull(mouseYAxis);
         }
 
         private void OnEnable()

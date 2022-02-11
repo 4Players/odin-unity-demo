@@ -3,7 +3,9 @@ guid: c09562a0233437f4393006790adacff4
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - currentViewState: {instanceID: 0}
+  - toggleViewButtonName: {fileID: 11400000, guid: d5911b16c69444e4da925cc986de7233, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

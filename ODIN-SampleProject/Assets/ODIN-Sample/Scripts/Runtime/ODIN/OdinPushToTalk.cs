@@ -2,6 +2,7 @@ using System;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
@@ -15,6 +16,16 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// ODIN rooms.
         /// </summary>
         [SerializeField] private OdinPushToTalkData[] pushToTalkSettings;
+
+        private void Awake()
+        {
+            foreach (OdinPushToTalkData data in pushToTalkSettings)
+            {
+                Assert.IsNotNull(data.connectedRoom, $"Missing push to talk setting on object {gameObject.name}");
+                Assert.IsNotNull(data.pushToTalkButton, $"Missing push to talk setting on object {gameObject.name}");
+            }
+        }
+
 
         private void OnEnable()
         {
@@ -76,7 +87,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
                 if (null != roomToCheck.MicrophoneMedia)
                 {
-                    bool isPushToTalkPressed = Input.GetButton(pushToTalkButton);
+                    bool isPushToTalkPressed = Input.GetKey(pushToTalkButton);
                     roomToCheck.MicrophoneMedia.SetMute(!isPushToTalkPressed);
                 }
             }
@@ -97,6 +108,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// The push to talk button. If this is pressed, the microphone data
         /// will be transmitted in the room given by <see cref="connectedRoom"/>.
         /// </summary>
-        public string pushToTalkButton;
+        public OdinStringVariable pushToTalkButton;
     }
 }
