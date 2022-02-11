@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using ODIN_Sample.Scripts.Runtime.Odin.Utility;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -14,7 +15,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// </summary>
         [SerializeField] private TextMeshProUGUI text;
 
-        private (string, ulong, int) _key;
+        private OdinConnectionIdentifier _key;
 
         private void Awake()
         {
@@ -27,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// </summary>
         /// <param name="key">The (room name, peer id, media id) key.</param>
         /// <returns>Whether the ui element is displaying data identified by the given key.</returns>
-        public bool IsShowing((string, ulong, int) key)
+        public bool IsShowing(OdinConnectionIdentifier key)
         {
             return IsActive() && _key == key;
         }
@@ -46,7 +47,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// </summary>
         /// <param name="key">The (room name, peer id, media id) key uniquely identifying the peer and media connected to the <see cref="displayData"/>. </param>
         /// <param name="displayData">The data to display.</param>
-        public void Show((string, ulong, int) key, OdinSampleUserData displayData)
+        public void Show(OdinConnectionIdentifier key, OdinSampleUserData displayData)
         {
             _key = key;
             text.text = displayData.name;

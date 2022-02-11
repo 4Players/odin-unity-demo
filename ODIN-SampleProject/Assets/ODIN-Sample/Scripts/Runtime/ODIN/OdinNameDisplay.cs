@@ -57,7 +57,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             if (!multiplayerAdapter.IsLocalUser())
             {
-                OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
+                OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
                 OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
             }
         }
@@ -75,10 +75,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
-        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             OdinSampleUserData userData =
-                new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
+                new UserData(peerUpdatedEventArgs.UserData.Buffer).ToOdinSampleUserData();
             
             // Debug.Log($"OdinNameDisplay - OnPeerUpdated - Name: {userData.name} ID: {userData.uniqueUserId}");
             if (null != userData && userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
@@ -91,7 +91,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             if (!multiplayerAdapter.IsLocalUser())
             {
-                OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
+                OdinHandler.Instance.OnPeerUserDataChanged.RemoveListener(OnPeerUpdated);
                 OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
             }
         }

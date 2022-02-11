@@ -24527,6 +24527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playbackRegistry: {fileID: 11400000, guid: 730500805facf3c4d9d495f95db03d0a, type: 2}
+  displayedRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
 --- !u!1001 &1474387193
 PrefabInstance:
   m_ObjectHideFlags: 0

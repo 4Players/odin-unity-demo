@@ -149,12 +149,6 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "io.fourplayers.odin": {
-      "version": "file:E:/Projects/UnityPackages/odin-0.4.7.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {}
-    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

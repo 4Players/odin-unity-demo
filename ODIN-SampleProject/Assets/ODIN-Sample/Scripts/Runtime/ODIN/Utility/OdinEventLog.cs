@@ -16,7 +16,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
                 OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
                 OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
-                OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
+                OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
             
                 OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
                 OdinHandler.Instance.OnPeerLeft.AddListener(OnPeerLeft);
@@ -24,7 +24,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             }
         }
 
-        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             Room room = sender as Room;
             if (null != room)

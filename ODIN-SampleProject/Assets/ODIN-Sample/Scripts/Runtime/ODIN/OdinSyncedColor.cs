@@ -44,14 +44,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         private void OnEnable()
         {
             OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
-            OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
+            OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
         }
 
 
         private void OnDisable()
         {
             OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
-            OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
+            OdinHandler.Instance.OnPeerUserDataChanged.RemoveListener(OnPeerUpdated);
         }
 
         /// <summary>
@@ -72,10 +72,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         /// <param name="sender">The sending ODIN room.</param>
         /// <param name="peerUpdatedEventArgs">The event arguments.</param>
-        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             var updatedPeer =
-                new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
+                new UserData(peerUpdatedEventArgs.UserData.Buffer).ToOdinSampleUserData();
             if (!multiplayerAdapter.IsLocalUser() && null != updatedPeer &&
                 updatedPeer.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
             {

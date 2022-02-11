@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.Odin.Utility;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
@@ -17,6 +18,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// </summary>
         [SerializeField] private OdinPlaybackRegistry playbackRegistry;
 
+        [SerializeField] private OdinStringVariable displayedRoomName;
+
+
         private HashSet<PlaybackComponent> _playbackComponents = new HashSet<PlaybackComponent>();
 
         private OdinTransmitterUiElement[] _uiElements;
@@ -26,95 +30,67 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
             Assert.IsNotNull(playbackRegistry);
 
             _uiElements = GetComponentsInChildren<OdinTransmitterUiElement>(true);
-            foreach (OdinTransmitterUiElement element in _uiElements)
-            {
-                element.Hide();
-            }
+            foreach (var element in _uiElements) element.Hide();
         }
 
         private void OnEnable()
         {
-            playbackRegistry.OnPlaybackComponentAdded += OnPlaybackComponentAdded;
-            playbackRegistry.OnPlaybackComponentRemoved += OnPlaybackComponentRemoved;
+            if(OdinHandler.Instance)
+                OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaActiveStateChanged);
         }
-        
+
+
         private void OnDisable()
         {
-            playbackRegistry.OnPlaybackComponentAdded -= OnPlaybackComponentAdded;
-            playbackRegistry.OnPlaybackComponentRemoved -= OnPlaybackComponentRemoved;
+            if(OdinHandler.Instance)
+                OdinHandler.Instance.OnMediaActiveStateChanged.RemoveListener(OnMediaActiveStateChanged);
         }
 
-        private void OnDestroy()
+        private void OnMediaActiveStateChanged(object sender, MediaActiveStateChangedEventArgs mediaActiveEventArgs)
         {
-            foreach (PlaybackComponent component in _playbackComponents)
+            if (sender is Room sendingRoom)
             {
-                component.OnPlaybackPlayingStatusChanged -= OnPlaybackPlayingStatusChanged;
+                var roomName = sendingRoom.Config.Name;
+                if (roomName == displayedRoomName.Value)
+                {
+                    var peerId = mediaActiveEventArgs.PeerId;
+                    int mediaId = mediaActiveEventArgs.MediaId;
+
+                    var uiKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
+
+                    if (mediaActiveEventArgs.Active)
+                    {
+                        var room = OdinHandler.Instance.Rooms[roomName];
+                        var peer = room.RemotePeers[peerId];
+                        if (null != peer)
+                        {
+                            var userData = OdinSampleUserData.FromUserData(peer.UserData);
+                            ShowElement(uiKey, userData);
+                        }
+                    }
+                    else
+                    {
+                        HideElement(uiKey);
+                    }
+                }
             }
         }
 
-        private void OnPlaybackComponentAdded(PlaybackComponent added)
+        private void ShowElement(OdinConnectionIdentifier key, OdinSampleUserData userData)
         {
-            if (null != added)
-            {
-                added.OnPlaybackPlayingStatusChanged += OnPlaybackPlayingStatusChanged;
-                _playbackComponents.Add(added);
-            }
-        }
-
-        private void OnPlaybackComponentRemoved(PlaybackComponent removed)
-        {
-            if (null != removed)
-            {
-                removed.OnPlaybackPlayingStatusChanged -= OnPlaybackPlayingStatusChanged;
-                _playbackComponents.Remove(removed);
-            }
-        }
-        
-        private void OnPlaybackPlayingStatusChanged(PlaybackComponent component, bool isplaying)
-        {
-            if (!component)
-                return;
-
-            string roomName = component.RoomName;
-            ulong peerId = component.PeerId;
-            int mediaId = component.MediaId;
-
-            var uiKey = (roomName, peerId, mediaId);
-
-            if (isplaying)
-            {
-                Room room = OdinHandler.Instance.Rooms[roomName];
-                Peer peer = room.RemotePeers[peerId];
-                OdinSampleUserData userData = OdinSampleUserData.FromUserData(peer.UserData);
-                ShowElement(uiKey, userData);
-            }
-            else
-            {
-                HideElement(uiKey);
-            }
-        }
-
-        private void ShowElement((string, ulong, int) key, OdinSampleUserData userData)
-        {
-            foreach (OdinTransmitterUiElement element in _uiElements)
-            {
+            foreach (var element in _uiElements)
                 if (!element.IsActive())
                 {
                     element.Show(key, userData);
                     break;
                 }
-            }
         }
 
-        private void HideElement((string, ulong, int) key)
+        private void HideElement(OdinConnectionIdentifier key)
         {
-            foreach (OdinTransmitterUiElement element in _uiElements)
-            {
+            foreach (var element in _uiElements)
                 if (element.IsShowing(key))
-                {
                     element.Hide();
-                }
-            }
         }
     }
 }

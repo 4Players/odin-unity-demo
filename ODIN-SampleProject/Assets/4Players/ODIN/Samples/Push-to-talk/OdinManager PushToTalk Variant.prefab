@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &7624631778276326834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2447511029134785564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2a3b412c9ac70946921820498835203, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RoomName: default
+  PushToTalkHotkey: 99
+  UsePushToTalk: 1
+  AudioSender: {fileID: 217662712529788596}
+--- !u!1001 &3496446744650135643
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1257227337902900295, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_Name
+      value: OdinManager PushToTalk Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 3711129780530095855, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: SampleRate
+      value: 48000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4347901583853084589, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: Server
+      value: https://gateway.odin.4players.io
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: Verbose
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: DeviceSampleRate
+      value: 48000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: CreatePlayback
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: CreateAudioSource
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+--- !u!1 &2447511029134785564 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1257227337902900295, guid: a421abe223e2dee45b89e686a84e5545,
+    type: 3}
+  m_PrefabInstance: {fileID: 3496446744650135643}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &217662712529788596 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3711129780530095855, guid: a421abe223e2dee45b89e686a84e5545,
+    type: 3}
+  m_PrefabInstance: {fileID: 3496446744650135643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2447511029134785564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b94aaec87e5ac649a98e650ec999187, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

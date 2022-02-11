@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.Odin.Utility;
+using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -33,7 +35,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         [SerializeField] private Color voiceOnColor = Color.green;
         
 
-        private List<PlaybackComponent> _playbackComponents = new List<PlaybackComponent>();
+        private List<OdinConnectionIdentifier> _connections = new List<OdinConnectionIdentifier>();
         private int _numActivePlaybacks = 0;
 
         private Color _originalColor;
@@ -53,49 +55,48 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void OnEnable()
         {
-            odinUser.OnPlaybackComponentAdded += OnPlaybackAdded;
+            odinUser.OnMediaStreamEstablished += OnConnectionAdded;
+            OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaStateChanged);
         }
 
         private void OnDisable()
         {
-            odinUser.OnPlaybackComponentAdded -= OnPlaybackAdded;
+            odinUser.OnMediaStreamEstablished -= OnConnectionAdded;
+            OdinHandler.Instance.OnMediaActiveStateChanged.RemoveListener(OnMediaStateChanged);
         }
+        
 
-        private void OnDestroy()
+        private void OnConnectionAdded(OdinConnectionIdentifier connectionIdentifier)
         {
-            foreach (PlaybackComponent playbackComponent in _playbackComponents)
+            if (connectionIdentifier.RoomName == odinRoomName.Value && !_connections.Contains(connectionIdentifier))
             {
-                if (playbackComponent)
-                {
-                    playbackComponent.OnPlaybackPlayingStatusChanged -= OnPlaybackPlayingStatusChanged;
-                }
-            }
-        }
-
-        private void OnPlaybackAdded(PlaybackComponent playback)
-        {
-            if (playback.RoomName == odinRoomName.Value)
-            {
-                _playbackComponents.Add(playback);
-                playback.OnPlaybackPlayingStatusChanged += OnPlaybackPlayingStatusChanged;
+                _connections.Add(connectionIdentifier);
             }
         }
 
 
-        private void OnPlaybackPlayingStatusChanged(PlaybackComponent component, bool isplaying)
+        private void OnMediaStateChanged(object sender, MediaActiveStateChangedEventArgs mediaActiveStateChangedEventArgs)
         {
             if (!enabled)
                 return;
-
-            if (isplaying)
+            
+            if(sender is Room sendingRoom)
             {
-                _numActivePlaybacks++;
+                var connection =  new OdinConnectionIdentifier(sendingRoom.Config.Name, mediaActiveStateChangedEventArgs.PeerId,
+                    mediaActiveStateChangedEventArgs.MediaId);
+                if (_connections.Contains(connection))
+                {
+                    if (mediaActiveStateChangedEventArgs.Active)
+                    {
+                        _numActivePlaybacks++;
+                    }
+                    else
+                    {
+                        _numActivePlaybacks--;
+                    }
+                }
             }
-            else
-            {
-                _numActivePlaybacks--;
-            }
-
+            
             SetFeedbackColor(_numActivePlaybacks > 0);
         }
 

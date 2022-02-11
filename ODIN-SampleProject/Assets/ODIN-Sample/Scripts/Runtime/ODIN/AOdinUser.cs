@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ODIN_Sample.Scripts.Runtime.Odin.Utility;
 using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,15 +26,15 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         [SerializeField] protected Transform instantiationTarget;
 
         /// <summary>
-        /// Called when a new <see cref="PlaybackComponent"/> was created by this script
+        /// Called when a new Media Stream was added for this Odin User (both remote or local)
         /// </summary>
-        public Action<PlaybackComponent> OnPlaybackComponentAdded;
+        public Action<OdinConnectionIdentifier> OnMediaStreamEstablished;
         
         /// <summary>
         /// Contains all constructed PlaybackComponents, identified by their (string roomname, ulong peerid, int mediaid) combination.
         /// </summary>
-        private Dictionary<(string, ulong, int), PlaybackComponent> _registeredRemoteMedia =
-            new Dictionary<(string, ulong, int), PlaybackComponent>();
+        private Dictionary<OdinConnectionIdentifier, PlaybackComponent> _registeredRemoteMedia =
+            new Dictionary<OdinConnectionIdentifier, PlaybackComponent>();
 
         protected virtual void Awake()
         {
@@ -68,7 +69,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <returns>The removed PlaybackComponent or null, if no component with the given tuple was registered.</returns>
         protected PlaybackComponent RemovePlaybackComponent(string roomName, ulong peerId, int mediaId)
         {
-            var dictionaryKey = (roomName, peerId, mediaId);
+            var dictionaryKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
             if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out PlaybackComponent toRemove))
             {
                 _registeredRemoteMedia.Remove(dictionaryKey);
@@ -89,7 +90,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         protected PlaybackComponent SpawnPlaybackComponent(string roomName, ulong peerId, ushort mediaId)
         {
             PlaybackComponent spawned = null;
-            var dictionaryKey = (roomName, peerId, mediaId);
+            var dictionaryKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
             if (!_registeredRemoteMedia.ContainsKey(dictionaryKey))
             {
                 Transform parentTransform = null == instantiationTarget ? transform : instantiationTarget;
@@ -104,7 +105,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 spawned.MediaId = mediaId;
 
                 _registeredRemoteMedia.Add(dictionaryKey, spawned);
-                OnPlaybackComponentAdded?.Invoke(spawned);
+                OnMediaStreamEstablished?.Invoke(dictionaryKey);
             }
 
             return spawned;

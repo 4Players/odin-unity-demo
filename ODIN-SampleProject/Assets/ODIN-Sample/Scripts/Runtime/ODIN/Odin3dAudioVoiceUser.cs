@@ -43,7 +43,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (OdinHandler.Instance)
             {
                 OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
-                OdinHandler.Instance.OnPeerUpdated.AddListener(OnPeerUpdated);
+                OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
             }
         }
 
@@ -52,14 +52,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (OdinHandler.Instance)
             {
                 OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
-                OdinHandler.Instance.OnPeerUpdated.RemoveListener(OnPeerUpdated);
+                OdinHandler.Instance.OnPeerUserDataChanged.RemoveListener(OnPeerUpdated);
             }
         }
 
-        private void OnPeerUpdated(object sender, PeerUpdatedEventArgs peerUpdatedEventArgs)
+        private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             var displayedPeerUserData =
-                new UserData(peerUpdatedEventArgs.UserData).ToOdinSampleUserData();
+                new UserData(peerUpdatedEventArgs.UserData.Buffer).ToOdinSampleUserData();
             if (null != displayedPeerUserData &&
                 displayedPeerUserData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
                 if (sender is Room room)
