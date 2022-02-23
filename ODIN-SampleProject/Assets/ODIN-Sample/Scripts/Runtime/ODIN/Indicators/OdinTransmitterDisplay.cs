@@ -13,10 +13,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
     /// </summary>
     public class OdinTransmitterDisplay : MonoBehaviour
     {
-        /// <summary>
-        /// Reference to a scriptable object containing references to all ODIN <c>PlaybackComponent</c>s.
-        /// </summary>
-        [SerializeField] private OdinPlaybackRegistry playbackRegistry;
 
         [SerializeField] private OdinStringVariable displayedRoomName;
 
@@ -27,8 +23,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void Awake()
         {
-            Assert.IsNotNull(playbackRegistry);
-
             _uiElements = GetComponentsInChildren<OdinTransmitterUiElement>(true);
             foreach (var element in _uiElements) element.Hide();
         }

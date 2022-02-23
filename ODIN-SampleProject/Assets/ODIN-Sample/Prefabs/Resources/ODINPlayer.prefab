@@ -913,7 +913,6 @@ MonoBehaviour:
   playbackComponentPrefab: {fileID: 4474646598376783118, guid: d5a1fa5b26b80ad46a174e501f5a66a4, type: 3}
   instantiationTarget: {fileID: 7070602923581338638}
   odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  odinPlaybackRegistry: {fileID: 11400000, guid: 730500805facf3c4d9d495f95db03d0a, type: 2}
 --- !u!1 &4722451112573258441
 GameObject:
   m_ObjectHideFlags: 0
