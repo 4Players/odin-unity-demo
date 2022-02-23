@@ -1,4 +1,5 @@
 using ODIN_Sample.Scripts.Runtime.Odin;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// store the name on disk, and stores it in the <see cref="OdinStringVariable"/> object <see cref="playerName"/> for
     /// access in other scripts.
     /// </summary>
-    [RequireComponent(typeof(InputField))]
+    [RequireComponent(typeof(TMP_InputField))]
     public class SetPlayerNameBehaviour : MonoBehaviour
     {
         /// <summary>
@@ -18,7 +19,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// </summary>
         [SerializeField] private OdinStringVariable playerName;
 
-        private InputField _playerNameInput = null;
+        private TMP_InputField _playerNameInput = null;
 
         /// <summary>
         /// The key used for storing the player name in <c>PlayerPrefs</c>.
@@ -27,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void Awake()
         {
-            _playerNameInput = GetComponent<InputField>();
+            _playerNameInput = GetComponent<TMP_InputField>();
             Assert.IsNotNull(playerName);
             
             string savedName = PlayerPrefs.GetString(PlayerNameKey, "Player");

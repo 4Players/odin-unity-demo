@@ -649,7 +649,7 @@ MonoBehaviour:
   odinUser: {fileID: 8506675492331546689}
   indicationTarget: {fileID: 2753487310897480875}
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
+  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &3001106345836885710
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,7 +714,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicationTarget: {fileID: 2753487310897480875}
   roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
+  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!114 &310909151100373091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,7 +729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicationTarget: {fileID: 5456647179934602871}
   roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
+  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,7 +1257,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 1870600810458566222, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1301,15 +1301,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: David 123
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
+  m_sharedMaterial: {fileID: 1870600810458566222, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4281477411
+  m_fontColor: {r: 0.13725491, g: 0.16078432, b: 0.19607845, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

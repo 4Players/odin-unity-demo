@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using OdinNative.Odin;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
@@ -44,10 +45,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             nameDisplay.text = "";
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            if (multiplayerAdapter.IsLocalUser())
+            if (multiplayerAdapter.IsLocalUser() )
             {
+                yield return new WaitForSeconds(0.1f); // wait a frame for odin to initialize
                 OdinSampleUserData userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
                 DisplayName(userData);
             }

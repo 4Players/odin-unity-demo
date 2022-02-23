@@ -22,6 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// <summary>
         /// The color the <see cref="indicationTarget"/> should display when the local player is transmitting.
         /// </summary>
+        [ColorUsage(true, true)]
         [SerializeField] private Color voiceOnColor = Color.green;
         
         private Color _originalColor;

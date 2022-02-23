@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -19,9 +20,13 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// </summary>
         [SerializeField] private Button joinButton;
 
+        [SerializeField] private TMP_Text buttonText;
+        
+
         private void Awake()
         {
             Assert.IsNotNull(joinButton);
+            Assert.IsNotNull(buttonText);
         }
 
         private void OnEnable()
@@ -29,7 +34,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             PhotonNetwork.AddCallbackTarget(this);
 
             if (!PhotonNetwork.IsConnected)
+            {
+                buttonText.text = "Connecting...";
                 joinButton.interactable = false;
+            }
         }
 
         private void OnDisable()
@@ -40,6 +48,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         public void OnConnectedToMaster()
         {
             joinButton.interactable = true;
+            buttonText.text = "Join";
         }
 
         #region Unused Photon Callbacks
