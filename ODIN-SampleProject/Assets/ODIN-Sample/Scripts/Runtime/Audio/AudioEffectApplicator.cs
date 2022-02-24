@@ -19,8 +19,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         private AudioSource _audioSource;
         private AudioLowPassFilter _lowPassFilter;
 
-        private float _originalVolume;
-        private float _originalCutoffFrequency;
+        private AudioEffectData _originalEffect = new AudioEffectData();
 
         private List<AudioEffectData> _effectList = new List<AudioEffectData>();
 
@@ -30,14 +29,15 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             Assert.IsNotNull(_audioSource);
             _audioSource.spatializePostEffects = true;
             
-            _originalVolume = _audioSource.volume;
+            _originalEffect.volume = _audioSource.volume;
 
             _lowPassFilter = GetComponent<AudioLowPassFilter>();
             if (!_lowPassFilter)
             {
                 _lowPassFilter = gameObject.AddComponent<AudioLowPassFilter>();
             }
-            _originalCutoffFrequency = _lowPassFilter.cutoffFrequency;
+            _originalEffect.cutoffFrequency = _lowPassFilter.cutoffFrequency;
+            _originalEffect.lowpassResonanceQ = _lowPassFilter.lowpassResonanceQ;
         }
 
         /// <summary>
@@ -45,8 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// </summary>
         public void Reset()
         {
-            _audioSource.volume = _originalVolume;
-            _lowPassFilter.cutoffFrequency = _originalCutoffFrequency;
+            ApplyInstant(_originalEffect);
         }
 
         /// <summary>
@@ -70,17 +69,24 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             if (null != toApply)
             {
                 _lowPassFilter.enabled = true;
-                _lowPassFilter.cutoffFrequency = toApply.cutoffFrequency;
-                _lowPassFilter.lowpassResonanceQ = toApply.lowpassResonanceQ;
-                _audioSource.volume = toApply.volume;
+                ApplyInstant(toApply);
             }
             else
             {
                 _lowPassFilter.enabled = false;
-                _audioSource.volume = _originalVolume;
+                _audioSource.volume = _originalEffect.volume;
             }
             
             _effectList.Clear();
+        }
+
+        private void ApplyInstant(AudioEffectData effectData)
+        {
+            _lowPassFilter.cutoffFrequency = effectData.cutoffFrequency;
+            _lowPassFilter.lowpassResonanceQ = effectData.lowpassResonanceQ;
+            _audioSource.volume = effectData.volume;
+
+            Debug.Log($"Applying {effectData}");
         }
     }
 

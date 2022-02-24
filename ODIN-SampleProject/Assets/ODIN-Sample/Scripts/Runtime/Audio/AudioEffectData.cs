@@ -82,7 +82,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             combined.volume = Mathf.Min(first.volume, second.volume);
             combined.volume = Mathf.Min(1.0f, combined.volume);
             combined.cutoffFrequency = Mathf.Min(first.cutoffFrequency, second.cutoffFrequency);
-            combined.lowpassResonanceQ = Mathf.Min(first.lowpassResonanceQ, second.lowpassResonanceQ);
+            combined.lowpassResonanceQ = Mathf.Max(first.lowpassResonanceQ, second.lowpassResonanceQ);
 
             return combined;
         }
