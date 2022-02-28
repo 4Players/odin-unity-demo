@@ -85,7 +85,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <returns>The converted OdinSampleUserData object.</returns>
         public static OdinSampleUserData FromUserData(UserData userData)
         {
-            return JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
+            if(null != userData)
+                return JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
+            return new OdinSampleUserData();
         }
 
         /// <summary>

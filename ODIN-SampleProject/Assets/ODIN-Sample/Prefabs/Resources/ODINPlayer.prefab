@@ -660,8 +660,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1810139959340640886}
   - component: {fileID: 2844093388615658216}
-  - component: {fileID: 8783286779862688165}
   - component: {fileID: 310909151100373091}
+  - component: {fileID: 4033543605695312380}
   m_Layer: 0
   m_Name: OdinPushToTalk
   m_TagString: Untagged
@@ -696,25 +696,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pushToTalkSettings:
-  - connectedRoom: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: 21ef755c5f5a4e547b3e0fd5e13666cd, type: 2}
   - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
     pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
---- !u!114 &8783286779862688165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3001106345836885710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 2753487310897480875}
-  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!114 &310909151100373091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -730,6 +713,21 @@ MonoBehaviour:
   indicationTarget: {fileID: 5456647179934602871}
   roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
   voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
+--- !u!114 &4033543605695312380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3001106345836885710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  indicationTarget: {fileID: 2753487310897480875}
+  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  voiceOnColor: {r: 0, g: 0.9646866, b: 0.9646866, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0

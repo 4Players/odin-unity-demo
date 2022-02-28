@@ -382,7 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb21a832b78e3174bbb99e1705d883e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: ThirdPerson
+  sceneToLoad: DemoLevel
 --- !u!1 &520703353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1028,6 +1028,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4541258194720005006, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
+      propertyPath: AccessKey
+      value: AfT58WD6FKeoM/RigMnDj9IOtoeUJyGlyOc7YK2Ijvca
+      objectReference: {fileID: 0}
     - target: {fileID: 5315226930280199745, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
       propertyPath: m_RootOrder
       value: 4

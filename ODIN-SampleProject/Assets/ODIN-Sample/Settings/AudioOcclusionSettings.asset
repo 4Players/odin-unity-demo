@@ -23,20 +23,21 @@ MonoBehaviour:
       time: 0
       value: 3500
       inSlope: 0
-      outSlope: -2405.5364
+      outSlope: -860.52014
       tangentMode: 5
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.028571429
+      outWeight: 0.05952381
     - serializedVersion: 3
       time: 4
       value: 100
-      inSlope: -148.2086
-      outSlope: -148.2086
-      tangentMode: 0
+      inSlope: -734.44275
+      outSlope: 0
+      tangentMode: 65
       weightedMode: 0
-      inWeight: 0.053571403
+      inWeight: 0.045238078
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  DefaultEffectDefinition: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}

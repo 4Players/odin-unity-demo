@@ -77,9 +77,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             var mediaRoomName = mediaAddedEventArgs.Peer.RoomName;
             if (IsRoomInAllowedConnectionList(mediaRoomName))
             {
-                var userData = mediaAddedEventArgs.Peer.UserData.ToOdinSampleUserData();
-                if (userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
-                    SpawnPlaybackComponent(mediaRoomName, mediaAddedEventArgs.PeerId, mediaAddedEventArgs.Media.Id);
+                if(null != mediaAddedEventArgs.Peer.UserData)
+                {
+                    var userData = mediaAddedEventArgs.Peer.UserData.ToOdinSampleUserData();
+                    if (userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
+                        SpawnPlaybackComponent(mediaRoomName, mediaAddedEventArgs.PeerId, mediaAddedEventArgs.Media.Id);
+                }
+                
             }
         }
 
