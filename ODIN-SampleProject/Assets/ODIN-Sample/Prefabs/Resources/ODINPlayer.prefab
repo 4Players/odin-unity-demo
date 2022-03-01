@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4208676046665426373}
   m_Layer: 0
-  m_Name: LocalOnly
+  m_Name: LocalPlayerBehaviours
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,9 +29,9 @@ Transform:
   m_Children:
   - {fileID: 9126928160679134696}
   - {fileID: 2309341422395066622}
-  - {fileID: 1007562410489983024}
   - {fileID: 1810139959340640886}
   - {fileID: 7070602923581338638}
+  - {fileID: 1007562410489983024}
   m_Father: {fileID: 2753487309664625876}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 9126928160679134696}
   - component: {fileID: 2878364909148699521}
   m_Layer: 0
-  m_Name: ViewState
+  m_Name: ControllerState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,7 +116,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4251494949255509700
 MonoBehaviour:
@@ -330,7 +330,7 @@ Transform:
   - {fileID: 7178438142582358687}
   - {fileID: 8020060008202973458}
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2753487309498945344
 MeshFilter:
@@ -429,9 +429,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7461076074404209110}
   - {fileID: 8369994021386623147}
   - {fileID: 2753487309498945350}
+  - {fileID: 7461076074404209110}
   - {fileID: 4208676046665426373}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -681,7 +681,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2844093388615658216
 MonoBehaviour:
@@ -740,9 +740,9 @@ GameObject:
   - component: {fileID: 4558789485580523338}
   - component: {fileID: 371299471331831029}
   - component: {fileID: 7856108277496924185}
+  - component: {fileID: 3355129328730777785}
   - component: {fileID: 6942348817801856013}
   - component: {fileID: 2784359670887783181}
-  - component: {fileID: 3872096263995398148}
   - component: {fileID: 7663716378265911341}
   m_Layer: 0
   m_Name: AudioListenerBehavior
@@ -802,6 +802,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3355129328730777785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292872340452153005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17c8a78828048c7bbe9bbe9c805160e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 100
 --- !u!114 &6942348817801856013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -814,7 +827,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae3f2872312422981626d85d73a7df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
+  defaultOcclusionEffect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
+  audioSourceDetectionLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
   audioListener: {fileID: 4558789485580523338}
   includeInactiveSourcesInSearch: 1
 --- !u!114 &2784359670887783181
@@ -829,23 +845,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0881f492f9bc4a3da5a22df89b8e9410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSourceDetectionRange: 100
-  directionalSettings: {fileID: 11400000, guid: a73a734d71d2dc34eb85c4e76ea86ff0, type: 2}
   audioListener: {fileID: 4558789485580523338}
   includeInactiveAudioSourcesInSearch: 1
---- !u!114 &3872096263995398148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3292872340452153005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6319950d64904ab7bb913c2cc1a3dfc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  listenerReference: {fileID: 11400000, guid: f45a8489b2e0b7747b6a82c4e9d0c171, type: 2}
+  directionalSettings: {fileID: 11400000, guid: 2bed6afa53f27a449959137e38e90706, type: 2}
 --- !u!1818360609 &7663716378265911341
 RotationConstraint:
   m_ObjectHideFlags: 0
@@ -894,7 +896,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6759813537705676269
 MonoBehaviour:
@@ -924,7 +926,7 @@ GameObject:
   - component: {fileID: 1749791214617125237}
   - component: {fileID: 2381487234558694510}
   m_Layer: 0
-  m_Name: OdinBehaviors
+  m_Name: RemotePlayerBehaviours
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -942,7 +944,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8506675492331546689
 MonoBehaviour:
@@ -1048,7 +1050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23bae722aa2c458e95428c1e55a7c456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: c486af08974f3b544a3949db49b95f66, type: 2}
+  effect: {fileID: 11400000, guid: c486af08974f3b544a3949db49b95f66, type: 2}
 --- !u!1 &6196065325629673390
 GameObject:
   m_ObjectHideFlags: 0
@@ -1228,7 +1230,7 @@ RectTransform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 44.967, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

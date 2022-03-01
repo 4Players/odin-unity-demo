@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
+namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     /// <summary>
     ///     Scriptable object containing data, which defines the effect on the Audio Source when being used as an
     ///     Audio Obstacle.
     /// </summary>
-    [CreateAssetMenu(fileName = "AudioEffectDefinition", menuName = "Odin-Sample/AudioObstacle", order = 0)]
+    [CreateAssetMenu(fileName = "AudioEffectDefinition", menuName = "Odin-Sample/AudioEffectDefinition", order = 0)]
     public class AudioEffectDefinition : ScriptableObject
     {
         [SerializeField] private AnimationCurve cutoffFrequencyCurve;

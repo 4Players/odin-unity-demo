@@ -1348,8 +1348,8 @@ GameObject:
   - component: {fileID: 4387734812870216801}
   - component: {fileID: 3583440601588531317}
   - component: {fileID: 8594791221341970293}
-  - component: {fileID: 7232409654844415100}
   - component: {fileID: 4303224883160630357}
+  - component: {fileID: 5518232405018563255}
   m_Layer: 0
   m_Name: AudioListenerBehavior
   m_TagString: Untagged
@@ -1420,7 +1420,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae3f2872312422981626d85d73a7df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
+  defaultOcclusionEffect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
+  audioSourceDetectionLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
   audioListener: {fileID: 7973288511864001330}
   includeInactiveSourcesInSearch: 1
 --- !u!114 &8594791221341970293
@@ -1435,23 +1438,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0881f492f9bc4a3da5a22df89b8e9410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSourceDetectionRange: 100
-  directionalSettings: {fileID: 11400000, guid: a73a734d71d2dc34eb85c4e76ea86ff0, type: 2}
   audioListener: {fileID: 7973288511864001330}
   includeInactiveAudioSourcesInSearch: 1
---- !u!114 &7232409654844415100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8957796788754404053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6319950d64904ab7bb913c2cc1a3dfc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  listenerReference: {fileID: 11400000, guid: f45a8489b2e0b7747b6a82c4e9d0c171, type: 2}
+  directionalSettings: {fileID: 11400000, guid: 2bed6afa53f27a449959137e38e90706, type: 2}
 --- !u!1818360609 &4303224883160630357
 RotationConstraint:
   m_ObjectHideFlags: 0
@@ -1471,3 +1460,16 @@ RotationConstraint:
   m_Sources:
   - sourceTransform: {fileID: 8634675182958297302}
     weight: 1
+--- !u!114 &5518232405018563255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8957796788754404053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17c8a78828048c7bbe9bbe9c805160e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 100

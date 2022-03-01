@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ODIN_Sample.Scripts.Runtime.Audio.Occlusion;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,7 +11,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     ///     implementation.
     /// </summary>
     /// <remarks>
-    ///     This script is usually added automatically by the directional or occlusion system.
+    ///     This script is added automatically by the directional or occlusion system, if not placed on an audio source.
     /// </remarks>
     [RequireComponent(typeof(AudioSource))]
     public class AudioEffectApplicator : MonoBehaviour
@@ -81,8 +80,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             _lowPassFilter.cutoffFrequency = effectData.CutoffFrequency;
             _lowPassFilter.lowpassResonanceQ = effectData.LowpassResonanceQ;
             _audioSource.volume = _originalEffect.Volume * effectData.Volume;
-
-            // Debug.Log($"Applying {effectData}");
         }
     }
 }

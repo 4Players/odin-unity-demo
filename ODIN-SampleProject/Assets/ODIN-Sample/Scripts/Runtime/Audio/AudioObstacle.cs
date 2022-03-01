@@ -2,7 +2,7 @@
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
+namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     /// <summary>
     ///     Data component, containing settings for overwriting the default occlusion behavior of objects.

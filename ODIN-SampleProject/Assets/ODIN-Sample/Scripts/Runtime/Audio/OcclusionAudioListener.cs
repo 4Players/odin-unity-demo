@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
-namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
+namespace ODIN_Sample.Scripts.Runtime.Audio
 {
     /// <summary>
     ///     <para>
     ///         This component automatically detects Audio Sources inside the radius given by the
-    ///         <see cref="occlusionSettings" />
+    ///         <see cref="defaultOcclusionEffect" />
     ///         and applies audio occlusion effects to them, if required.
     ///     </para>
     ///     <para>
@@ -21,14 +22,20 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
     /// <remarks>
     ///     Only audio sources with colliders in the parent hierarchy can be detected!
     /// </remarks>
-    [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
+    [RequireComponent(typeof(AudioListenerSetup))]
     public class OcclusionAudioListener : MonoBehaviour
     {
         /// <summary>
         ///     Reference to the audio occlusion settings object.
         /// </summary>
-        [SerializeField] private OcclusionSettings occlusionSettings;
+        [FormerlySerializedAs("occlusionSettings")] [SerializeField] private AudioEffectDefinition defaultOcclusionEffect;
 
+        /// <summary>
+        ///     The Layers on which audio occluding Colliders are detected by the <see cref="OcclusionAudioListener" />.
+        /// </summary>
+        [SerializeField]
+        private LayerMask audioSourceDetectionLayer = ~0;
+        
         /// <summary>
         ///     Reference to the audio listener. If null, will try to retrieve audio listener from the same game object.
         /// </summary>
@@ -47,17 +54,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
 
         private void Awake()
         {
-            var audioSourceDetector = GetComponent<SphereCollider>();
-            Assert.IsNotNull(audioSourceDetector);
-            audioSourceDetector.isTrigger = true;
-
-            var detectorRigidBody = GetComponent<Rigidbody>();
-            Assert.IsNotNull(detectorRigidBody);
-            detectorRigidBody.isKinematic = true;
-            detectorRigidBody.useGravity = false;
-
-            Assert.IsNotNull(occlusionSettings);
-            audioSourceDetector.radius = occlusionSettings.audioSourceDetectionRange;
+            Assert.IsNotNull(defaultOcclusionEffect);
 
             if (null == audioListener)
                 audioListener = GetComponent<AudioListener>();
@@ -98,26 +95,32 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 RemoveOriginCollisions(ref backwardsHits, audioSourceColliders);
 
 
+                // Initialise with default, non-audible effect
                 AudioEffectData combinedEffect = AudioEffectData.Default;
                 foreach (RaycastHit hit in forwardHits)
                 {
+                    // Get the thickness of the hit object
                     float objectThickness = RetrieveThickness(hit, backwardsHits);
                     AudioEffectData occlusionEffect;
-
+                    // Check if the collider has an Audio Obstacle
                     AudioObstacle audioObstacle = hit.collider.GetComponent<AudioObstacle>();
                     if (audioObstacle)
                     {
+                        // if yes - use the effect given by the audio obstacle effect definition based on the object thickness
                         AudioEffectDefinition effectDefinition = audioObstacle.effect;
                         occlusionEffect = effectDefinition.GetEffect(objectThickness);
                     }
                     else
                     {
-                        occlusionEffect = occlusionSettings.defaultEffectDefinition.GetEffect(objectThickness);
+                        // else: use default effect
+                        occlusionEffect = defaultOcclusionEffect.GetEffect(objectThickness);
                     }
-
+                    
+                    // Combine the effect so far with the newly retrieved effect
                     combinedEffect = AudioEffectDefinition.GetCombinedEffect(combinedEffect, occlusionEffect);
                 }
 
+                // apply the combined effect
                 ApplyOcclusionEffect(combinedEffect, audioSource);
             }
 
@@ -175,36 +178,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
             return thickness;
         }
 
-        /// <summary>
-        ///     Casts a ray from the ray target (usually the audio source position) to the ray source (usually the audio listener),
-        ///     to determine the thickness of each occluder between the two. If <see cref="applicableEffect" /> is pre-filled
-        ///     from data of an occluder with a <see cref="AudioObstacle" /> component, it will compare the default occlusion
-        ///     effect of
-        ///     the combined thickness to the given effect and use the stronger one. If the <see cref="applicableEffect" /> was
-        ///     not prefilled, it we will just return the default thickness occlusion effect.
-        /// </summary>
-        /// <remarks>
-        ///     The <see cref="targetColliders" /> are necessary to remove colliders that surround the audio source. E.g. you have
-        ///     a radio playing, the radio has a rough collider on itself and the radio audio source is located inside of that
-        ///     collider.
-        ///     Without automatically removing the radios colliders from the algorithm, the occlusion effect would dampen the radio
-        ///     audio source.
-        /// </remarks>
-        /// <param name="forwardHits">The hits determined in the forward step (Audio Listener --> Audio Source)</param>
-        /// <param name="rayOrigins">
-        ///     The two origins of the ray (usually Audio Listener and Audio Source). Assumes the Array has two entries, the first
-        ///     contains the ray origin, the second the ray target.
-        /// </param>
-        /// <param name="toTarget">Vector towards target.</param>
-        /// <param name="targetColliders">
-        ///     All colliders on the ray target. Used to remove colliders that surround the audio source
-        ///     from dampening the audio.
-        /// </param>
-        /// <param name="applicableEffect">The effect that should be filled in.</param>
-        /// <summary>
-        /// </summary>
-        /// <param name="obstacleEffect"></param>
-        /// <param name="source"></param>
+        
         private void ApplyOcclusionEffect(AudioEffectData obstacleEffect, AudioSource source)
         {
             var applicator = source.GetComponent<AudioEffectApplicator>();
@@ -233,7 +207,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio.Occlusion
                 Physics.RaycastAll(
                     occluderRay,
                     rayDirection.magnitude + float.Epsilon,
-                    occlusionSettings.audioSourceDetectionLayer,
+                    audioSourceDetectionLayer,
                     QueryTriggerInteraction.Ignore));
             // Sort by distance
             occludingHits.Sort(delegate(RaycastHit hit1, RaycastHit hit2)

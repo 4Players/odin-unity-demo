@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0ae3f2872312422981626d85d73a7df5
+guid: 23bae722aa2c458e95428c1e55a7c456
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
+  - effect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
