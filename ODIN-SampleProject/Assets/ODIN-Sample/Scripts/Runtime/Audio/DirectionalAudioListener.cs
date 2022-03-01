@@ -20,7 +20,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     /// <remarks>
     /// Only audio sources with colliders in the parent hierarchy can be detected!
     /// </remarks>
-    [RequireComponent(typeof(AudioListenerSetup))]
     public class DirectionalAudioListener : AAudioListenerEffect
     {
         /// <summary>
@@ -49,9 +48,8 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             float signedAngle = Vector3.SignedAngle(listenerForwards, toSource, Vector3.up);
 
             AudioEffectApplicator applicator = data.GetApplicator();
-            if (!applicator) applicator = data.ConnectedSource.gameObject.AddComponent<AudioEffectApplicator>();
-
-            applicator.Apply(directionalSettings.GetEffect(signedAngle));
+            if(applicator) 
+                applicator.Apply(directionalSettings.GetEffect(signedAngle));
         }
     }
 }

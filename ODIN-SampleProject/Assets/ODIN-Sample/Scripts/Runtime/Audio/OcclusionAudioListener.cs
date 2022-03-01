@@ -22,8 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     /// <remarks>
     ///     Only audio sources with colliders in the parent hierarchy can be detected!
     /// </remarks>
-    [RequireComponent(typeof(AudioListenerSetup))]
-    public class OcclusionAudioListener : MonoBehaviour
+    public class OcclusionAudioListener : AAudioListenerEffect
     {
         /// <summary>
         ///     Reference to the audio occlusion settings object.
@@ -35,30 +34,13 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// </summary>
         [SerializeField]
         private LayerMask audioSourceDetectionLayer = ~0;
-        
-        /// <summary>
-        ///     Reference to the audio listener. If null, will try to retrieve audio listener from the same game object.
-        /// </summary>
-        [SerializeField] private AudioListener audioListener;
-
-        /// <summary>
-        ///     Whether to search for inactive audio sources on objects in range.
-        /// </summary>
-        [SerializeField] private bool includeInactiveSourcesInSearch = true;
-
-
-        private readonly List<AudioSource> _audioSources =
-            new List<AudioSource>();
 
         private Collider[] _collidersOnAudiolistener;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             Assert.IsNotNull(defaultOcclusionEffect);
-
-            if (null == audioListener)
-                audioListener = GetComponent<AudioListener>();
-            Assert.IsNotNull(audioListener);
         }
 
         private void Start()
@@ -66,88 +48,65 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             _collidersOnAudiolistener = audioListener.GetComponentsInParent<Collider>();
         }
 
-        private void Update()
+        protected override void EffectUpdate(AudioSourceData data)
         {
-            List<AudioSource> toRemove = new List<AudioSource>();
-            foreach (AudioSource audioSource in _audioSources)
+            AudioSource audioSource = data.ConnectedSource;
+            
+            // Determine ray origins and ray direction
+            Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
+            Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
+            
+            // Retrieve all colliders on the 
+            Collider[] audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
+
+            // Get all hits from audio listener to audio source and from source to listener
+            List<RaycastHit> forwardHits = GetCleanedHits(rayOrigins[0], toAudioSource, audioSourceColliders);
+            List<RaycastHit> backwardsHits = GetCleanedHits(rayOrigins[1], -toAudioSource, audioSourceColliders);
+            
+            // Initialise with default, non-audible effect
+            AudioEffectData combinedEffect = AudioEffectData.Default;
+            foreach (RaycastHit forwardHit in forwardHits)
             {
-                // Remove already destroyed audiosources from our list
-                if (!audioSource)
-                {
-                    toRemove.Add(audioSource);
-                    continue;
-                }
-
-                // Determine ray origins and ray direction
-                Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
-                Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
-                Collider[] audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
-
-
-                // Get all hits from audio listener to audio source
-                List<RaycastHit> forwardHits = GetOccluderHits(rayOrigins[0], toAudioSource);
-                // Remove colliders, that are inside the audio listener or inside the audio source
-                RemoveOriginCollisions(ref forwardHits, _collidersOnAudiolistener);
-                RemoveOriginCollisions(ref forwardHits, audioSourceColliders);
-
-                List<RaycastHit> backwardsHits = GetOccluderHits(rayOrigins[1], -toAudioSource);
-                RemoveOriginCollisions(ref backwardsHits, _collidersOnAudiolistener);
-                RemoveOriginCollisions(ref backwardsHits, audioSourceColliders);
-
-
-                // Initialise with default, non-audible effect
-                AudioEffectData combinedEffect = AudioEffectData.Default;
-                foreach (RaycastHit hit in forwardHits)
-                {
-                    // Get the thickness of the hit object
-                    float objectThickness = RetrieveThickness(hit, backwardsHits);
-                    AudioEffectData occlusionEffect;
-                    // Check if the collider has an Audio Obstacle
-                    AudioObstacle audioObstacle = hit.collider.GetComponent<AudioObstacle>();
-                    if (audioObstacle)
-                    {
-                        // if yes - use the effect given by the audio obstacle effect definition based on the object thickness
-                        AudioEffectDefinition effectDefinition = audioObstacle.effect;
-                        occlusionEffect = effectDefinition.GetEffect(objectThickness);
-                    }
-                    else
-                    {
-                        // else: use default effect
-                        occlusionEffect = defaultOcclusionEffect.GetEffect(objectThickness);
-                    }
-                    
-                    // Combine the effect so far with the newly retrieved effect
-                    combinedEffect = AudioEffectDefinition.GetCombinedEffect(combinedEffect, occlusionEffect);
-                }
-
-                // apply the combined effect
-                ApplyOcclusionEffect(combinedEffect, audioSource);
+                combinedEffect = AddOcclusionEffect(forwardHit, backwardsHits, combinedEffect);
             }
-
-            foreach (var audioSource in toRemove) _audioSources.Remove(audioSource);
+            
+            // apply the combined effect
+            AudioEffectApplicator audioEffectApplicator = data.GetApplicator();
+            if(audioEffectApplicator)
+                audioEffectApplicator.Apply(combinedEffect);
         }
 
-        private void OnTriggerEnter(Collider other)
+        private List<RaycastHit> GetCleanedHits(Vector3 rayOrigin, Vector3 rayDirection, Collider[] audioSourceColliders)
         {
-            foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
-            {
-                // only use audio source, if it's a 3d sound
-                if (!(audioSource.spatialBlend > 0.0f))
-                    return;
-
-                if (!_audioSources.Contains(audioSource)) _audioSources.Add(audioSource);
-            }
+            List<RaycastHit> forwardHits = GetOccluderHits(rayOrigin, rayDirection);
+            // Remove colliders, that are inside the audio listener or inside the audio source
+            RemoveOriginCollisions(ref forwardHits, _collidersOnAudiolistener);
+            RemoveOriginCollisions(ref forwardHits, audioSourceColliders);
+            return forwardHits;
         }
 
-        private void OnTriggerExit(Collider other)
+        private AudioEffectData AddOcclusionEffect(RaycastHit forwardHit, List<RaycastHit> backwardsHits, AudioEffectData combinedEffect)
         {
-            foreach (var audioSource in other.GetComponentsInChildren<AudioSource>(includeInactiveSourcesInSearch))
+            // Get the thickness of the hit object
+            float objectThickness = RetrieveThickness(forwardHit, backwardsHits);
+            AudioEffectData occlusionEffect;
+            // Check if the collider has an Audio Obstacle
+            AudioObstacle audioObstacle = forwardHit.collider.GetComponent<AudioObstacle>();
+            if (audioObstacle)
             {
-                AudioEffectApplicator audioEffectApplicator = audioSource.GetComponent<AudioEffectApplicator>();
-                if (audioEffectApplicator) audioEffectApplicator.Reset();
-
-                _audioSources.Remove(audioSource);
+                // if yes - use the effect given by the audio obstacle effect definition based on the object thickness
+                AudioEffectDefinition effectDefinition = audioObstacle.effect;
+                occlusionEffect = effectDefinition.GetEffect(objectThickness);
             }
+            else
+            {
+                // else: use default effect
+                occlusionEffect = defaultOcclusionEffect.GetEffect(objectThickness);
+            }
+
+            // Combine the effect so far with the newly retrieved effect
+            combinedEffect = AudioEffectDefinition.GetCombinedEffect(combinedEffect, occlusionEffect);
+            return combinedEffect;
         }
 
         private float RetrieveThickness(RaycastHit frontHit, List<RaycastHit> possibleBacksides)
@@ -177,17 +136,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
             return thickness;
         }
-
         
-        private void ApplyOcclusionEffect(AudioEffectData obstacleEffect, AudioSource source)
-        {
-            var applicator = source.GetComponent<AudioEffectApplicator>();
-            if (!applicator)
-                applicator = source.gameObject.AddComponent<AudioEffectApplicator>();
-            Assert.IsNotNull(applicator);
-
-            applicator.Apply(obstacleEffect);
-        }
 
 
         /// <summary>

@@ -140,7 +140,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             public AudioEffectApplicator GetApplicator()
             {
                 if (!_cachedApplicator && ConnectedSource)
+                {
                     _cachedApplicator = ConnectedSource.GetComponent<AudioEffectApplicator>();
+                    if (!_cachedApplicator)
+                        _cachedApplicator = ConnectedSource.gameObject.AddComponent<AudioEffectApplicator>();
+                }
                 return _cachedApplicator;
             }
 
