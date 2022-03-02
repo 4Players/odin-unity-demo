@@ -27,13 +27,13 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// <summary>
         ///     Reference to the audio occlusion settings object.
         /// </summary>
-        [FormerlySerializedAs("occlusionSettings")] [SerializeField] private AudioEffectDefinition defaultOcclusionEffect;
+        [FormerlySerializedAs("occlusionSettings")] [SerializeField]
+        private AudioEffectDefinition defaultOcclusionEffect;
 
         /// <summary>
         ///     The Layers on which audio occluding Colliders are detected by the <see cref="OcclusionAudioListener" />.
         /// </summary>
-        [SerializeField]
-        private LayerMask audioSourceDetectionLayer = ~0;
+        [SerializeField] private LayerMask audioSourceDetectionLayer = ~0;
 
         private Collider[] _collidersOnAudiolistener;
 
@@ -51,44 +51,46 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         protected override void EffectUpdate(AudioSourceData data)
         {
             AudioSource audioSource = data.ConnectedSource;
-            
+
             // Determine ray origins and ray direction
             Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
             Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
-            
+
             // Retrieve all colliders on the 
             Collider[] audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
 
             // Get all hits from audio listener to audio source and from source to listener
-            List<RaycastHit> forwardHits = GetCleanedHits(rayOrigins[0], toAudioSource, audioSourceColliders);
-            List<RaycastHit> backwardsHits = GetCleanedHits(rayOrigins[1], -toAudioSource, audioSourceColliders);
-            
+            List<RaycastHit> forwardHits = GetOccludingHits(rayOrigins[0], toAudioSource, audioSourceColliders);
+            List<RaycastHit> backwardsHits = GetOccludingHits(rayOrigins[1], -toAudioSource, audioSourceColliders);
+
+            Debug.Log($"For source: {data.ConnectedSource}");
             // Initialise with default, non-audible effect
             AudioEffectData combinedEffect = AudioEffectData.Default;
             foreach (RaycastHit forwardHit in forwardHits)
-            {
                 combinedEffect = AddOcclusionEffect(forwardHit, backwardsHits, combinedEffect);
-            }
-            
+
             // apply the combined effect
             AudioEffectApplicator audioEffectApplicator = data.GetApplicator();
-            if(audioEffectApplicator)
+            if (audioEffectApplicator)
                 audioEffectApplicator.Apply(combinedEffect);
         }
 
-        private List<RaycastHit> GetCleanedHits(Vector3 rayOrigin, Vector3 rayDirection, Collider[] audioSourceColliders)
+        private List<RaycastHit> GetOccludingHits(Vector3 rayOrigin, Vector3 rayDirection,
+            Collider[] audioSourceColliders)
         {
-            List<RaycastHit> forwardHits = GetOccluderHits(rayOrigin, rayDirection);
+            List<RaycastHit> forwardHits = GetSortedHits(rayOrigin, rayDirection);
             // Remove colliders, that are inside the audio listener or inside the audio source
             RemoveOriginCollisions(ref forwardHits, _collidersOnAudiolistener);
             RemoveOriginCollisions(ref forwardHits, audioSourceColliders);
             return forwardHits;
         }
 
-        private AudioEffectData AddOcclusionEffect(RaycastHit forwardHit, List<RaycastHit> backwardsHits, AudioEffectData combinedEffect)
+        private AudioEffectData AddOcclusionEffect(RaycastHit forwardHit, List<RaycastHit> backwardsHits,
+            AudioEffectData combinedEffect)
         {
             // Get the thickness of the hit object
             float objectThickness = RetrieveThickness(forwardHit, backwardsHits);
+            Debug.Log($"Object thickness of {forwardHit.collider.gameObject.name}: {objectThickness}");
             AudioEffectData occlusionEffect;
             // Check if the collider has an Audio Obstacle
             AudioObstacle audioObstacle = forwardHit.collider.GetComponent<AudioObstacle>();
@@ -118,12 +120,9 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
                 RaycastHit backHit = possibleBacksides[i];
                 if (backHit.collider == frontHit.collider)
                 {
-                    float dot = Vector3.Dot(backHit.normal, frontHit.normal);
                     float distance = Vector3.Distance(backHit.point, frontHit.point);
-
-                    // the backhit has to be facing in a different direction than the front hit --> dot product < 0
-                    // and we want to use the nearest candidate
-                    if (dot < 0 && distance < currentCandidateDistance)
+                    // we want to use the nearest candidate
+                    if (distance < currentCandidateDistance)
                     {
                         currentCandidateDistance = distance;
                         candidateIndex = i;
@@ -136,7 +135,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
 
             return thickness;
         }
-        
 
 
         /// <summary>
@@ -145,7 +143,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         /// <param name="rayOrigin"></param>
         /// <param name="rayDirection"></param>
         /// <returns></returns>
-        private List<RaycastHit> GetOccluderHits(Vector3 rayOrigin, Vector3 rayDirection)
+        private List<RaycastHit> GetSortedHits(Vector3 rayOrigin, Vector3 rayDirection)
         {
             var occluderRay = new Ray(rayOrigin, rayDirection);
 
