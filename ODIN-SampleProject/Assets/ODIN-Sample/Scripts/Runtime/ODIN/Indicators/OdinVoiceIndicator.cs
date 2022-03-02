@@ -1,23 +1,24 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using ODIN_Sample.Scripts.Runtime.Odin.Utility;
+using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     /// <summary>
-    ///     Behaviour for displaying feedback on whether the remote player represented by the <see cref="odinUser" /> script
+    ///     Behaviour for displaying feedback on whether the remote player represented by the <see cref="adapter" /> script
     ///     is currently transmitting in the ODIN room with the name <see cref="odinRoomName" />, by changing the color of a
     ///     mesh.
     /// </summary>
-    public class OdinRemoteVoiceIndicator : MonoBehaviour
+    public class OdinVoiceIndicator : MonoBehaviour
     {
         /// <summary>
-        ///     Reference to the remote player for which the indicator should check for transmissions.
+        ///     Reference to the multiplayer adapter for which the indicator should check for transmissions.
         /// </summary>
-        [SerializeField] private AOdinUser odinUser;
+        [FormerlySerializedAs("odinUser")] [SerializeField]
+        private AOdinMultiplayerAdapter adapter;
 
         /// <summary>
         ///     This renderers color will be switched to <see cref="voiceOnColor" />, if the remote player is transmitting. The
@@ -36,8 +37,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         [ColorUsage(true, true)] [SerializeField]
         private Color voiceOnColor = Color.green;
 
-
-        private readonly List<OdinConnectionIdentifier> _connections = new List<OdinConnectionIdentifier>();
         private int _numActivePlaybacks;
 
         private Color _originalColor;
@@ -46,7 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         {
             Assert.IsNotNull(odinRoomName);
 
-            Assert.IsNotNull(odinUser);
+            Assert.IsNotNull(adapter);
 
             if (null == indicationTarget)
                 indicationTarget = GetComponent<Renderer>();
@@ -57,47 +56,45 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void OnEnable()
         {
-            odinUser.OnMediaStreamEstablished += OnConnectionAdded;
             StartCoroutine(WaitForConnection());
         }
 
         private void OnDisable()
         {
-            odinUser.OnMediaStreamEstablished -= OnConnectionAdded;
             if (OdinHandler.Instance)
                 OdinHandler.Instance.OnMediaActiveStateChanged.RemoveListener(OnMediaStateChanged);
         }
+
 
         private IEnumerator WaitForConnection()
         {
             while (!OdinHandler.Instance)
                 yield return null;
 
+
             OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaStateChanged);
         }
 
 
-        private void OnConnectionAdded(OdinConnectionIdentifier connectionIdentifier)
-        {
-            if (connectionIdentifier.RoomName == odinRoomName.Value && !_connections.Contains(connectionIdentifier))
-                _connections.Add(connectionIdentifier);
-        }
-
-
         private void OnMediaStateChanged(object sender,
-            MediaActiveStateChangedEventArgs mediaActiveStateChangedEventArgs)
+            MediaActiveStateChangedEventArgs args)
         {
-            //if (!enabled)
-            //    return;
-
-            if (sender is Room sendingRoom)
+            if (sender is Room sendingRoom && sendingRoom.Config.Name == odinRoomName.Value)
             {
-                var connection = new OdinConnectionIdentifier(sendingRoom.Config.Name,
-                    mediaActiveStateChangedEventArgs.PeerId,
-                    mediaActiveStateChangedEventArgs.MediaId);
-                if (_connections.Contains(connection))
+                OdinSampleUserData userdata;
+                if (!sendingRoom.RemotePeers.Contains(args.PeerId))
                 {
-                    if (mediaActiveStateChangedEventArgs.Active)
+                    userdata = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
+                }
+                else
+                {
+                    Peer peer = sendingRoom.RemotePeers[args.PeerId];
+                    userdata = peer.UserData.ToOdinSampleUserData();
+                }
+
+                if (null != userdata && adapter.GetUniqueUserId() == userdata.uniqueUserId)
+                {
+                    if (args.Active)
                         _numActivePlaybacks++;
                     else
                         _numActivePlaybacks--;

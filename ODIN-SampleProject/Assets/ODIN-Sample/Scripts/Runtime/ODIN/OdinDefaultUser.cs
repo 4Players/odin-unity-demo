@@ -64,11 +64,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnMediaRemoved(object arg0, MediaRemovedEventArgs mediaRemovedArgs)
         {
-            string mediaRoomName = mediaRemovedArgs.Peer.RoomName;
-            ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
-            int mediaId = mediaRemovedArgs.MediaId;
+            if (null != mediaRemovedArgs && null != mediaRemovedArgs.Peer)
+            {
+                string mediaRoomName = mediaRemovedArgs.Peer.RoomName;
+                ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
+                int mediaId = mediaRemovedArgs.MediaId;
 
-            DestroyPlaybackAudioSource(mediaRoomName, mediaPeerId, mediaId);
+                DestroyPlaybackAudioSource(mediaRoomName, mediaPeerId, mediaId);
+            }
         }
     }
 }

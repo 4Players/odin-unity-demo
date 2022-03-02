@@ -63,7 +63,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             List<RaycastHit> forwardHits = GetOccludingHits(rayOrigins[0], toAudioSource, audioSourceColliders);
             List<RaycastHit> backwardsHits = GetOccludingHits(rayOrigins[1], -toAudioSource, audioSourceColliders);
 
-            Debug.Log($"For source: {data.ConnectedSource}");
             // Initialise with default, non-audible effect
             AudioEffectData combinedEffect = AudioEffectData.Default;
             foreach (RaycastHit forwardHit in forwardHits)
@@ -90,7 +89,6 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         {
             // Get the thickness of the hit object
             float objectThickness = RetrieveThickness(forwardHit, backwardsHits);
-            Debug.Log($"Object thickness of {forwardHit.collider.gameObject.name}: {objectThickness}");
             AudioEffectData occlusionEffect;
             // Check if the collider has an Audio Obstacle
             AudioObstacle audioObstacle = forwardHit.collider.GetComponent<AudioObstacle>();

@@ -69,6 +69,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             OdinSampleUserData userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
             userData.uniqueUserId = GetUniqueUserId();
             newRoom.UpdateUserData(userData.ToUserData());
+            OdinHandler.Instance.UpdateUserData(userData.ToUserData());
         }
     }
 }

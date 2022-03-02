@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoJoin: 0
-  roomName: DefaultPhotonRoom
+  roomName: TestRoom
 --- !u!4 &450973408
 Transform:
   m_ObjectHideFlags: 0

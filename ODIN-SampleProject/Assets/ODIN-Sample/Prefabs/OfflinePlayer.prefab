@@ -330,6 +330,7 @@ GameObject:
   - component: {fileID: 4516590768207066474}
   - component: {fileID: 1899176510802678287}
   - component: {fileID: 2405863662913963851}
+  - component: {fileID: 5532098353613629962}
   m_Layer: 0
   m_Name: Headset
   m_TagString: Untagged
@@ -400,6 +401,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 990892884779273746}
   m_Mesh: {fileID: -1294430266268286495, guid: 7fba4e4c2e3505e489cf1747a437341a, type: 3}
+--- !u!114 &5532098353613629962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 990892884779273746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adapter: {fileID: 8634675184425525418}
+  indicationTarget: {fileID: 1899176510802678287}
+  odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
+  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &1183137245366357681
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,7 +998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  odinUser: {fileID: 2877541777990626361}
+  adapter: {fileID: 0}
   indicationTarget: {fileID: 8634675182958297299}
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
   voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
@@ -1266,8 +1283,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5259137811154890254}
   - component: {fileID: 8546392369194495632}
-  - component: {fileID: 6175085397375896603}
-  - component: {fileID: 7356871624543384964}
   m_Layer: 0
   m_Name: OdinPushToTalk
   m_TagString: Untagged
@@ -1304,36 +1319,6 @@ MonoBehaviour:
   pushToTalkSettings:
   - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
     pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
---- !u!114 &6175085397375896603
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8666279286435246774}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 1899176510802678287}
-  roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
---- !u!114 &7356871624543384964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8666279286435246774}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 8634675182958297299}
-  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0, g: 0.9646866, b: 0.9646866, a: 1}
 --- !u!1 &8957796788754404053
 GameObject:
   m_ObjectHideFlags: 0
@@ -1420,12 +1405,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae3f2872312422981626d85d73a7df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioListener: {fileID: 7973288511864001330}
+  includeInactiveAudioSourcesInSearch: 1
   defaultOcclusionEffect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
   audioSourceDetectionLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  audioListener: {fileID: 7973288511864001330}
-  includeInactiveSourcesInSearch: 1
 --- !u!114 &8594791221341970293
 MonoBehaviour:
   m_ObjectHideFlags: 0
