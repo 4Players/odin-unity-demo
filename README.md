@@ -1,9 +1,24 @@
+# ODIN Unity Sample Project
+
+Please check out https://developers.4players.io/odin/ for more info on ODIN.
+
+More info on this sample project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
+
+## Download the Windows Binary
+
+You can download the Windows binary here: https://github.com/4Players/odin-unity-demo/releases/latest
+
+## Download for Unity
+
+**Please note**: This repository uses LFS. You need to clone this repo with LFS enabled. **Downloading the ZIP file via Githubs Download ZIP functionality does not work!**
+
+
 # ODIN Sample: Multiplayer with Photon PUN 2
 In this guide we’ll walk you through the basic concepts of integrating ODIN into a game built with PUN 2. If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://developers.4players.io/odin/introduction/).
 
 ## Multiplayer
 
-
+Work in Progress
 
 ## Audio
 
@@ -34,21 +49,19 @@ higher the value, the better sound is transmitted through the material the filte
 door, the `Lowpass Resonance Q` value should be higher than for imitating a wooden door.
 
 
-To determine the values that the Audio Occluders (Walls, Windows etc.) apply to the audio sources they block, the occlusion system
-implements two modes:
-
-- **Default:** The occlusion effect is based on the thickness of objects between our 
+he occlusion effect is based on the thickness of objects between our 
 ``AudioListener`` and a ``AudioSource``. For each audio source we check for colliders placed between the listener and the source and
 determine the thickness of the collider. The combined thickness of all colliders we find is then used to look up a cutoff 
-frequency from the ``Occlusion Curve`` curve in the ``AudioOcclusionSettings`` file. 
-- **Customized:** By adding an ``AudioObstacle`` script to the collider's game object, we can directly set the three occlusion effect values for 
-that object, using the `AudioObstacleSettings` scriptable object reference. The sample project
-contains settings for common materials like brick, concrete, glass and wood, as well as for persons or a "silenced" material,
-which blocks all sound from going through the material.
+frequency from settings. 
 
+Work in Progress
 
 ### Directional Audio
 
+Work in Progress
+
 ### Game Logic
+
+Work in Progress
 
 
