@@ -4,8 +4,9 @@ using OdinNative.Unity.Audio;
 namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 {
     /// <summary>
-    /// Structure used to uniquely compare roomname, peerid and mediaid tuples. These three values uniquely identify a media
-    /// stream.
+    ///     Structure used to uniquely compare roomname, peerid and mediaid tuples. These three values uniquely identify a
+    ///     media
+    ///     stream.
     /// </summary>
     public struct OdinConnectionIdentifier : IEquatable<OdinConnectionIdentifier>
     {
@@ -13,9 +14,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         public ulong PeerId;
         public int MediaId;
 
-        public OdinConnectionIdentifier(PlaybackComponent playbackComponent) : this(playbackComponent.RoomName, playbackComponent.PeerId, playbackComponent.MediaId)
+        public OdinConnectionIdentifier(PlaybackComponent playbackComponent) : this(playbackComponent.RoomName,
+            playbackComponent.PeerId, playbackComponent.MediaId)
         {
-            
         }
 
         public OdinConnectionIdentifier(string roomName, ulong peerId, int mediaId)
@@ -40,13 +41,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         {
             unchecked
             {
-                var hashCode = (RoomName != null ? RoomName.GetHashCode() : 0);
+                var hashCode = RoomName != null ? RoomName.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ PeerId.GetHashCode();
                 hashCode = (hashCode * 397) ^ MediaId;
                 return hashCode;
             }
         }
-        
+
         public static bool operator ==(OdinConnectionIdentifier id1, OdinConnectionIdentifier id2)
         {
             return id1.Equals(id2);
@@ -55,6 +56,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         public static bool operator !=(OdinConnectionIdentifier id1, OdinConnectionIdentifier id2)
         {
             return !(id1 == id2);
+        }
+
+        public override string ToString()
+        {
+            return $"Room: {RoomName}, Peer: {PeerId}, Media: {MediaId}";
         }
     }
 }

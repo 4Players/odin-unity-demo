@@ -33,11 +33,16 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             if (Input.GetKeyDown(leaveRoomsButton) && !_wasSceneLoadRequested)
             {
-                // Leave the photon room
-                if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
-
-                _wasSceneLoadRequested = true;
+                LeavePhotonRoom();
             }
+        }
+
+        public void LeavePhotonRoom()
+        {
+            // Leave the photon room
+            if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
+
+            _wasSceneLoadRequested = true;
         }
 
         private void OnEnable()

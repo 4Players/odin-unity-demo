@@ -1,4 +1,3 @@
-using ODIN_Sample.Scripts.Runtime.Odin;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -21,7 +20,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// Room to join, if <see cref="autoJoin"/> is set to true or if <see cref="JoinPhotonRoom"/> is called on
         /// this script.
         /// </summary>
-        [SerializeField] private OdinStringVariable roomName;
+        [SerializeField] private string roomName = "DefaultPhotonRoom";
 
         private void Awake()
         {
@@ -48,24 +47,24 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// </summary>
         public void JoinPhotonRoom()
         {
-            PhotonNetwork.JoinOrCreateRoom(roomName.Value, new RoomOptions(), TypedLobby.Default);
+            PhotonNetwork.JoinOrCreateRoom(roomName, new RoomOptions(), TypedLobby.Default);
         }
 
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            Debug.LogError($"Could not join room {roomName.Value} given by reference, joining room with null roomName");
+            Debug.LogError($"Could not join room {roomName} given by reference, joining room with null roomName");
             OnFailedToJoinAnyRoom();
         }
 
         private void OnFailedToJoinAnyRoom()
         {
-            Debug.Log($"Failed to join Photon room {roomName.Value}, creating new room.");
+            Debug.Log($"Failed to join Photon room {roomName}, creating new room.");
             PhotonNetwork.CreateRoom(null, new RoomOptions());
         }
 
         public override void OnJoinedRoom()
         {
-            Debug.Log($"Joined Photon room {roomName.Value}.");
+            Debug.Log($"Joined Photon room {roomName}.");
         }
     }
 }

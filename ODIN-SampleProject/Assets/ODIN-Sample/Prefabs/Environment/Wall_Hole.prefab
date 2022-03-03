@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2600937566990081533}
   - component: {fileID: 2600937566990081534}
   - component: {fileID: 2600937566990081535}
-  - component: {fileID: 6493709142337974572}
   m_Layer: 0
   m_Name: Wall_Hole
   m_TagString: Untagged
@@ -97,16 +96,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1019374097632501684, guid: 993bfb53d2f9e874f8231d7e511ccf45, type: 3}
---- !u!114 &6493709142337974572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2600937566990081521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23bae722aa2c458e95428c1e55a7c456, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: 5fd113763b3471a46a1072bc0304ecac, type: 2}

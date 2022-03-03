@@ -18,10 +18,15 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         {
             if (Input.GetKeyDown(leaveRoomsButton))
             {
-                if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
-                    foreach (var room in OdinHandler.Instance.Rooms)
-                        OdinHandler.Instance.LeaveRoom(room.Config.Name);
+                LeaveOdinRooms();
             }
+        }
+
+        public void LeaveOdinRooms()
+        {
+            if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
+                foreach (var room in OdinHandler.Instance.Rooms)
+                    OdinHandler.Instance.LeaveRoom(room.Config.Name);
         }
     }
 }

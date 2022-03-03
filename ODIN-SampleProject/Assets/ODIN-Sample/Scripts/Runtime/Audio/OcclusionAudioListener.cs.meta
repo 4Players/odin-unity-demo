@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 0ae3f2872312422981626d85d73a7df5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - defaultOcclusionEffect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
+  - audioListener: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

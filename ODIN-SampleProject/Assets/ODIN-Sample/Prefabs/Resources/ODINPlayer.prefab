@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4208676046665426373}
   m_Layer: 0
-  m_Name: LocalOnly
+  m_Name: LocalPlayerBehaviours
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,9 +29,9 @@ Transform:
   m_Children:
   - {fileID: 9126928160679134696}
   - {fileID: 2309341422395066622}
-  - {fileID: 1007562410489983024}
   - {fileID: 1810139959340640886}
   - {fileID: 7070602923581338638}
+  - {fileID: 1007562410489983024}
   m_Father: {fileID: 2753487309664625876}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 9126928160679134696}
   - component: {fileID: 2878364909148699521}
   m_Layer: 0
-  m_Name: ViewState
+  m_Name: ControllerState
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -116,7 +116,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4251494949255509700
 MonoBehaviour:
@@ -330,7 +330,7 @@ Transform:
   - {fileID: 7178438142582358687}
   - {fileID: 8020060008202973458}
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2753487309498945344
 MeshFilter:
@@ -429,9 +429,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 7461076074404209110}
   - {fileID: 8369994021386623147}
   - {fileID: 2753487309498945350}
+  - {fileID: 7461076074404209110}
   - {fileID: 4208676046665426373}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -646,10 +646,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  odinUser: {fileID: 8506675492331546689}
+  adapter: {fileID: 1608805246826064242}
   indicationTarget: {fileID: 2753487310897480875}
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0.18039216, g: 0.8000001, b: 0.4431373, a: 1}
+  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &3001106345836885710
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,8 +660,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1810139959340640886}
   - component: {fileID: 2844093388615658216}
-  - component: {fileID: 8783286779862688165}
-  - component: {fileID: 310909151100373091}
   m_Layer: 0
   m_Name: OdinPushToTalk
   m_TagString: Untagged
@@ -681,7 +679,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2844093388615658216
 MonoBehaviour:
@@ -696,40 +694,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pushToTalkSettings:
-  - connectedRoom: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: 21ef755c5f5a4e547b3e0fd5e13666cd, type: 2}
   - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
     pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
---- !u!114 &8783286779862688165
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3001106345836885710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 2753487310897480875}
-  roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
---- !u!114 &310909151100373091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3001106345836885710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0fc18385fd498e89590fac88049353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  indicationTarget: {fileID: 5456647179934602871}
-  roomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  voiceOnColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,9 +708,9 @@ GameObject:
   - component: {fileID: 4558789485580523338}
   - component: {fileID: 371299471331831029}
   - component: {fileID: 7856108277496924185}
+  - component: {fileID: 3355129328730777785}
   - component: {fileID: 6942348817801856013}
   - component: {fileID: 2784359670887783181}
-  - component: {fileID: 3872096263995398148}
   - component: {fileID: 7663716378265911341}
   m_Layer: 0
   m_Name: AudioListenerBehavior
@@ -804,6 +770,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3355129328730777785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3292872340452153005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a17c8a78828048c7bbe9bbe9c805160e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 100
 --- !u!114 &6942348817801856013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,9 +795,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae3f2872312422981626d85d73a7df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occlusionSettings: {fileID: 11400000, guid: d84d2b7a7e548064b95a918ed64c2d27, type: 2}
   audioListener: {fileID: 4558789485580523338}
-  includeInactiveSourcesInSearch: 1
+  includeInactiveAudioSourcesInSearch: 1
+  defaultOcclusionEffect: {fileID: 11400000, guid: 7648cbf20c587ed45805856a9a8780a0, type: 2}
+  audioSourceDetectionLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &2784359670887783181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -831,23 +813,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0881f492f9bc4a3da5a22df89b8e9410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSourceDetectionRange: 100
-  directionalSettings: {fileID: 11400000, guid: a73a734d71d2dc34eb85c4e76ea86ff0, type: 2}
   audioListener: {fileID: 4558789485580523338}
   includeInactiveAudioSourcesInSearch: 1
---- !u!114 &3872096263995398148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3292872340452153005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6319950d64904ab7bb913c2cc1a3dfc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  listenerReference: {fileID: 11400000, guid: f45a8489b2e0b7747b6a82c4e9d0c171, type: 2}
+  directionalSettings: {fileID: 11400000, guid: 2bed6afa53f27a449959137e38e90706, type: 2}
 --- !u!1818360609 &7663716378265911341
 RotationConstraint:
   m_ObjectHideFlags: 0
@@ -896,7 +864,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4208676046665426373}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6759813537705676269
 MonoBehaviour:
@@ -913,7 +881,6 @@ MonoBehaviour:
   playbackComponentPrefab: {fileID: 4474646598376783118, guid: d5a1fa5b26b80ad46a174e501f5a66a4, type: 3}
   instantiationTarget: {fileID: 7070602923581338638}
   odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-  odinPlaybackRegistry: {fileID: 11400000, guid: 730500805facf3c4d9d495f95db03d0a, type: 2}
 --- !u!1 &4722451112573258441
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,7 +894,7 @@ GameObject:
   - component: {fileID: 1749791214617125237}
   - component: {fileID: 2381487234558694510}
   m_Layer: 0
-  m_Name: OdinBehaviors
+  m_Name: RemotePlayerBehaviours
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -945,7 +912,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8506675492331546689
 MonoBehaviour:
@@ -1051,7 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23bae722aa2c458e95428c1e55a7c456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: c486af08974f3b544a3949db49b95f66, type: 2}
+  effect: {fileID: 11400000, guid: c486af08974f3b544a3949db49b95f66, type: 2}
 --- !u!1 &6196065325629673390
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,6 +1097,7 @@ GameObject:
   - component: {fileID: 8020060008202973458}
   - component: {fileID: 5456647179934602871}
   - component: {fileID: 8106907088053764915}
+  - component: {fileID: 8964255033531273736}
   m_Layer: 0
   m_Name: Headset
   m_TagString: Untagged
@@ -1200,6 +1168,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6639016815256160874}
   m_Mesh: {fileID: -1294430266268286495, guid: 7fba4e4c2e3505e489cf1747a437341a, type: 3}
+--- !u!114 &8964255033531273736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6639016815256160874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e033d2c0d3644e48f3b27644b3d135d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adapter: {fileID: 1608805246826064242}
+  indicationTarget: {fileID: 5456647179934602871}
+  odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
+  voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &6767416847630222415
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,7 +1215,7 @@ RectTransform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 2753487309664625876}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 44.967, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1257,7 +1241,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 1870600810458566222, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1301,15 +1285,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: David 123
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
+  m_sharedMaterial: {fileID: 1870600810458566222, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4281477411
+  m_fontColor: {r: 0.13725491, g: 0.16078432, b: 0.19607845, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

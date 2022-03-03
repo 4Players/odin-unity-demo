@@ -8,24 +8,25 @@ using UnityEngine.Serialization;
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
     /// <summary>
-    /// Behaviour for replicating the player's capsule color using ODIN.
+    ///     Behaviour for replicating the player's capsule color using ODIN.
     /// </summary>
     public class OdinSyncedColor : MonoBehaviour
     {
         /// <summary>
-        /// Reference to the adapter used for identifying the current player.
+        ///     Reference to the adapter used for identifying the current player.
         /// </summary>
         [FormerlySerializedAs("odinAdapter")] [SerializeField]
         private AOdinMultiplayerAdapter multiplayerAdapter;
 
         /// <summary>
-        /// The renderer, for which the color should be synced.
+        ///     The renderer, for which the color should be synced.
         /// </summary>
         [SerializeField] private Renderer capsuleRenderer;
 
         private Color _currentColor;
+
         /// <summary>
-        /// The Player Pref key for accessing the locally stored player color.
+        ///     The Player Pref key for accessing the locally stored player color.
         /// </summary>
         private static string ColorKey => "PlayerColor";
 
@@ -43,19 +44,30 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnEnable()
         {
-            OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
-            OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
+            StartCoroutine(WaitForConnection());
         }
 
 
         private void OnDisable()
         {
-            OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
-            OdinHandler.Instance.OnPeerUserDataChanged.RemoveListener(OnPeerUpdated);
+            if (OdinHandler.Instance)
+            {
+                OdinHandler.Instance.OnPeerJoined.RemoveListener(OnPeerJoined);
+                OdinHandler.Instance.OnPeerUserDataChanged.RemoveListener(OnPeerUpdated);
+            }
+        }
+
+        private IEnumerator WaitForConnection()
+        {
+            while (!OdinHandler.Instance)
+                yield return null;
+
+            OdinHandler.Instance.OnPeerJoined.AddListener(OnPeerJoined);
+            OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
         }
 
         /// <summary>
-        /// When a new peer enters the room, send a color update to the entire room.
+        ///     When a new peer enters the room, send a color update to the entire room.
         /// </summary>
         /// <param name="sender">The sending ODIN room.</param>
         /// <param name="peerJoinedEventArgs">The event arguments containing additional data.</param>
@@ -66,9 +78,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        /// Called when a peer's user data was updated. If this behaviour is connected to a remote user's multiplayer adapter
-        /// and the UserData uniqueUserId corresponds to the adapters unique user id, the referenced <see cref="capsuleRenderer"/>'s
-        /// color will be updated to the transmitted color.
+        ///     Called when a peer's user data was updated. If this behaviour is connected to a remote user's multiplayer adapter
+        ///     and the UserData uniqueUserId corresponds to the adapters unique user id, the referenced
+        ///     <see cref="capsuleRenderer" />'s
+        ///     color will be updated to the transmitted color.
         /// </summary>
         /// <param name="sender">The sending ODIN room.</param>
         /// <param name="peerUpdatedEventArgs">The event arguments.</param>
@@ -86,8 +99,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        /// If available, loads the color from player prefs, otherwise a new random color will be created and saved
-        /// to player prefs.
+        ///     If available, loads the color from player prefs, otherwise a new random color will be created and saved
+        ///     to player prefs.
         /// </summary>
         private void InitializeColor()
         {
@@ -106,7 +119,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        /// Sends the local user's capsule color to all other users in the room. 
+        ///     Sends the local user's capsule color to all other users in the room.
         /// </summary>
         /// <param name="room">The room in which we want to broadcast the color updated.</param>
         /// <param name="delay">An additional time to wait before sending. This is used to sidestep some synchronization issues.</param>
@@ -119,12 +132,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             userData.color = GetHtmlStringRGB();
             userData.uniqueUserId = multiplayerAdapter.GetUniqueUserId();
             room.UpdateUserData(userData.ToUserData());
+            OdinHandler.Instance.UpdateUserData(userData.ToUserData());
 
             // Debug.Log($"ColorSync: Sending color update: {userData.color}");
         }
 
         /// <summary>
-        /// Converts an html rbg string into a Unity Color struct.
+        ///     Converts an html rbg string into a Unity Color struct.
         /// </summary>
         /// <param name="htmlStringRGB">The color as an html rgb string.</param>
         /// <returns>The converted color.</returns>
@@ -135,9 +149,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        /// Converts the <see cref="_currentColor"/> into an html rgb string for transmission using ODIN.
+        ///     Converts the <see cref="_currentColor" /> into an html rgb string for transmission using ODIN.
         /// </summary>
-        /// <returns>The <see cref="_currentColor"/> as an html rgb string.</returns>
+        /// <returns>The <see cref="_currentColor" /> as an html rgb string.</returns>
         private string GetHtmlStringRGB()
         {
             return ColorUtility.ToHtmlStringRGB(_currentColor);
