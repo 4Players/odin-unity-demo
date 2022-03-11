@@ -60,5 +60,5 @@ sysinfo.txt
 crashlytics-build.properties
 
 #remove Photon Server Settings
-*/PhotonUnityNetworking/Resources/
+*PhotonServerSettings.asset*
 
