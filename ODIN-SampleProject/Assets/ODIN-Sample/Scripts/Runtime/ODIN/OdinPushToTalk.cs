@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -16,11 +14,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         ///     The list of settings for different rooms. Allows definition of different push-to-talk buttons for different
         ///     ODIN rooms.
         /// </summary>
-        [SerializeField] private OdinPushToTalkData[] pushToTalkSettings;
+        [SerializeField] private OdinPushToTalkSettings pushToTalkSettings;
 
         private void Awake()
         {
-            foreach (OdinPushToTalkData data in pushToTalkSettings)
+            Assert.IsNotNull(pushToTalkSettings);
+            foreach (OdinPushToTalkSettings.OdinPushToTalkData data in pushToTalkSettings.settings)
             {
                 Assert.IsNotNull(data.connectedRoom, $"Missing push to talk setting on object {gameObject.name}");
                 Assert.IsNotNull(data.pushToTalkButton, $"Missing push to talk setting on object {gameObject.name}");
@@ -32,14 +31,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             if (!(OdinHandler.Instance && null != OdinHandler.Instance.Rooms))
                 return;
 
-            foreach (OdinPushToTalkData pushToTalkData in pushToTalkSettings)
-                HandleRoomMutedStatus(pushToTalkData.connectedRoom, pushToTalkData.pushToTalkButton);
+            foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
+                HandleRoomMutedStatus(pushToTalkData);
         }
-
 
         private void OnEnable()
         {
             StartCoroutine(WaitForConnection());
+            pushToTalkSettings.Load();
         }
 
         private void OnDisable()
@@ -66,7 +65,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         private void OnMediaAdded(object arg0, MediaAddedEventArgs mediaAddedEventArgs)
         {
             // check if the added media is one of the rooms for which the user has provided push to talk data
-            foreach (OdinPushToTalkData pushToTalkData in pushToTalkSettings)
+            foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
                 if (pushToTalkData.connectedRoom == mediaAddedEventArgs.Peer.RoomName)
                 {
                     Room pushToTalkRoom = OdinHandler.Instance.Rooms[pushToTalkData.connectedRoom];
@@ -79,41 +78,31 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         }
 
         /// <summary>
-        ///     Mutes / unmutes local microphone in the room given by <see cref="roomName" /> based on whether the button given
-        ///     by <see cref="pushToTalkButton" /> is pressed.
+        ///     Mutes / unmutes local microphone in the room based on whether the button
+        ///     given is pressed.
         /// </summary>
-        /// <param name="roomName">Room to check</param>
-        /// <param name="pushToTalkButton">Push to talk button for that room</param>
-        private void HandleRoomMutedStatus(string roomName, string pushToTalkButton)
+        /// <param name="data">
+        ///     Push To Talk data container, containing information on the push to talk button,
+        ///     the room to target and whether push to talk is currently activated.
+        /// </param>
+        private void HandleRoomMutedStatus(OdinPushToTalkSettings.OdinPushToTalkData data)
         {
-            if (OdinHandler.Instance.Rooms.Contains(roomName))
+            if (OdinHandler.Instance.Rooms.Contains(data.connectedRoom))
             {
-                Room roomToCheck = OdinHandler.Instance.Rooms[roomName];
-
+                Room roomToCheck = OdinHandler.Instance.Rooms[data.connectedRoom];
                 if (null != roomToCheck.MicrophoneMedia)
                 {
-                    bool isPushToTalkPressed = Input.GetKey(pushToTalkButton);
-                    roomToCheck.MicrophoneMedia.SetMute(!isPushToTalkPressed);
+                    if (!data.pushToTalkIsActive)
+                    {
+                        roomToCheck.MicrophoneMedia.SetMute(false);
+                    }
+                    else
+                    {
+                        bool isPushToTalkPressed = Input.GetKey(data.pushToTalkButton);
+                        roomToCheck.MicrophoneMedia.SetMute(!isPushToTalkPressed);
+                    }
                 }
             }
         }
-    }
-
-    /// <summary>
-    ///     Data container for storing push to talk settings.
-    /// </summary>
-    [Serializable]
-    public class OdinPushToTalkData
-    {
-        /// <summary>
-        ///     The room for which the push to talk button should work.
-        /// </summary>
-        public OdinStringVariable connectedRoom;
-
-        /// <summary>
-        ///     The push to talk button. If this is pressed, the microphone data
-        ///     will be transmitted in the room given by <see cref="connectedRoom" />.
-        /// </summary>
-        public OdinStringVariable pushToTalkButton;
     }
 }
