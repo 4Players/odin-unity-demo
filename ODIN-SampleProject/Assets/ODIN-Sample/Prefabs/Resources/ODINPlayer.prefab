@@ -693,9 +693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb9a3125586fb5f4bb2a1df0246ed741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushToTalkSettings:
-  - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
+  pushToTalkSettings: {fileID: 11400000, guid: 4832a66c193afee4087de8c8f32bcabc, type: 2}
 --- !u!1 &3292872340452153005
 GameObject:
   m_ObjectHideFlags: 0

@@ -971,8 +971,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1030,7 +1030,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4541258194720005006, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
       propertyPath: AccessKey
-      value: AfT58WD6FKeoM/RigMnDj9IOtoeUJyGlyOc7YK2Ijvca
+      value: AQKylBh+Kf3ke8JK2pOjVz14JydDcQruvWTErhgIEc82
       objectReference: {fileID: 0}
     - target: {fileID: 5315226930280199745, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
       propertyPath: m_RootOrder
@@ -1078,7 +1078,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7270835465501535659, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
       propertyPath: m_Name
-      value: SampeOdinManager
+      value: SampleOdinManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
@@ -1200,8 +1200,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1355,8 +1355,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 28
-  m_fontSizeBase: 28
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
