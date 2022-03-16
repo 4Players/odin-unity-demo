@@ -85,7 +85,37 @@ please take a look at the implementation of [Head Related Transfer Functions (HR
 
 ## Multiplayer
 
-Work in Progress
+Photon login and join room --> load scene
+
+on load scene: Join ODIN Rooms (Voice and Radio)
+
+AOdinUser script as base for spawning playback components
+
+what is a playback component
+
+OdinDefaultUser: Uses the OnMediaAdded Event and spawns a `PlaybackComponent` for 
+each media stream in a given room. All placed playback components are simply 
+instantiated as children of a single transform, so the `OdinDefaultUser` script
+should be used for ODIN rooms, where the position of the Voice Chat output doesn't
+matter. In the sample project this script is used to implement the _Radio_ room, in 
+which players can communicate as if using radio transmitters.
+
+The `Odin3dAudioVoiceUser` automatically creates a PlaybackComponent for each
+remote player. In this case, the placement of the `PlaybackComponent` on a specific
+gameobject is important, because we want a player's voice to originate from her/his/their controlled avatar.
+
+### Connecting ODIN to the multiplayer framework
+
+When connecting an ODIN media stream to a specific player's representation in the game, we somehow have to
+identify both 
+
+The abstract `AOdinMultiplayerAdapter` script gives access to the methods `string GetUniqueUserId()` and `bool IsLocalUser()`. This adapter is used to connect the player's representation in the multiplayer framework to ODIN's representation as a peer. ODIN
+allows us set custom user data for each peer. When joining an ODIN room, the `AOdinMultiplayerAdapter` automatically
+sets the `uniqueUserId` parameter of our custom user data and sends an update to the ODIN server. Scripts
+can then use a reference to `AOdinMultiplayerAdapter` to compare
+an ODIN peer's `uniqueUserId` to the id supplied by the adapter's `GetUniqueUserId()` - if they're equal: great, 
+the ODIN peer we're checking is 
+
 
 ## Game Logic
 

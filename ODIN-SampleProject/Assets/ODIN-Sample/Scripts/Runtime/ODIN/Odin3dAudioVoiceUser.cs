@@ -27,7 +27,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         /// <summary>
         ///     All rooms which should be handled by the odin voice user script.
-        ///     The script won't automatically create Playback Components for rooms that aren't listed here.
+        ///     The script will only create Playback Components for rooms that are listed here.
         /// </summary>
         [SerializeField] private OdinStringVariable[] connectedOdinRooms;
 
