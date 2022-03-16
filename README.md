@@ -4,9 +4,9 @@ Please check out https://developers.4players.io/odin/ for more info on ODIN.
 
 More info on this sample project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
 
-## Download the Windows Binary
+## Download the Binary
 
-You can download the Windows binary here: https://github.com/4Players/odin-unity-demo/releases/latest
+You can download the binaries here: https://github.com/4Players/odin-unity-demo/releases/latest
 
 ## Download for Unity
 
@@ -19,6 +19,71 @@ the Photon PUN 2 multiplayer framework, but ODIN can be integrated into your gam
 even without multiplayer. The ODIN-Sample itself is also built in a way, that allows us to easily switch out Photon.
 
 If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://developers.4players.io/odin/introduction/).
+
+## Multiplayer
+
+### Lobby
+
+Photon login and join room --> load scene
+
+on load scene: Join ODIN Rooms (Voice and Radio)
+
+### ODIN
+
+Todo
+
+#### OdinHandler
+
+Todo
+#### Rooms, Peers and Media
+Todo
+
+#### PlaybackComponent
+
+The ODIN SDK provides the `PlaybackComponent` script to easily play back audio data received from
+the ODIN server. Each `PlaybackComponent` represents one media stream and is identified by a media id, a
+peer id and a room name.
+
+### ODIN Global Voice Chat - Radio transmissions
+
+In the sample project, users automatically join the ODIN room named _Radio_, in
+which players can communicate as if using radio transmitters - when pressing down `V`, the microphone input
+can be heard by all players in the room independent of their position.
+
+For this scenario, the sample project provides the `OdinDefaultUser`script, which uses the 
+`OdinHandler.Instance.OnMediaAdded` Event to spawn an instance of a prefab with a `PlaybackComponent` for
+each media stream in a given room. The event provides the room name, peer id and media id required
+for the `PlaybackComponent` to work. 
+
+The `OdinDefaultUser` simply
+instantiates the `PlaybackComponent` prefabs as children of a single game object, so 
+the `OdinDefaultUser` script should only be used for ODIN rooms which do not use proximity voice chat.
+
+
+### ODIN Proximity Chat - connecting ODIN to the multiplayer framework
+
+In a multiplayer scenario, we encounter the issue of connecting a user's ODIN media stream to the user's avatar
+in the game, e.g. in our sample project we'd want a player's voice in the proximity chat to originate
+from the player's capsule.
+
+The abstract `AOdinMultiplayerAdapter` script gives access to the methods `string GetUniqueUserId()` and 
+`bool IsLocalUser()`. This adapter is used to connect the player's representation in the multiplayer 
+framework (using the framework's equivalent of an unique user id) to an ODIN peer. On ODIN's side we use 
+custom user data to keep track of that id. When joining an ODIN room, the `AOdinMultiplayerAdapter` 
+automatically sets the `uniqueUserId` of our custom ODIN user data for the current peer and sends an 
+update to the other peers in the room. On receiving the update, those clients then use a reference to `AOdinMultiplayerAdapter` 
+to compare the remote peer's `uniqueUserId` to the id supplied by the remote adapter's `GetUniqueUserId()`.
+If both ids are equal,we know that an ODIN peer is represented by the referenced `AOdinMultiplayerAdapter`.
+
+In the sample project
+we use this information to correctly play black the proximity chat audio at a player's location -
+specifically using the `Odin3dAudioVoiceUser`, which automatically creates a `PlaybackComponent` for each remote user.
+
+The sample project uses Photon as a multiplayer framework, so we add the
+`PhotonToOdinAdapter` to our player. The script uses `PhotonView.ViewID` as a unique user id and
+`PhotonView.IsMine`
+to determine whether the adapter represents a local or a remote player. To switch out Photon for another
+multiplayer framework, simply provide your own implementation of `AOdinMultiplayerAdapter`.
 
 ## Audio
 
@@ -83,38 +148,6 @@ pointing from the listener to the audio source. The
 Note: The implementation won't let us differentiate between sound coming from above or below. To implement this behaviour, 
 please take a look at the implementation of [Head Related Transfer Functions (HRTF)](https://en.wikipedia.org/wiki/Head-related_transfer_function).
 
-## Multiplayer
-
-Photon login and join room --> load scene
-
-on load scene: Join ODIN Rooms (Voice and Radio)
-
-AOdinUser script as base for spawning playback components
-
-what is a playback component
-
-OdinDefaultUser: Uses the OnMediaAdded Event and spawns a `PlaybackComponent` for 
-each media stream in a given room. All placed playback components are simply 
-instantiated as children of a single transform, so the `OdinDefaultUser` script
-should be used for ODIN rooms, where the position of the Voice Chat output doesn't
-matter. In the sample project this script is used to implement the _Radio_ room, in 
-which players can communicate as if using radio transmitters.
-
-The `Odin3dAudioVoiceUser` automatically creates a PlaybackComponent for each
-remote player. In this case, the placement of the `PlaybackComponent` on a specific
-gameobject is important, because we want a player's voice to originate from her/his/their controlled avatar.
-
-### Connecting ODIN to the multiplayer framework
-
-When connecting an ODIN media stream to a specific player's representation in the game, we somehow have to
-identify both 
-
-The abstract `AOdinMultiplayerAdapter` script gives access to the methods `string GetUniqueUserId()` and `bool IsLocalUser()`. This adapter is used to connect the player's representation in the multiplayer framework to ODIN's representation as a peer. ODIN
-allows us set custom user data for each peer. When joining an ODIN room, the `AOdinMultiplayerAdapter` automatically
-sets the `uniqueUserId` parameter of our custom user data and sends an update to the ODIN server. Scripts
-can then use a reference to `AOdinMultiplayerAdapter` to compare
-an ODIN peer's `uniqueUserId` to the id supplied by the adapter's `GetUniqueUserId()` - if they're equal: great, 
-the ODIN peer we're checking is 
 
 
 ## Game Logic
