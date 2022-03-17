@@ -14,29 +14,32 @@ You can download the binaries here: https://github.com/4Players/odin-unity-demo/
 
 
 # ODIN Sample: Extended Audio System and Multiplayer with Photon PUN 2
-In this guide we’ll walk you through the basic concepts of integrating ODIN into a multiplayer game. In this sample we'll be using
+In this guide we’ll walk you through the basic concepts of integrating ODIN into a multiplayer game. This sample will use
 the Photon PUN 2 multiplayer framework, but ODIN can be integrated into your game using any multiplayer solution or
-even without multiplayer. The ODIN-Sample itself is also built in a way, that allows us to easily switch out Photon.
+even without multiplayer. The ODIN-Sample itself also allows us to easily switch out Photon for another framework.
 
 If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://developers.4players.io/odin/introduction/).
 
-## Multiplayer
+## ODIN terms and behaviours
 
-### Lobby
+This is a short introduction into the most important ODIN terms - for more in-depth information [please take a look at the ODIN documentation](https://developers.4players.io/odin/introduction/).
 
-Photon login and join room --> load scene
+#### Rooms, Peers and Media
 
-on load scene: Join ODIN Rooms (Voice and Radio)
+Every client connects an ODIN server, authenticates with an access token and joins a room. Once the client has joined a room, he is a peer inside the ODIN room. Every peer can add media to that room, linked to a physical device like a microphone. Clients can join multiple rooms at the same time and can add multiple media streams at the same time.
 
-### ODIN
-
-Todo
+To find more information on the basic ODIN topology, [please take a look at the Basic Concepts documentation](https://developers.4players.io/odin/introduction/structure/).
 
 #### OdinHandler
 
-Todo
-#### Rooms, Peers and Media
-Todo
+The OdinHandler script is a singleton behaviour, wrapping the functionality of the native ODIN SDK for use in Unity. You can access the script via `OdinHandler.Instance`. 
+
+The most important use-cases are the `OdinHandler.Instance.JoinRoom` method for joining ODIN rooms and the events for listening for ODIN events, like `OnRoomJoin`, `OnPeerJoined` and `OnMediaAdded`. To use the `OdinHandler`, make sure to add a variant of the `OdinManager` prefab into your project. The prefab also contains the `OdinEditorConfig` script, which allows us to set the Access Key and Room Audio Processing settings in the inspector.
+
+<!-- Using the __Manage Access__  -->
+
+![The OdinManager prefab options in the inspector view](Documentation/OdinManager.png)
+
 
 #### PlaybackComponent
 
@@ -44,10 +47,39 @@ The ODIN SDK provides the `PlaybackComponent` script to easily play back audio d
 the ODIN server. Each `PlaybackComponent` represents one media stream and is identified by a media id, a
 peer id and a room name.
 
+#### User Data
+
+Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data at all clients and sends this message. Read more about user data in the guide: [Understanding User Data](https://developers.4players.io/odin/guides/unity/user-data/).
+
+## Multiplayer
+
+### Lobby
+
+Because ODIN works framework independent, we won't go into detail on how to set up Photon - if you're interested in reading more on PUN2, [please take a look at Photon's starter guide](https://doc.photonengine.com/en-us/pun/current/getting-started/pun-intro). 
+
+![Image of the Lobby Scene](Documentation/Lobby.png "The Lobby")
+
+The Behaviours in the Lobby scene simply wait for the PhotonNetwork to connect to the cloud, before allowing users to join a Photon room - in the sample we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
+
+**Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
+
+### Demo Level
+
+When entering the Demo Level scene, two things happen:
+
+- We instantiate the player over the Photon network using `PhotonNetwork.Instantiate` and the `ODINPlayer` prefab
+- We automatically connect to two ODIN rooms (Voice and Radio) using 
+
+```c#
+OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
+OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
+```
+We don't have to send user data when joining an ODIN room, but in this case we already have access to the player name from the value entered in the Lobby scene, so it makes sense to supply it while joining.
+
 ### ODIN Global Voice Chat - Radio transmissions
 
 In the sample project, users automatically join the ODIN room named _Radio_, in
-which players can communicate as if using radio transmitters - when pressing down `V`, the microphone input
+which players can communicate as if using radio transmitters - when pressing down the `V` key, the microphone input
 can be heard by all players in the room independent of their position.
 
 For this scenario, the sample project provides the `OdinDefaultUser`script, which uses the 
