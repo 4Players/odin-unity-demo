@@ -36,7 +36,7 @@ The OdinHandler script is a singleton behaviour, wrapping the functionality of t
 
 The most important use-cases are the `OdinHandler.Instance.JoinRoom` method for joining ODIN rooms and the events for listening for ODIN events, like `OnRoomJoin`, `OnPeerJoined` and `OnMediaAdded`. To use the `OdinHandler`, make sure to add a variant of the `OdinManager` prefab into your project. The prefab also contains the `OdinEditorConfig` script, which allows us to set the Access Key and Room Audio Processing settings in the inspector.
 
-<!-- Using the __Manage Access__  -->
+If you don't yet have an ODIN subscription and just want to test out ODIN's functionality, you can use a generated key by pressing the __Manage Access__ Button and then selecting __Generate Access Key__. The resulting access keys can be used to access the ODIN network with up to 25 concurrently connected users free of charge.
 
 ![The OdinManager prefab options in the inspector view](Documentation/OdinManager.png)
 
