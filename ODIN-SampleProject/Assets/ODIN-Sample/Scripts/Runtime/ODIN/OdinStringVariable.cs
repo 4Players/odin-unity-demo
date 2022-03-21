@@ -6,7 +6,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     /// Scriptable object used to define a string property. This is used e.g. for defining room names or for storing the
     /// player name across different scenes.
     /// </summary>
-    [CreateAssetMenu(fileName = "OdinStringVariable", menuName = "Odin-Sample/StringVariable", order = 0)]
+    [CreateAssetMenu(fileName = "OdinStringVariable", menuName = "Odin-Demo/StringVariable", order = 0)]
     public class OdinStringVariable : ScriptableObject
     {
         /// <summary>

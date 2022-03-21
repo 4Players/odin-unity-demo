@@ -2,6 +2,10 @@
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
 {
+    
+    /// <summary>
+    /// Used to simulate a multiplayer adapter. Can be used in single player modes.
+    /// </summary>
     public class OdinDummyAdapter : AOdinMultiplayerAdapter
     {
         private string _uniqueId;
