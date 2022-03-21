@@ -7,7 +7,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// Scriptable Object, used as a reference to the sample project's current view state.  A view state is defined as
     /// the view (camera) position of a player, e.g. First Person or Third Person.
     /// </summary>
-    [CreateAssetMenu(fileName = "SampleViewState", menuName = "Odin-Sample/ViewState", order = 0)]
+    [CreateAssetMenu(fileName = "SampleViewState", menuName = "Odin-Demo/ViewState", order = 0)]
     public class SampleViewState : ScriptableObject
     {
         /// <summary>

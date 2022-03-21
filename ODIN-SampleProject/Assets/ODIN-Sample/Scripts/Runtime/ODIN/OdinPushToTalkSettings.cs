@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
-    [CreateAssetMenu(fileName = "PushToTalkSettings", menuName = "Odin-Sample/PushToTalkSettings", order = 0)]
+    [CreateAssetMenu(fileName = "PushToTalkSettings", menuName = "Odin-Demo/PushToTalkSettings", order = 0)]
     public class OdinPushToTalkSettings : ScriptableObject
     {
         public OdinPushToTalkData[] settings;

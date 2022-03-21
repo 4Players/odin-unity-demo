@@ -1,24 +1,40 @@
-# ODIN Unity Sample Project
+# ODIN Unity Demo Project
 
 Please check out https://developers.4players.io/odin/ for more info on ODIN.
 
-More info on this sample project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
+More info on this demo project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
 
 ## Download the Binary
 
 You can download the binaries here: https://github.com/4Players/odin-unity-demo/releases/latest
 
-## Download for Unity
+## ⚠ Downloading the ZIP ⚠
 
 **Please note**: This repository uses LFS. You need to clone this repo with LFS enabled. **Downloading the ZIP file via Githubs Download ZIP functionality does not work!**
 
+To enable git lfs, enter `git lfs install` in your git bash in your local repository.
 
-# ODIN Sample: Extended Audio System and Multiplayer with Photon PUN 2
-In this guide we’ll walk you through the basic concepts of integrating ODIN into a multiplayer game. This sample will use
+# ODIN Demo: Extended Audio System and Multiplayer with Photon PUN 2
+In this guide we’ll walk you through the basic concepts of integrating ODIN into a multiplayer game. This demo will use
 the Photon PUN 2 multiplayer framework, but ODIN can be integrated into your game using any multiplayer solution or
-even without multiplayer. The ODIN-Sample itself also allows us to easily switch out Photon for another framework.
+even without multiplayer. The ODIN-Demo itself also allows us to easily switch out Photon for another framework.
 
 If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://developers.4players.io/odin/introduction/).
+
+## Project Structure
+
+The ODIN-Demo project's scripts are split up into the categories:
+- **Audio**: Scripts in here handle the custom Audio System behaviour like directional audio and occlusion effects. 
+- **ODIN:** Handles anything related to core ODIN-features, without external dependencies. If you'd like to use a multiplayer framework other than Photon, you can safely reuse the files contained in this assembly.
+- **Photon:** Anything Photon specific is contained in here, like joining Photon Rooms or synchronizing Player Position.
+- **GameLogic:** Anything else required for the demo, like the player's movement or view state (1st-person or 3rd-person).
+
+You can find demo settings in the `Assets > ODIN-Demo > Settings` directory, e.g. settings for the occlusion effects, ODIN room names, Push-To-Talk settings and Input definitions. Any prefabs used in the demo can be found in the `Assets > ODIN-Demo > Prefabs` directory, with the player prefab being located in the `Resources`.
+
+The demo scene's hierarchy contains three root game object's used for categorizing the functions of behaviours:
+- **Environment:** Contains all visible objects or lights that contain the scene's visuals.
+- **Gamelogic:** Behaviours like the `PhotonPlayerSpawner` or the ODIN room join logic are placed here.
+- **UI:** The root object for in-game UI, like the settings menu or the radio room's active user display.
 
 ## ODIN terms and behaviours
 
@@ -57,18 +73,21 @@ Every peer in Unity can store arbitrary information as user data. When local use
 
 Because ODIN works framework independent, we won't go into detail on how to set up Photon - if you're interested in reading more on PUN2, [please take a look at Photon's starter guide](https://doc.photonengine.com/en-us/pun/current/getting-started/pun-intro). 
 
+**Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
+
 ![Image of the Lobby Scene](Documentation/Lobby.png "The Lobby")
 
-The Behaviours in the Lobby scene simply wait for the PhotonNetwork to connect to the cloud, before allowing users to join a Photon room - in the sample we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
+The Behaviours in the Lobby scene simply wait for the PhotonNetwork to connect to the cloud, before allowing users to join a Photon room - in the demo we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
 
-**Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
+
 
 ### Demo Level
 
 When entering the Demo Level scene, two things happen:
 
-- We instantiate the player over the Photon network using `PhotonNetwork.Instantiate` and the `ODINPlayer` prefab
-- We automatically connect to two ODIN rooms (Voice and Radio) using 
+1. We instantiate the player over the Photon network using `PhotonNetwork.Instantiate` and the `ODINPlayer` prefab. This is kicked off by the `PhotonPlayerSpawner` script on Start. **Note:** The player prefab needs to be located in a `Resources` subdirectory, in order for Photon to be able to instantiate the player correctly.
+
+2. We automatically connect to two ODIN rooms (Voice and Radio) using 
 
 ```c#
 OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
@@ -78,11 +97,11 @@ We don't have to send user data when joining an ODIN room, but in this case we a
 
 ### ODIN Global Voice Chat - Radio transmissions
 
-In the sample project, users automatically join the ODIN room named _Radio_, in
+In the demo project, users automatically join the ODIN room named _Radio_, in
 which players can communicate as if using radio transmitters - when pressing down the `V` key, the microphone input
 can be heard by all players in the room independent of their position.
 
-For this scenario, the sample project provides the `OdinDefaultUser`script, which uses the 
+For this scenario, the demo project provides the `OdinDefaultUser`script, which uses the 
 `OdinHandler.Instance.OnMediaAdded` Event to spawn an instance of a prefab with a `PlaybackComponent` for
 each media stream in a given room. The event provides the room name, peer id and media id required
 for the `PlaybackComponent` to work. 
@@ -95,7 +114,7 @@ the `OdinDefaultUser` script should only be used for ODIN rooms which do not use
 ### ODIN Proximity Chat - connecting ODIN to the multiplayer framework
 
 In a multiplayer scenario, we encounter the issue of connecting a user's ODIN media stream to the user's avatar
-in the game, e.g. in our sample project we'd want a player's voice in the proximity chat to originate
+in the game, e.g. in our demo project we'd want a player's voice in the proximity chat to originate
 from the player's capsule.
 
 The abstract `AOdinMultiplayerAdapter` script gives access to the methods `string GetUniqueUserId()` and 
@@ -107,15 +126,21 @@ update to the other peers in the room. On receiving the update, those clients th
 to compare the remote peer's `uniqueUserId` to the id supplied by the remote adapter's `GetUniqueUserId()`.
 If both ids are equal,we know that an ODIN peer is represented by the referenced `AOdinMultiplayerAdapter`.
 
-In the sample project
+In the demo project
 we use this information to correctly play black the proximity chat audio at a player's location -
 specifically using the `Odin3dAudioVoiceUser`, which automatically creates a `PlaybackComponent` for each remote user.
 
-The sample project uses Photon as a multiplayer framework, so we add the
+The demo project uses Photon as a multiplayer framework, so we add the
 `PhotonToOdinAdapter` to our player. The script uses `PhotonView.ViewID` as a unique user id and
 `PhotonView.IsMine`
 to determine whether the adapter represents a local or a remote player. To switch out Photon for another
 multiplayer framework, simply provide your own implementation of `AOdinMultiplayerAdapter`.
+
+### Push-To-Talk
+
+Push-To-Talk is handled by the `OdinPushToTalk` script using settings defined in a `OdinPushToTalkSettings` scriptable object. If the push-to-talk button for a specific room is pressed, the script will access the user's mediastream and set a user's mute status using `targetRoom.MicrophoneMedia.SetMute()`.
+
+The `OdinPushToTalkSettings` scriptable object allows rooms to be either be voice-activated or require a button press to talk - if you'd like to make this available as a user-setting, you can use the `OdinPushToTalkSettingsController`, which automatically sets the room's activation method based on a Unity Toggle.
 
 ## Audio
 
@@ -158,7 +183,7 @@ on the y-Axis.
 The `AudioEffectDefinition` is retrieved using one of two options:
 - By placing an `AudioObstacle` script on the collider's gameobject. This can be
 used to customize a collider's occlusion effect and give it a certain material's damping
-behaviour. The sample uses the `AudioObstacle` to define the occlusion effect of a brick wall,
+behaviour. The demo uses the `AudioObstacle` to define the occlusion effect of a brick wall,
 a wooden door, a glass pane or even a 100% soundproof barrier.
 - Using the default `AudioEffectDefinition` - this option is used, if no `AudioObstacle`
 is attached to the collider. 
@@ -180,10 +205,19 @@ pointing from the listener to the audio source. The
 Note: The implementation won't let us differentiate between sound coming from above or below. To implement this behaviour, 
 please take a look at the implementation of [Head Related Transfer Functions (HRTF)](https://en.wikipedia.org/wiki/Head-related_transfer_function).
 
-
-
 ## Game Logic
 
-Work in Progress
+### Player Name and Color Synchronization
 
+The `OdinNameDisplay` and `OdinSyncedColor` scripts use the ODIN's custom User Data to synchronize the Player's name and avatar color. With `OdinHandler.Instance.OnPeerUserDataChanged.AddListener()` we listen to any changes in a remote peers User Data - if the peer's `UniqueUserId` equals the Multiplayer Adapter's `GetUniqueUserId()`, we read the name and display it above the player's avatar using a world-space canvas and display the color on the avatar's mesh.
+
+### Toggling the in-game radio objects
+
+The `ToggleRadioBehaviour` script implements the basic behaviour for turning the in-game radio sources on and off - if an  avatar enters the detection radio, the controlling player will be able to toggle the radio status with a button press. The status then gets synchronized with the `PhotonRadioSynchronization` behaviour, which listens to the toggle behaviour's `onRadioToggled` UnityEvent.
+
+If you'd like to implement another multiplayer framework, simply replace the `PhotonRadioSynchronization` with your own synchronization behaviour. 
+
+### Switching Player Views
+
+User's can switch from 3rd-person to 1st-person view on button press - this is implemented in the `ToggleViews` script by toggling game objects found in the `ODINPlayer > LocalPlayerBehaviours > ControllerState` hierarchy of the `ODINPlayer` prefab. The `FirstPersonBehavior` object contains the camera and behaviours for 1st-person controls, the `ThirdPersonBehavior` contains everything for 3rd-person controls.
 
