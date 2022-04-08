@@ -1,4 +1,7 @@
-#exclude builds
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Builds
 /[Bb]uild/
 /[Bb]uilds/
-
