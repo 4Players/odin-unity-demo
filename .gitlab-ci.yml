@@ -1,0 +1,125 @@
+# Project ODIN :: Unity PUN 2 Multiplayer Sample CI/CD
+#
+# Unity Editor command line arguments:
+# https://docs.unity3d.com/Manual/EditorCommandLineArguments.html
+
+stages:
+  - test
+  - build
+  - package
+
+variables:
+  PRODUCT_NAME: OdinSample
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SSL_NO_VERIFY: 1
+
+### Testing
+
+.job_template: &common_test
+  stage: test
+  except: [tags]
+  image: $CI_REGISTRY/odin/builders/unity-editor
+  cache:
+    key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
+    paths:
+      - $CI_PROJECT_DIR/Library/
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - Logs
+
+test:editor:
+  <<: *common_test
+  script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runEditorTests
+
+# Run tests in Unity editor editmode (uncomment if needed)
+#
+# test:editmode:
+#   <<: *common_test
+#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform EditMode
+
+# Run tests in Unity editor playmode (uncomment if needed)
+#
+# test:editmode:
+#   <<: *common_test
+#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform PlayMode
+
+### Building
+
+.job_template: &common_build
+  stage: build
+  only: [tags]
+  image: $CI_REGISTRY/odin/builders/unity-editor
+  before_script:
+    - mkdir -p bin
+  cache:
+    key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
+    paths:
+      - ODIN-SampleProject/Library
+  artifacts:
+    expire_in: 30 minutes
+    paths:
+      - bin
+
+build:windows:
+  <<: *common_build
+  script:
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
+
+build:macos:
+  <<: *common_build
+  script:
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
+
+build:linux:
+  <<: *common_build
+  script:
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
+
+### Packaging
+
+.job_template: &common_package
+  stage: package
+  only: [tags]
+  before_script:
+    - mkdir -p dist
+  artifacts:
+    name: '${PRODUCT_NAME}_${PRODUCT_OS}_${CI_COMMIT_REF_SLUG}'
+    expire_in: 30 minutes
+    paths:
+      - dist
+
+package:windows:
+  <<: *common_package
+  tags: [windows]
+  variables:
+    PRODUCT_OS: "windows"
+  needs:
+    - build:windows
+  script:
+    - signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 "bin/${PRODUCT_NAME}.exe"
+    - iscc InnoSetup.iss
+    - signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 "dist/${PRODUCT_NAME}_Setup.exe"
+
+package:macos:
+  <<: *common_package
+  tags: [macos]
+  variables:
+    PRODUCT_OS: "macos"
+  needs:
+    - build:macos
+  script:
+    - codesign --force --sign "Developer ID Application" --options runtime --entitlements Entitlements.plist --deep "bin/${PRODUCT_NAME}.app"
+    - create-dmg --overwrite "bin/${PRODUCT_NAME}.app" dist && mv dist/*.dmg "dist/${PRODUCT_NAME}.dmg"
+    - export BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" bin/${PRODUCT_NAME}.app/Contents/Info.plist)
+    - notarize-cli --file "dist/${PRODUCT_NAME}.dmg" --bundle-id ${BUNDLE_ID} --username ${APPLE_DEV_USERNAME} --password ${APPLE_DEV_PASSWORD}
+
+package:linux:
+  <<: *common_package
+  variables:
+    PRODUCT_OS: "linux"
+  needs:
+    - build:linux
+  script:
+    - mv bin ${PRODUCT_NAME}
+    - tar -czvf dist/${PRODUCT_NAME}.tar.gz ${PRODUCT_NAME}
