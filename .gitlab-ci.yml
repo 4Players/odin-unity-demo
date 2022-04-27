@@ -9,7 +9,7 @@ stages:
   - package
 
 variables:
-  PRODUCT_NAME: OdinSample
+  PRODUCT_NAME: ODIN-SampleProject
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_SSL_NO_VERIFY: 1
 
@@ -19,30 +19,31 @@ variables:
   stage: test
   except: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
+  before_script: cd $PRODUCT_NAME
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
-      - ODIN-SampleProject/Library/
+      - $PRODUCT_NAME/Library/
   artifacts:
     expire_in: 7 days
     paths:
-      - ODIN-SampleProject/Logs
+      - $PRODUCT_NAME/Logs
 
 test:editor:
   <<: *common_test
-  script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runEditorTests
+  script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runEditorTests
 
 # Run tests in Unity editor editmode (uncomment if needed)
 #
 # test:editmode:
 #   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform EditMode
+#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform EditMode
 
 # Run tests in Unity editor playmode (uncomment if needed)
 #
 # test:editmode:
 #   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform PlayMode
+#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform PlayMode
 
 ### Building
 
@@ -51,30 +52,31 @@ test:editor:
   only: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
   before_script:
+    - cd $PRODUCT_NAME
     - mkdir -p bin
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
-      - ODIN-SampleProject/Library
+      - $PRODUCT_NAME/Library
   artifacts:
     expire_in: 30 minutes
     paths:
-      - bin
+      - cd $PRODUCT_NAME/bin
 
 build:windows:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
 
 build:macos:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
 
 build:linux:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
 
 ### Packaging
 
@@ -82,12 +84,13 @@ build:linux:
   stage: package
   only: [tags]
   before_script:
+    - cd $PRODUCT_NAME
     - mkdir -p dist
   artifacts:
     name: '${PRODUCT_NAME}_${PRODUCT_OS}_${CI_COMMIT_REF_SLUG}'
     expire_in: 30 minutes
     paths:
-      - dist
+      - cd $PRODUCT_NAME/dist
 
 package:windows:
   <<: *common_package
