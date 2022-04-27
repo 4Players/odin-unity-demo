@@ -97,6 +97,7 @@ package:macos:
   needs:
     - build:macos
   script:
+    - cp PlayerIcon.icns "bin/${PRODUCT_NAME}.app/Contents/Resources/"
     - codesign --force --sign "Developer ID Application" --options runtime --entitlements Entitlements.plist --deep "bin/${PRODUCT_NAME}.app"
     - create-dmg --overwrite "bin/${PRODUCT_NAME}.app" dist && mv dist/*.dmg "dist/${PRODUCT_NAME}.dmg"
     - export BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" bin/${PRODUCT_NAME}.app/Contents/Info.plist)
