@@ -23,7 +23,7 @@ variables:
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
-      - $PRODUCT_NAME/Library/
+      - $PRODUCT_NAME/Library
   artifacts:
     expire_in: 7 days
     paths:
@@ -31,19 +31,9 @@ variables:
 
 test:editor:
   <<: *common_test
-  script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runEditorTests
-
-# Run tests in Unity editor editmode (uncomment if needed)
-#
-# test:editmode:
-#   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform EditMode
-
-# Run tests in Unity editor playmode (uncomment if needed)
-#
-# test:editmode:
-#   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform PlayMode
+  script:
+    - cd ${PRODUCT_NAME}
+    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runEditorTests
 
 ### Building
 
@@ -52,8 +42,7 @@ test:editor:
   only: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
   before_script:
-    - cd $PRODUCT_NAME
-    - mkdir -p bin
+    - mkdir -p $PRODUCT_NAME/bin
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
@@ -61,21 +50,24 @@ test:editor:
   artifacts:
     expire_in: 30 minutes
     paths:
-      - cd $PRODUCT_NAME/bin
+      - $PRODUCT_NAME/bin
 
 build:windows:
   <<: *common_build
   script:
+    - cd ${PRODUCT_NAME}
     - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
 
 build:macos:
   <<: *common_build
   script:
+    - cd ${PRODUCT_NAME}
     - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
 
 build:linux:
   <<: *common_build
   script:
+    - cd ${PRODUCT_NAME}
     - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
 
 ### Packaging
@@ -84,13 +76,12 @@ build:linux:
   stage: package
   only: [tags]
   before_script:
-    - cd $PRODUCT_NAME
-    - mkdir -p dist
+    - mkdir -p $PRODUCT_NAME/dist
   artifacts:
     name: '${PRODUCT_NAME}_${PRODUCT_OS}_${CI_COMMIT_REF_SLUG}'
     expire_in: 30 minutes
     paths:
-      - cd $PRODUCT_NAME/dist
+      - $PRODUCT_NAME/dist
 
 package:windows:
   <<: *common_package
@@ -100,6 +91,7 @@ package:windows:
   needs:
     - build:windows
   script:
+    - cd ${PRODUCT_NAME}
     - signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 "bin/${PRODUCT_NAME}.exe"
     - iscc InnoSetup.iss
     - signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 "dist/${PRODUCT_NAME}_Setup.exe"
@@ -112,6 +104,7 @@ package:macos:
   needs:
     - build:macos
   script:
+    - cd ${PRODUCT_NAME}
     - codesign --force --sign "Developer ID Application" --options runtime --entitlements Entitlements.plist --deep "bin/${PRODUCT_NAME}.app"
     - create-dmg --overwrite "bin/${PRODUCT_NAME}.app" dist && mv dist/*.dmg "dist/${PRODUCT_NAME}.dmg"
     - export BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" bin/${PRODUCT_NAME}.app/Contents/Info.plist)
@@ -124,5 +117,6 @@ package:linux:
   needs:
     - build:linux
   script:
+    - cd ${PRODUCT_NAME}
     - mv bin ${PRODUCT_NAME}
     - tar -czvf dist/${PRODUCT_NAME}.tar.gz ${PRODUCT_NAME}
