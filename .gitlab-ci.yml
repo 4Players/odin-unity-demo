@@ -48,10 +48,13 @@ test:editor:
 
 .job_template: &common_build
   stage: build
-  only: [tags]
+# only: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
   before_script:
     - mkdir -p bin
+  after_script:
+    - ls -la
+    - ls -la ${PRODUCT_NAME}
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
