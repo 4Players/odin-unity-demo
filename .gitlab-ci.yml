@@ -32,23 +32,11 @@ test:editor:
   <<: *common_test
   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runEditorTests
 
-# Run tests in Unity editor editmode (uncomment if needed)
-#
-# test:editmode:
-#   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform EditMode
-
-# Run tests in Unity editor playmode (uncomment if needed)
-#
-# test:editmode:
-#   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -runTests -testPlatform PlayMode
-
 ### Building
 
 .job_template: &common_build
   stage: build
-# only: [tags]
+  only: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
   before_script:
     - mkdir -p bin
