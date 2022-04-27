@@ -22,7 +22,7 @@ variables:
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
     paths:
-      - $CI_PROJECT_DIR/Library/
+      - ODIN-SampleProject/Library/
   artifacts:
     expire_in: 7 days
     paths:
@@ -30,19 +30,19 @@ variables:
 
 test:editor:
   <<: *common_test
-  script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runEditorTests
+  script: unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runEditorTests
 
 # Run tests in Unity editor editmode (uncomment if needed)
 #
 # test:editmode:
 #   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform EditMode
+#   script: unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform EditMode
 
 # Run tests in Unity editor playmode (uncomment if needed)
 #
 # test:editmode:
 #   <<: *common_test
-#   script: unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform PlayMode
+#   script: unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -runTests -testPlatform PlayMode
 
 ### Building
 
@@ -64,17 +64,17 @@ test:editor:
 build:windows:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
+    - unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Win64 -buildWindows64Player "bin/${PRODUCT_NAME}.exe"
 
 build:macos:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
+    - unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget OSXUniversal -buildOSXUniversalPlayer "bin/${PRODUCT_NAME}"
 
 build:linux:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
+    - unity-editor -projectPath ${CI_PROJECT_DIR}/ODIN-SampleProject -buildTarget Linux64 -buildLinux64Player "bin/${PRODUCT_NAME}"
 
 ### Packaging
 
