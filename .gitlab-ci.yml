@@ -26,7 +26,7 @@ variables:
   artifacts:
     expire_in: 7 days
     paths:
-      - Logs
+      - ODIN-SampleProject/Logs
 
 test:editor:
   <<: *common_test
