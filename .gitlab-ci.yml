@@ -39,6 +39,8 @@ test:editor:
   only: [tags]
   image: $CI_REGISTRY/odin/builders/unity-editor
   before_script:
+    - mkdir -p ${PRODUCT_NAME}/Assets/Photon/PhotonUnityNetworking/Resources
+    - echo "$PHOTON_50CCU_CONFIG" > ${PRODUCT_NAME}/Assets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset
     - mkdir -p bin
   cache:
     key: "$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME"
