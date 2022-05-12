@@ -74,7 +74,7 @@ namespace OdinNative.Unity
         /// <summary>
         /// Turns VAC on and off
         /// </summary>
-        public bool VadEnable = OdinDefaults.VadEnable;
+        public bool VoiceActivityDetection = OdinDefaults.VoiceActivityDetection;
         /// <summary>
         /// Turns Echo cancellation on and off
         /// </summary>

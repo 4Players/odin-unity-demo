@@ -139,6 +139,34 @@ namespace OdinNative.Odin
         }
 
         /// <summary>
+        /// Join or create a named <see cref="Room.Room"/> by token via a gateway
+        /// </summary>
+        /// <param name="roomalias">Room alias</param>
+        /// <param name="token">Room token</param>
+        /// <param name="userData">Set new <see cref="UserData"/> on room join</param>
+        /// <param name="setup">will invoke to setup a room before adding or joining</param>
+        /// <returns><see cref="Room.Room"/> or null</returns>
+        public async Task<Room.Room> JoinNamedRoom(string roomalias, string token, UserData userData = null, Action<Room.Room> setup = null)
+        {
+            if (string.IsNullOrEmpty(token)) throw new OdinWrapperException("Room token can not be null or empty!", new ArgumentNullException());
+
+            UserData = userData == null || userData.IsEmpty() ? UserData : userData;
+            return await Task.Factory.StartNew<Room.Room>(() =>
+            {
+                var room = new Room.Room(EndPoint.ToString(), string.Empty, token, roomalias);
+                setup?.Invoke(room);
+                Rooms.Add(room);
+                if (room.Join(token) == false)
+                {
+                    Rooms.Remove(room);
+                    room.Dispose();
+                    room = null;
+                }
+                return room;
+            });
+        }
+
+        /// <summary>
         /// Join or create a <see cref="Room.Room"/> by token via a gateway
         /// </summary>
         /// <param name="token">Room token</param>
@@ -237,7 +265,9 @@ namespace OdinNative.Odin
         /// <param name="roomPtr">sender room pointer</param>
         /// <param name="event">OdinEvent struct</param>
         /// <param name="userDataPtr">userdata pointer</param>
+#if UNITY_2019_4
         [AOT.MonoPInvokeCallback(typeof(Core.Imports.NativeMethods.OdinEventCallback))]
+#endif
         internal static void OnEventReceivedProxy(IntPtr roomPtr, IntPtr odinEvent, IntPtr extraData)
         {
             try

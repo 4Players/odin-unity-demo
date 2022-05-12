@@ -63,6 +63,10 @@ namespace OdinNative.Odin.Room
             : this(server, string.Empty, token, string.Empty, new OdinMediaConfig(MediaSampleRate.Hz48000, MediaChannels.Mono), apmConfig ?? new OdinRoomConfig(), true)
         { }
 
+        internal Room(string server, string accessKey, string token, string name, OdinRoomConfig apmConfig = null)
+            : this(server, accessKey, token, name, new OdinMediaConfig(MediaSampleRate.Hz48000, MediaChannels.Mono), apmConfig ?? new OdinRoomConfig(), true)
+        { }
+
         /// <summary>
         /// Create a ODIN ffi room 
         /// </summary>
