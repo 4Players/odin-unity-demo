@@ -13,7 +13,7 @@ namespace OdinNative.Core.Imports
     /// </summary>
     public static class NativeBindings
     {
-        public const string OdinVersion = "0.5.0";
+        public const string OdinVersion = "0.6.0";
 
         /// <summary>
         /// Valid levels for aggressiveness of the noise suppression
@@ -41,7 +41,7 @@ namespace OdinNative.Core.Imports
 
         internal struct OdinApmConfig
         {
-            public bool vad_enable;
+            public bool voice_activity_detection;
             public bool echo_canceller;
             public bool high_pass_filter;
             public bool pre_amplifier;

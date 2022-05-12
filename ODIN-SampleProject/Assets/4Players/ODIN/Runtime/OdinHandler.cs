@@ -288,34 +288,7 @@ public class OdinHandler : MonoBehaviour
         if (userData == null)
             userData = new UserData(Config.UserDataText);
         
-        if (setup == null)
-            setup = (r) =>
-            {
-                var cfg = Config;
-                if (cfg.PeerJoinedEvent) r.OnPeerJoined += Room_OnPeerJoined;
-                if (cfg.PeerLeftEvent) r.OnPeerLeft += Room_OnPeerLeft;
-                if (cfg.PeerUpdatedEvent) r.OnPeerUserDataChanged += Room_OnPeerUserDataChanged;
-                if (cfg.MediaAddedEvent) r.OnMediaAdded += Room_OnMediaAdded;
-                if (cfg.MediaRemovedEvent) r.OnMediaRemoved += Room_OnMediaRemoved;
-                if (cfg.RoomUpdatedEvent) r.OnRoomUserDataChanged += Room_OnRoomUserDataChanged;
-                if (cfg.MediaActiveStateChangedEvent) r.OnMediaActiveStateChanged += Room_OnMediaActiveStateChanged;
-                if (cfg.MessageReceivedEvent) r.OnMessageReceived += Room_OnMessageReceived;
-                
-                r.SetApmConfig(new OdinNative.Core.OdinRoomConfig()
-                {
-                    VadEnable = cfg.VadEnable,
-                    EchoCanceller = cfg.EchoCanceller,
-                    HighPassFilter = cfg.HighPassFilter,
-                    PreAmplifier = cfg.PreAmplifier,
-                    OdinNoiseSuppressionLevel = cfg.NoiseSuppressionLevel,
-                    TransientSuppressor = cfg.TransientSuppressor,
-                });
-
-                EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
-                    this,
-                    new RoomJoinEventArgs() { Room = r }));
-            };
-
+        setup = CheckSetup(setup);
         Client.UpdateUserData(userData);
         Room room = await Client.JoinRoom(roomName, Config.ClientId, userData, setup);
 
@@ -334,6 +307,83 @@ public class OdinHandler : MonoBehaviour
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
             this, 
             new RoomJoinedEventArgs() { Room = room }));
+    }
+
+    /// <summary>
+    /// Join or create a room by name and attach a <see cref="OdinNative.Odin.Media.MicrophoneStream"/>
+    /// </summary>
+    /// <remarks>Configure Room-Apm i.e VadEnable, ... or Odin-Event-Listeners i.e PeerJoinedEvent, ... with <see cref="Config"/></remarks>
+    /// <param name="roomAlias">Room name</param>
+    /// <param name="userData">Override OdinClient default UserData</param>
+    /// <param name="setup">Override default Room setup</param>
+    public async void JoinRoom(string roomAlias, string token, UserData userData = null, System.Action<Room> setup = null)
+    {
+        if (string.IsNullOrEmpty(roomAlias))
+        {
+            Debug.LogError("Room name can not be empty!");
+            return;
+        }
+
+        if (Client.Rooms[roomAlias] != null)
+        {
+            Debug.LogError($"Room {roomAlias} already joined!");
+            return;
+        }
+
+        if (userData == null)
+            userData = new UserData(Config.UserDataText);
+
+        setup = CheckSetup(setup);
+        Client.UpdateUserData(userData);
+        Room room = await Client.JoinNamedRoom(roomAlias, token, userData, setup);
+
+        if (room == null || room.IsJoined == false)
+        {
+            Debug.LogError($"Odin {Config.ClientId}: Room {roomAlias} join failed!");
+            return;
+        }
+        Debug.Log($"Odin {Config.ClientId}: Room {room.Config.Name} joined.");
+
+        if (room.CreateMicrophoneMedia(new OdinNative.Core.OdinMediaConfig(Microphone.SampleRate, Config.DeviceChannels)))
+            Debug.Log($"MicrophoneStream added to room {roomAlias}.");
+
+        await System.Threading.Tasks.Task.Yield();
+
+        EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
+            this,
+            new RoomJoinedEventArgs() { Room = room }));
+    }
+
+    private Action<Room> CheckSetup(Action<Room> setup)
+    {
+        if (setup == null)
+            setup = (r) =>
+            {
+                var cfg = Config;
+                if (cfg.PeerJoinedEvent) r.OnPeerJoined += Room_OnPeerJoined;
+                if (cfg.PeerLeftEvent) r.OnPeerLeft += Room_OnPeerLeft;
+                if (cfg.PeerUpdatedEvent) r.OnPeerUserDataChanged += Room_OnPeerUserDataChanged;
+                if (cfg.MediaAddedEvent) r.OnMediaAdded += Room_OnMediaAdded;
+                if (cfg.MediaRemovedEvent) r.OnMediaRemoved += Room_OnMediaRemoved;
+                if (cfg.RoomUpdatedEvent) r.OnRoomUserDataChanged += Room_OnRoomUserDataChanged;
+                if (cfg.MediaActiveStateChangedEvent) r.OnMediaActiveStateChanged += Room_OnMediaActiveStateChanged;
+                if (cfg.MessageReceivedEvent) r.OnMessageReceived += Room_OnMessageReceived;
+
+                r.SetApmConfig(new OdinNative.Core.OdinRoomConfig()
+                {
+                    VoiceActivityDetection = cfg.VoiceActivityDetection,
+                    EchoCanceller = cfg.EchoCanceller,
+                    HighPassFilter = cfg.HighPassFilter,
+                    PreAmplifier = cfg.PreAmplifier,
+                    OdinNoiseSuppressionLevel = cfg.NoiseSuppressionLevel,
+                    TransientSuppressor = cfg.TransientSuppressor,
+                });
+
+                EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
+                    this,
+                    new RoomJoinEventArgs() { Room = r }));
+            };
+        return setup;
     }
 
     /// <summary>

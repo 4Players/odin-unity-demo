@@ -54,7 +54,7 @@ namespace OdinNative.Odin
         public static ulong TokenLifetime { get; set; } = 300;
 
         #region Apm
-        public static bool VadEnable = true;
+        public static bool VoiceActivityDetection = true;
         public static bool EchoCanceller = false;
         public static bool HighPassFilter = false;
         public static bool PreAmplifier = false;

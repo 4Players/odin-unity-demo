@@ -22,7 +22,7 @@ namespace OdinNative.Unity.UIEditor
         SerializedProperty RemoteSampleRate;
         SerializedProperty RemoteChannels;
 
-        SerializedProperty VadEnable;
+        SerializedProperty VoiceActivityDetection;
         SerializedProperty EchoCanceller;
         SerializedProperty HighPassFilter;
         SerializedProperty PreAmplifier;
@@ -49,7 +49,7 @@ namespace OdinNative.Unity.UIEditor
             RemoteSampleRate = serializedObject.FindProperty("RemoteSampleRate");
             RemoteChannels = serializedObject.FindProperty("RemoteChannels");
 
-            VadEnable = serializedObject.FindProperty("VadEnable");
+            VoiceActivityDetection = serializedObject.FindProperty("VoiceActivityDetection");
             EchoCanceller = serializedObject.FindProperty("EchoCanceller");
             HighPassFilter = serializedObject.FindProperty("HighPassFilter");
             PreAmplifier = serializedObject.FindProperty("PreAmplifier");
@@ -146,7 +146,7 @@ namespace OdinNative.Unity.UIEditor
             drawRect(2);
             if (toggleRoomSettings)
             {
-                EditorGUILayout.PropertyField(VadEnable, new GUIContent("Voice activity detection", "Use intelligent algorithms to determine speech presence probability in the microphone input signal."));
+                EditorGUILayout.PropertyField(VoiceActivityDetection, new GUIContent("Voice activity detection", "Use intelligent algorithms to determine speech presence probability in the microphone input signal."));
                 //EditorGUILayout.PropertyField(EchoCanceller, new GUIContent("Echo cancellation", "Improve voice quality by preventing echo from being created.")); // TODO
                 EditorGUILayout.PropertyField(HighPassFilter, new GUIContent("High-pass filter", "Reduce lower frequencies of the microphone input signal."));
                 EditorGUILayout.PropertyField(PreAmplifier, new GUIContent("Input Amplifier", "Amplify the microphone input signal when needed."));

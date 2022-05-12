@@ -13,10 +13,10 @@ namespace OdinNative.Core
         /// <summary>
         /// Enables or disables RNN-based voice activity detection
         /// </summary>
-        public bool VadEnable
+        public bool VoiceActivityDetection
         {
-            get { return ApmConfig.vad_enable; }
-            set { ApmConfig.vad_enable = value; }
+            get { return ApmConfig.voice_activity_detection; }
+            set { ApmConfig.voice_activity_detection = value; }
         }
 
         /// <summary>
@@ -69,12 +69,12 @@ namespace OdinNative.Core
 
         private OdinApmConfig ApmConfig = new OdinApmConfig();
 
-        private OdinRoomConfig(OdinApmConfig config) : this(config.vad_enable, config.echo_canceller, config.high_pass_filter, config.pre_amplifier, config.noise_suppression_level, config.transient_suppressor, true) { }
+        private OdinRoomConfig(OdinApmConfig config) : this(config.voice_activity_detection, config.echo_canceller, config.high_pass_filter, config.pre_amplifier, config.noise_suppression_level, config.transient_suppressor, true) { }
         public OdinRoomConfig(bool vadEnable = false, bool echoCanceller = false, bool highPassFilter = false, bool preAmplifier = false, OdinNoiseSuppressionLevel noiseSuppressionLevel = OdinNoiseSuppressionLevel.None, bool transientSuppressor = false)
             : this(vadEnable, echoCanceller, highPassFilter, preAmplifier, noiseSuppressionLevel, transientSuppressor, false) { }
-        internal OdinRoomConfig(bool vadEnable, bool echoCanceller, bool highPassFilter, bool preAmplifier, OdinNoiseSuppressionLevel noiseSuppressionLevel, bool transientSuppressor, bool remote = false)
+        internal OdinRoomConfig(bool voiceActivityDetection, bool echoCanceller, bool highPassFilter, bool preAmplifier, OdinNoiseSuppressionLevel noiseSuppressionLevel, bool transientSuppressor, bool remote = false)
         {
-            VadEnable = vadEnable;
+            VoiceActivityDetection = voiceActivityDetection;
             EchoCanceller = echoCanceller;
             HighPassFilter = highPassFilter;
             PreAmplifier = preAmplifier;
