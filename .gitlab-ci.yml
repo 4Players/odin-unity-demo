@@ -54,17 +54,17 @@ test:editor:
 build:windows:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Win64 -buildWindows64Player "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}.exe"
+    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Win64 -buildWindows64Player "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}.exe"
 
 build:macos:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget OSXUniversal -buildOSXUniversalPlayer "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}"
+    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget OSXUniversal -buildOSXUniversalPlayer "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}"
 
 build:linux:
   <<: *common_build
   script:
-    - unity-editor -2021 -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Linux64 -buildLinux64Player "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}"
+    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Linux64 -buildLinux64Player "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}"
 
 ### Packaging
 
