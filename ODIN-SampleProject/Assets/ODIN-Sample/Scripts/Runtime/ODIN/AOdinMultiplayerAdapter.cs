@@ -27,10 +27,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         protected virtual IEnumerator OnConnectionBehaviour()
         {
-            while (!OdinHandler.Instance)
+            while (!OdinHandler.Instance || null == OdinHandler.Instance.GetUserData())
                 yield return null;
 
-            if (OdinHandler.Instance.HasConnections)
+            if (OdinHandler.Instance.HasConnections && IsLocalUser())
                 foreach (Room instanceRoom in OdinHandler.Instance.Rooms)
                     UpdateUniqueUserId(instanceRoom);
 

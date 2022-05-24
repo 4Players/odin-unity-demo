@@ -426,7 +426,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2753487309664625877}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.15, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8369994021386623147}
@@ -647,8 +647,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   adapter: {fileID: 1608805246826064242}
-  indicationTarget: {fileID: 2753487310897480875}
   odinRoomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  indicationTarget: {fileID: 2753487310897480875}
   voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &3001106345836885710
 GameObject:
@@ -1179,8 +1179,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   adapter: {fileID: 1608805246826064242}
-  indicationTarget: {fileID: 5456647179934602871}
   odinRoomName: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
+  indicationTarget: {fileID: 5456647179934602871}
   voiceOnColor: {r: 0, g: 1.4352942, b: 1.4980392, a: 1}
 --- !u!1 &6767416847630222415
 GameObject:

@@ -16,9 +16,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         [SerializeField] private OdinStringVariable displayedRoomName;
 
-
-        private HashSet<PlaybackComponent> _playbackComponents = new HashSet<PlaybackComponent>();
-
         private OdinTransmitterUiElement[] _uiElements;
 
         private void Awake()
@@ -44,23 +41,30 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         {
             if (sender is Room sendingRoom)
             {
-                var roomName = sendingRoom.Config.Name;
+                string roomName = sendingRoom.Config.Name;
                 if (roomName == displayedRoomName.Value)
                 {
-                    var peerId = mediaActiveEventArgs.PeerId;
+                    ulong peerId = mediaActiveEventArgs.PeerId;
                     int mediaId = mediaActiveEventArgs.MediaId;
 
-                    var uiKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
+                    OdinConnectionIdentifier uiKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
 
                     if (mediaActiveEventArgs.Active)
                     {
                         var room = OdinHandler.Instance.Rooms[roomName];
                         var peer = room.RemotePeers[peerId];
+                        OdinSampleUserData userData = null;
                         if (null != peer)
                         {
-                            var userData = OdinSampleUserData.FromUserData(peer.UserData);
-                            ShowElement(uiKey, userData);
+                            userData = OdinSampleUserData.FromUserData(peer.UserData);
                         }
+                        else
+                        {
+                            userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
+                        }
+                        
+                        if(null != userData)
+                            ShowElement(uiKey, userData);
                     }
                     else
                     {
@@ -72,7 +76,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void ShowElement(OdinConnectionIdentifier key, OdinSampleUserData userData)
         {
-            foreach (var element in _uiElements)
+            foreach (OdinTransmitterUiElement element in _uiElements)
                 if (!element.IsActive())
                 {
                     element.Show(key, userData);
@@ -82,7 +86,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void HideElement(OdinConnectionIdentifier key)
         {
-            foreach (var element in _uiElements)
+            foreach (OdinTransmitterUiElement element in _uiElements)
                 if (element.IsShowing(key))
                     element.Hide();
         }

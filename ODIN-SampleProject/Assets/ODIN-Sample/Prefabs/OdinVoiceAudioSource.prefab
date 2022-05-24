@@ -43,7 +43,8 @@ AudioSource:
   m_GameObject: {fileID: 1106984047728188998}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -2421494080382456696, guid: b7046d9e5d9f0824bab6670f346b26b8, type: 2}
+  OutputAudioMixerGroup: {fileID: -2421494080382456696, guid: b7046d9e5d9f0824bab6670f346b26b8,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -55,7 +56,7 @@ AudioSource:
   Priority: 0
   DopplerLevel: 1
   MinDistance: 2
-  MaxDistance: 100
+  MaxDistance: 75
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -148,10 +149,6 @@ MonoBehaviour:
   Channels: 1
   OverrideSampleRate: 0
   SampleRate: 48000
-  CheckPlayingStatusInUpdate: 0
-  CheckPlayingStatusAsInvoke: 1
-  PlayingStatusDelay: 0.2
-  PlayingStatusRepeatingTime: 0.2
 --- !u!135 &-5669443469478044909
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -177,3 +174,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49da86a68ef34f208720a2fca9fbe004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  removeParentCollidersForOcclusion: 1

@@ -16,11 +16,20 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
     [RequireComponent(typeof(AudioSource))]
     public class AudioEffectApplicator : MonoBehaviour
     {
+        /// <summary>
+        /// If set to true, the audio occlusion system will remove the parent colliders of this occluded audio source
+        /// from consideration as a occluding object. Should be set to false e.g. if you want any parent object to
+        /// be an audio occlusion object.
+        /// </summary>
+        [SerializeField] private bool removeParentCollidersForOcclusion = true;
+        
         private readonly List<AudioEffectData> _effectList = new List<AudioEffectData>();
         private AudioSource _audioSource;
         private AudioLowPassFilter _lowPassFilter;
 
         private AudioEffectData _originalEffect;
+
+        public bool RemoveParentCollidersForOcclusion => removeParentCollidersForOcclusion;
 
         private void Awake()
         {

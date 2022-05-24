@@ -27,12 +27,16 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
         IEnumerator Start()
         {
+            while (!OdinHandler.Instance)
+                yield return null;
+
+            Debug.Log("Odin Handler now available.");
             // Important: We have to disperse the Join Room Calls over multiple frames. If called in the same frame, build will crash.
             foreach (OdinStringVariable refRoomName in refRoomNames)
             {
                 if (OdinHandler.Instance && !OdinHandler.Instance.Rooms.Contains(refRoomName.Value))
                 {
-                    Debug.Log($"ODIN - joining room {refRoomName.Value}");
+                    Debug.Log($"ODIN Auto Join - joining room {refRoomName.Value}");
                 
                     OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
                     OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);

@@ -1146,7 +1146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8634675184425525421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.62, y: 1.15, z: 9.14}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3920889674927449518}
@@ -1316,9 +1316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb9a3125586fb5f4bb2a1df0246ed741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushToTalkSettings:
-  - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
+  pushToTalkSettings: {fileID: 0}
 --- !u!1 &8957796788754404053
 GameObject:
   m_ObjectHideFlags: 0
