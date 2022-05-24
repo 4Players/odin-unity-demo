@@ -72,8 +72,16 @@ MonoBehaviour:
   PeerUpdatedEvent: 1
   MediaAddedEvent: 1
   MediaRemovedEvent: 1
+  RoomUpdatedEvent: 1
+  MediaActiveStateChangedEvent: 1
+  MessageReceivedEvent: 1
   TokenLifetime: 300
-  VadEnable: 1
+  VoiceActivityDetection: 1
+  VoiceActivityDetectionAttackProbability: 0.9
+  VoiceActivityDetectionReleaseProbability: 0.8
+  VolumeGate: 0
+  VolumeGateAttackLoudness: -30
+  VolumeGateReleaseLoudness: -40
   EchoCanceller: 0
   HighPassFilter: 0
   PreAmplifier: 0
@@ -107,7 +115,7 @@ MonoBehaviour:
   OnPeerJoined:
     m_PersistentCalls:
       m_Calls: []
-  OnPeerUpdated:
+  OnPeerUserDataChanged:
     m_PersistentCalls:
       m_Calls: []
   OnPeerLeft:
@@ -119,6 +127,15 @@ MonoBehaviour:
   OnMediaRemoved:
     m_PersistentCalls:
       m_Calls: []
+  OnMediaActiveStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRoomUserDataChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMessageReceived:
+    m_PersistentCalls:
+      m_Calls: []
   OnCreatedMediaObject:
     m_PersistentCalls:
       m_Calls: []
@@ -127,7 +144,8 @@ MonoBehaviour:
       m_Calls: []
   _persistent: 1
   Use3DAudio: 0
-  CreatePlayback: 0
+  CreatePlayback: 1
+  PlaybackAudioMixer: {fileID: 0}
   PlaybackAudioMixerGroup: {fileID: 0}
 --- !u!114 &3711129780530095855
 MonoBehaviour:

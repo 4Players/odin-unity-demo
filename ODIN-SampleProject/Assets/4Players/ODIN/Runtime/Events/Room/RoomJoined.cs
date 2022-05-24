@@ -5,7 +5,8 @@ using OdinNative.Odin.Room;
 namespace OdinNative.Unity.Events
 {
     /// <summary>
-    /// Unity Inspector event wrapper <see href="https://docs.unity3d.com/ScriptReference/Events.UnityEvent.html">(UnityEvent)</see>
+    /// This class provides the base functionality for ODIN SDK UnityEvents.
+    /// A persistent callback that can be saved with the Scene.
     /// </summary>
     [Serializable]
     public class RoomJoinedProxy : UnityEvent<RoomJoinedEventArgs>

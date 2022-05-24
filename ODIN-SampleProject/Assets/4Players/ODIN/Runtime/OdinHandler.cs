@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using static OdinNative.Core.Imports.NativeBindings;
 
+[AddComponentMenu("")]
 [RequireComponent(typeof(OdinEditorConfig))]
 [DisallowMultipleComponent, DefaultExecutionOrder(-100)]
 public class OdinHandler : MonoBehaviour
@@ -93,7 +94,8 @@ public class OdinHandler : MonoBehaviour
     /// <remarks>Invokes after <see cref="OnMediaRemoved"/></remarks>
     public UnityDeleteMediaObject OnDeleteMediaObject;
 
-    internal ConcurrentQueue<KeyValuePair<object, System.EventArgs>> EventQueue;
+    internal static readonly ConcurrentQueue<Action> ActionQueue = new ConcurrentQueue<Action>();
+    internal ConcurrentQueue<KeyValuePair<object, EventArgs>> EventQueue;
 
     /// <summary>
     /// Internal wrapper instance for the native ODIN runtime
@@ -178,26 +180,11 @@ public class OdinHandler : MonoBehaviour
         Identifier = SystemInfo.deviceUniqueIdentifier;
         ClientId = string.Join(".", Application.companyName, Application.productName, Identifier);
 
-        MediaAddedQueue = new ConcurrentQueue<KeyValuePair<Room, MediaAddedEventArgs>>();
-        MediaRemovedQueue = new ConcurrentQueue<KeyValuePair<Room, MediaRemovedEventArgs>>();
-
         SetupEventProxy();
-    }
-
-    [RuntimeInitializeOnLoadMethod]
-    void RunOnStart()
-    {
-#if UNITY_EDITOR
-        UnityEditor.AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
-#endif
     }
 
     void Start()
     {
-#if UNITY_EDITOR
-        UnityEditor.AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
-#endif
-
         if (string.IsNullOrEmpty(Config.ClientId))
             Config.ClientId = ClientId;
 
@@ -212,7 +199,7 @@ public class OdinHandler : MonoBehaviour
                 Debug.LogWarning("Using a generated test key!");
             }
             Client = new OdinClient(new System.Uri(Config.Server), Config.AccessKey, userData);
-            if(!OdinNative.Core.OdinLibrary.IsInitialized)
+            if (!OdinNative.Core.OdinLibrary.IsInitialized)
                 Client.ReloadLibrary(); // call the load from Unity main thread
         }
         catch (System.DllNotFoundException e)
@@ -231,6 +218,8 @@ public class OdinHandler : MonoBehaviour
     private void SetupEventProxy(bool customProxy = false)
     {
         EventQueue = new ConcurrentQueue<KeyValuePair<object, System.EventArgs>>();
+        MediaAddedQueue = new ConcurrentQueue<KeyValuePair<Room, MediaAddedEventArgs>>();
+        MediaRemovedQueue = new ConcurrentQueue<KeyValuePair<Room, MediaRemovedEventArgs>>();
 
         if (OnCreatedMediaObject == null) OnCreatedMediaObject = new UnityCreatedMediaObject();
         if (OnDeleteMediaObject == null) OnDeleteMediaObject = new UnityDeleteMediaObject();
@@ -273,7 +262,7 @@ public class OdinHandler : MonoBehaviour
     /// <param name="setup">Override default Room setup</param>
     public async void JoinRoom(string roomName, UserData userData = null, System.Action<Room> setup = null)
     {
-        if(string.IsNullOrEmpty(roomName))
+        if (string.IsNullOrEmpty(roomName))
         {
             Debug.LogError("Room name can not be empty!");
             return;
@@ -287,7 +276,7 @@ public class OdinHandler : MonoBehaviour
 
         if (userData == null)
             userData = new UserData(Config.UserDataText);
-        
+
         setup = CheckSetup(setup);
         Client.UpdateUserData(userData);
         Room room = await Client.JoinRoom(roomName, Config.ClientId, userData, setup);
@@ -305,7 +294,7 @@ public class OdinHandler : MonoBehaviour
         await System.Threading.Tasks.Task.Yield();
 
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
-            this, 
+            this,
             new RoomJoinedEventArgs() { Room = room }));
     }
 
@@ -372,6 +361,11 @@ public class OdinHandler : MonoBehaviour
                 r.SetApmConfig(new OdinNative.Core.OdinRoomConfig()
                 {
                     VoiceActivityDetection = cfg.VoiceActivityDetection,
+                    VoiceActivityDetectionAttackProbability = cfg.VoiceActivityDetectionAttackProbability,
+                    VoiceActivityDetectionReleaseProbability = cfg.VoiceActivityDetectionReleaseProbability,
+                    VolumeGate = cfg.VolumeGate,
+                    VolumeGateAttackLoudness = cfg.VolumeGateAttackLoudness,
+                    VolumeGateReleaseLoudness = cfg.VolumeGateReleaseLoudness,
                     EchoCanceller = cfg.EchoCanceller,
                     HighPassFilter = cfg.HighPassFilter,
                     PreAmplifier = cfg.PreAmplifier,
@@ -399,8 +393,8 @@ public class OdinHandler : MonoBehaviour
         }
 
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
-            this, 
-            new RoomLeaveEventArgs() { Room = Rooms[roomName] } ));
+            this,
+            new RoomLeaveEventArgs() { Room = Rooms[roomName] }));
 
         if (CreatePlayback && Use3DAudio == false)
         {
@@ -536,8 +530,25 @@ public class OdinHandler : MonoBehaviour
         HandleEventQueue();
     }
 
+    void Update()
+    {
+        if (Corrupted) return;
+
+        HandleActionQueue();
+    }
+
+    private IEnumerator HandleActionQueue()
+    {
+        while (ActionQueue.TryDequeue(out Action uAction))
+        {
+            uAction.Invoke();
+            yield return null;
+        }
+    }
+
     private void HandleEventQueue()
     {
+        if (EventQueue == null) return;
         while (EventQueue.TryDequeue(out KeyValuePair<object, System.EventArgs> uEvent))
         {
             //Room
@@ -573,10 +584,12 @@ public class OdinHandler : MonoBehaviour
 
     private void HandleNewMediaQueue()
     {
+        if (MediaAddedQueue == null) return;
         if (MediaAddedQueue.TryDequeue(out KeyValuePair<Room, MediaAddedEventArgs> addedEvent))
         {
 
             if (CreatePlayback)
+            {
                 if (Use3DAudio)
                 {
                     Debug.LogWarning("Create Playback and 3D Audio enabled at the same time has currently limit support and uses FindGameObjectsWithTag with UnityAudioSourceTag tagged gameobjects.");
@@ -584,6 +597,7 @@ public class OdinHandler : MonoBehaviour
                 }
                 else if (addedEvent.Key.OwnId != addedEvent.Value.PeerId)
                     AddPlaybackComponent(this.gameObject, addedEvent);
+            }
             else if (Config.Verbose)
                 Debug.LogWarning($"No available consumers for playback found.");
 
@@ -668,6 +682,7 @@ public class OdinHandler : MonoBehaviour
 
     private void HandleRemoveMediaQueue()
     {
+        if (MediaRemovedQueue == null) return;
         if (MediaRemovedQueue.TryDequeue(out KeyValuePair<Room, MediaRemovedEventArgs> removedEvent))
         {
             OnDeleteMediaObject?.Invoke(removedEvent.Value.MediaId);
@@ -705,7 +720,36 @@ public class OdinHandler : MonoBehaviour
         return room.MicrophoneMedia;
     }
 
-#region convenience
+    #region convenience
+    /// <summary>
+    /// Configures the allowed 'view' distance for proximity calculation of peers in each room
+    /// </summary>
+    /// <remarks>Make sure that all of your ODIN clients configure the same `distance` value.</remarks>
+    /// <param name="scale">Per default, the room will use a distance of `1.0` fo proximity calculation</param>
+    public void RoomsSetPositionScale(float scale)
+    {
+        foreach (var room in Rooms)
+            if (room.IsJoined)
+                room.SetPositionScale(scale);
+    }
+
+    /// <summary>
+    /// Updates the two-dimensional position of our own peer in each room
+    /// </summary>
+    /// <remarks>This should _only_ be used after configuring the room with <see cref="OdinNative.Core.Imports.NativeMethods.RoomSetPositionScale"/>.</remarks>
+    /// <param name="x">x postition</param>
+    /// <param name="y">y postition</param>
+    public void RoomsUpdatePosition(float x, float y)
+    {
+        foreach (var room in Rooms)
+            if (room.IsJoined)
+                room.UpdatePosition(x, y);
+    }
+
+    /// <summary>
+    /// Updates the <see cref="UserData"/> for all <see cref="Rooms"/>
+    /// </summary>
+    /// <param name="userData"><see cref="OdinNative.Odin.UserData"/></param>
     public void UpdateUserData(UserData userData)
     {
         Client.UpdateUserData(userData);
@@ -907,12 +951,30 @@ public class OdinHandler : MonoBehaviour
         foreach (PlaybackComponent component in GetPlaybackComponents(mediaId))
             Destroy(component);
     }
-#endregion convenience 
+    #endregion convenience 
 
-    private static void OnAfterAssemblyReload()
+    void OnEnable()
     {
-        Corrupted = true;
-        Debug.LogError("Odin instance lost! Please, restart the application - hot reload is currently not supported.");
+#if UNITY_EDITOR
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += OnBeforeAssemblyReload;
+#endif 
+    }
+
+    void OnDisable()
+    {
+#if UNITY_EDITOR
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload -= OnBeforeAssemblyReload;
+#endif
+    }
+
+    private void OnBeforeAssemblyReload()
+    {
+        if (!HasConnections) return;
+
+        Destroy(Microphone);
+        DestroyPlaybackComponents();
+        Rooms.Clear();
+        Debug.LogException(new NotSupportedException("ODIN SDK ReloadEvent is not supported!"));
     }
 
     void OnDestroy()

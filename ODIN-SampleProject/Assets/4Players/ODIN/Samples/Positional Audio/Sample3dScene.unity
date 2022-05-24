@@ -150,11 +150,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 923744098729652767, guid: f4033c2bcba24fd438033c821af49a45,
         type: 3}
-      propertyPath: AccessKey
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 923744098729652767, guid: f4033c2bcba24fd438033c821af49a45,
-        type: 3}
       propertyPath: PeerLeftEvent
       value: 0
       objectReference: {fileID: 0}

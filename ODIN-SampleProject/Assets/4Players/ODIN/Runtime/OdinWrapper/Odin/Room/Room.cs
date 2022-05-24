@@ -17,7 +17,7 @@ namespace OdinNative.Odin.Room
     /// </summary>
     public class Room : IDisposable
     {
-        public static KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason> ConnectionState { get; private set; }
+        public static KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason> ConnectionState { get; private set; } = new KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason>(OdinRoomConnectionState.Disconnected, OdinRoomConnectionStateChangeReason.ClientRequested);
 
         /// <summary>
         /// Room configuration
@@ -137,7 +137,8 @@ namespace OdinNative.Odin.Room
         /// <returns>true on successful join or false</returns>
         public bool Join(string name, string userId, UserData userData = null)
         {
-            if (IsJoined) return false;
+            if(Test(IsJoined == false, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
+
             Utility.Assert(!string.IsNullOrEmpty(this.Config.AccessKey), "Can not join a room by name without an accesskey. Use Join with token instead!");
             if (AuthHandle == null || AuthHandle == IntPtr.Zero) return false;
 
@@ -157,8 +158,9 @@ namespace OdinNative.Odin.Room
         /// <returns>true on successful join or false</returns>
         public bool Join(string token)
         {
-            if (IsJoined) return false;
-            if(string.IsNullOrEmpty(token))
+            if(Test(IsJoined == false, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
+
+            if (string.IsNullOrEmpty(token))
             { 
                 Utility.Assert(!string.IsNullOrEmpty(this.Config.Token), "Can not join a room without a token!");
                 token = this.Config.Token;
@@ -177,7 +179,7 @@ namespace OdinNative.Odin.Room
         /// <returns>true if media was added to the room or false</returns>
         public bool CreateMicrophoneMedia(OdinMediaConfig config)
         {
-            if (!IsJoined) return false;
+            if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
 
             MicrophoneStream stream = new MicrophoneStream(config);
             bool result = stream.AddMediaToRoom(_Handle);
@@ -273,8 +275,7 @@ namespace OdinNative.Odin.Room
         /// <returns>true if data was send or false</returns>
         public bool SendMessage(ulong[] peerIdList, byte[] data)
         {
-            if (!IsJoined) return false;
-
+            if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
             return OdinLibrary.Api.RoomSendMessage(_Handle, peerIdList, (ulong)peerIdList.Length, data, (ulong)data.Length) == Utility.OK;
         }
 
@@ -310,6 +311,7 @@ namespace OdinNative.Odin.Room
         /// <returns>true if set or false</returns>
         public bool SetPositionScale(float scale)
         {
+            if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
             return OdinLibrary.Api.RoomSetPositionScale(_Handle, scale) == Utility.OK;
         }
 
@@ -322,6 +324,7 @@ namespace OdinNative.Odin.Room
         /// <returns>true if set or false</returns>
         public bool UpdatePosition(float x, float y)
         {
+            if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
             return OdinLibrary.Api.RoomUpdatePosition(_Handle, x, y) == Utility.OK;
         }
 
@@ -331,6 +334,7 @@ namespace OdinNative.Odin.Room
         /// <remarks>This resets the room object for a final close use <see cref="Dispose"/></remarks>
         public void Leave()
         {
+            RegisterEventCallback(null);
             RemotePeers.FreeAll();
             _Handle.DangerousRelease();
             _AuthHandle?.DangerousRelease();
@@ -463,6 +467,8 @@ namespace OdinNative.Odin.Room
 
                 case OdinEventTag.OdinEvent_ConnectionStateChanged:
                     ConnectionState = new KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason> (@event.room_connection_state_changed.state, @event.room_connection_state_changed.reason);
+                    if (ConnectionState.Key.HasFlag(OdinRoomConnectionState.Disconnected))
+                        IsJoined = false;
                     break;
                 case OdinEventTag.OdinEvent_None:
                 default:
@@ -530,7 +536,6 @@ namespace OdinNative.Odin.Room
             {
                 MediaId = @event.media_id,
                 Peer = peerWithMedia,
-                Media = peerWithMedia?.Medias[@event.media_id]
             });
         }
 
@@ -590,7 +595,6 @@ namespace OdinNative.Odin.Room
                     {
                         MediaId = (ushort)closingMedia.Id,
                         Peer = leavingPeer,
-                        Media = closingMedia
                     });
             }
             //remove peer
@@ -640,6 +644,15 @@ namespace OdinNative.Odin.Room
             Self = new Peer.Peer(@event.own_peer_id, roomId, PeerUserData);
         }
         #endregion Events
+
+        private static bool Test(bool condition, string message)
+        {
+            if(condition) return false;
+#pragma warning disable CS0618 // Type or member is obsolete
+            OdinNative.Core.Utility.Throw(new OdinUnityException(message));
+#pragma warning restore CS0618 // Type or member is obsolete
+            return true;
+        }
 
         private bool disposedValue;
         protected virtual void Dispose(bool disposing)

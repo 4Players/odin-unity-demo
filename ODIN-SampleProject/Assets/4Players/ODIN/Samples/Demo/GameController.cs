@@ -110,7 +110,7 @@ namespace OdinNative.Unity.Samples
             // get PlaybackComponent by media id
             PlaybackComponent playback = PeersObjects
                 .Select(gameObj => gameObj.GetComponent<PlaybackComponent>())
-                .FirstOrDefault(playbackComponent => playbackComponent != null && playbackComponent.MediaId == args.Media.Id);
+                .FirstOrDefault(playbackComponent => playbackComponent != null && playbackComponent.MediaId == args.MediaId);
 
             
             if (playback == null) return;

@@ -48,6 +48,12 @@ namespace OdinNative.Unity.UIEditor
         int mediaEventToolbarInt = 0;
         string[] mediaEventToolbarLabels = { "Media added", "Media state changed", "Media removed" };
 
+        int audioModeSelected = 1;
+        GUIContent[] audioModeOptions = new GUIContent[] { 
+            new GUIContent("Manual positional audio", "Setup positional audio PlaybackStreams for manual use (mutually exclusive to \"Playback auto creation\")"),
+            new GUIContent("Playback auto creation", "Automatically creates Playback components within the handler object (mutually exclusive to \"Manual positional audio\")")
+        };
+
         void OnEnable()
         {
             MicrophoneObject = serializedObject.FindProperty("Microphone");
@@ -91,15 +97,40 @@ namespace OdinNative.Unity.UIEditor
             EditorGUILayout.PropertyField(AudioMixerGroupObject, new GUIContent("Default Playback Mixer Group", "Unity Audio Mixer Group to use for inserting default effects that process the signal of incoming ODIN audio streams and changing the parameters of effects."));
 
             GUILayout.Space(10);
-
-            // TODO: needs cleanup and clarification
-            EditorGUILayout.PropertyField(UseManual3DAudio, new GUIContent("Manual positional audio", "Setup positional audio PlaybackStreams for manual use (mutually exclusive to \"Playback auto creation\")"));
-            EditorGUILayout.PropertyField(PlaybackCreation, new GUIContent("Playback auto creation", "Automatically creates Playback components within the handler object (mutually exclusive to \"Manual positional audio\")"));
+            CreateAudioBoxes();
 
             GUILayout.Space(10);
             CreateEventListenersLayout();
 
             serializedObject.ApplyModifiedProperties();
+        }
+
+        private void CreateAudioBoxes(bool radioStyle = true)
+        {
+            if (radioStyle)
+            {
+                if (UseManual3DAudio.boolValue)
+                    audioModeSelected = 0;
+                else
+                    audioModeSelected = 1;
+                audioModeSelected = GUILayout.SelectionGrid(audioModeSelected, audioModeOptions, audioModeOptions.Length, EditorStyles.radioButton);
+                switch (audioModeSelected)
+                {
+                    case 0:
+                        UseManual3DAudio.boolValue = true;
+                        PlaybackCreation.boolValue = false;
+                        break;
+                    case 1:
+                        UseManual3DAudio.boolValue = false;
+                        PlaybackCreation.boolValue = true;
+                        break;
+                }
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(UseManual3DAudio, new GUIContent("Manual positional audio", "Setup positional audio PlaybackStreams for manual use (mutually exclusive to \"Playback auto creation\")"));
+                EditorGUILayout.PropertyField(PlaybackCreation, new GUIContent("Playback auto creation", "Automatically creates Playback components within the handler object (mutually exclusive to \"Manual positional audio\")"));
+            }
         }
 
         private void changeStyles()
