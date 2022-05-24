@@ -61,18 +61,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: ClientId
-      value: CrystalMesh.ODIN-SampleProject
+      value: 4Players.Photon-FPS-Showcase
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: AccessKey
-      value: AcdFXutP8PsgL04KxnBIks55ZC9eRSGPxCFK/P6BLr+l
+      value: AcaE4heahIIpDAdRRc6bZfWuZxDOh4HE+1h88J0uYEVs
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: VadEnable
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+      propertyPath: VolumeGate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: PreAmplifier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+      propertyPath: EchoCanceller
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+      propertyPath: HighPassFilter
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
@@ -85,11 +97,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: NoiseSuppressionLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5372910402810491490, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+      propertyPath: VoiceActivityDetection
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
       propertyPath: Use3DAudio
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
+      propertyPath: CreatePlayback
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a421abe223e2dee45b89e686a84e5545, type: 3}

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using OdinNative.Odin;
 using OdinNative.Odin.Media;
+using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
 using UnityEngine;
@@ -32,8 +34,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
         private void OnDisable()
         {
-            OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
-            OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
+            if (OdinHandler.Instance)
+            {
+                OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
+                OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
+            }
+            
+            DestroyAllPlaybacks();
         }
 
         private IEnumerator WaitForConnection()
@@ -41,8 +48,29 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             while (!OdinHandler.Instance)
                 yield return null;
 
+            
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
             OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
+
+            while (null == OdinHandler.Instance.Rooms)
+                yield return null;
+            UpdateRoomPlayback();
+        }
+        
+        /// <summary>
+        ///     Checks for each mediastream connected to any peer in the room <see cref="odinRoomName" />
+        ///     whether a Playback Components was already created and initialized.
+        /// </summary>
+        private void UpdateRoomPlayback()
+        {
+            if (OdinHandler.Instance && OdinHandler.Instance.Rooms.Contains(odinRoomName))
+            {
+                Room room = OdinHandler.Instance.Rooms[odinRoomName];
+                foreach (Peer remotePeer in room.RemotePeers)
+                {
+                    foreach (var mediaStream in remotePeer.Medias) SpawnPlaybackComponent(room.Config.Name, remotePeer.Id, mediaStream.Id);
+                }
+            }
         }
 
         private void OnMediaAdded(object arg0, MediaAddedEventArgs mediaAddedEventArgs)
@@ -70,7 +98,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
                 int mediaId = mediaRemovedArgs.MediaId;
 
-                DestroyPlaybackAudioSource(mediaRoomName, mediaPeerId, mediaId);
+                DestroyPlayback(mediaRoomName, mediaPeerId, mediaId);
             }
         }
     }

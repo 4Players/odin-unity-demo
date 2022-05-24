@@ -86,6 +86,12 @@ namespace OdinNative.Unity.Audio
         /// or false for manually manage sources
         /// </summary>
         public bool AutoDestroyAudioSource = true;
+        /// <summary>
+        /// On true destroy the <see cref="OdinNative.Odin.Media.MediaStream"/> in dispose to not leak 
+        /// or false for manually manage stream
+        /// </summary>
+        /// <remarks>On room leave/destroy the underlying streams will still be freed up</remarks>
+        public bool AutoDestroyMediaStream = true;
 
         internal bool RedirectPlaybackAudio = true;
         //State of InvokeRepeating
@@ -287,10 +293,11 @@ namespace OdinNative.Unity.Audio
             if (AutoDestroyAudioSource)
                 Destroy(PlaybackSource);
 
-            OdinHandler.Instance.Client?
-            .Rooms[RoomName]?
-            .RemotePeers[PeerId]?
-            .Medias.Free(MediaId);
+            if(AutoDestroyMediaStream)
+                OdinHandler.Instance.Client?
+                .Rooms[RoomName]?
+                .RemotePeers[PeerId]?
+                .Medias.Free(MediaId);
         }
     }
 }
