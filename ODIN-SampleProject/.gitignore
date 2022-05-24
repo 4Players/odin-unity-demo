@@ -62,3 +62,6 @@ crashlytics-build.properties
 # Remove Photon Server Settings
 *PhotonServerSettings.asset*
 
+# Rider specific assets
+ProjectSettings/RiderScriptEditorPersistedState.asset
+

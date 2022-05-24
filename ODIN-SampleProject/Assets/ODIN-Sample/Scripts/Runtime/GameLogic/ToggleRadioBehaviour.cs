@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
@@ -34,10 +35,13 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         [ColorUsage(true, true)]
         [SerializeField] private Color radioOffColor = Color.red;
 
+        
+        [Serializable] public class OnRadioToggledEvent : UnityEvent<bool> { }
+
         /// <summary>
         /// Called, when the radio active status is toggled. True, if the radio audio is playing, off otherwise.
         /// </summary>
-        public UnityEvent<bool> onRadioToggled;
+        public OnRadioToggledEvent onRadioToggled;
 
         private Color _originalColor;
         
