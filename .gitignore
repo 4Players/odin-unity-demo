@@ -1,5 +1,6 @@
 # OS specific files
 .DS_Store
+.vscode
 Thumbs.db
 
 # Builds
