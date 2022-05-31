@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin
@@ -11,21 +10,18 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     {
         private void Awake()
         {
-            if (OdinHandler.Instance)
-            {
-                var overrideGatewayURL = GetCommandLineArg("override-gateway-url");
-                if (overrideGatewayURL != null) {
-                    Debug.Log("Overriding default ODIN gateway URL: " + overrideGatewayURL);
+            var overrideGatewayURL = GetCommandLineArg("override-gateway-url");
+            if (!String.IsNullOrEmpty(overrideGatewayURL)) {
+                Debug.Log("Overriding default ODIN gateway URL: " + overrideGatewayURL);
 
-                    OdinHandler.Config.Server = overrideGatewayURL;
-                }
+                OdinHandler.Config.Server = overrideGatewayURL;
+            }
 
-                var overrideAccessKey = GetCommandLineArg("override-access-key");
-                if (overrideAccessKey != null) {
-                    Debug.Log("Overriding default ODIN access key: " + overrideAccessKey);
+            var overrideAccessKey = GetCommandLineArg("override-access-key");
+            if (!String.IsNullOrEmpty(overrideAccessKey)) {
+                Debug.Log("Overriding default ODIN access key: " + overrideAccessKey);
 
-                    OdinHandler.Config.AccessKey = overrideAccessKey;
-                }
+                OdinHandler.Config.AccessKey = overrideAccessKey;
             }
         }
 
