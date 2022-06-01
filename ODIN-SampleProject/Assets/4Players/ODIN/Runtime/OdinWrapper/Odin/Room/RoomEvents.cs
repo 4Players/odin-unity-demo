@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace OdinNative.Odin.Room
 {
     /// <summary>
-    /// Room join arguments before the room is actually joined
+    /// Arguments for RoomJoin events right before the room is joined
     /// </summary>
     public class RoomJoinEventArgs : EventArgs
     {
@@ -16,7 +16,7 @@ namespace OdinNative.Odin.Room
     }
 
     /// <summary>
-    /// Room joined arguments after a room is joined
+    /// Arguments for RoomJoined events when the room was joined successfully
     /// </summary>
     public class RoomJoinedEventArgs : EventArgs
     {
@@ -24,7 +24,7 @@ namespace OdinNative.Odin.Room
     }
 
     /// <summary>
-    /// Room leave arguments before the room is destroyed
+    /// Arguments for RoomLeave events right before the room handle is destroyed
     /// </summary>
     public class RoomLeaveEventArgs : EventArgs
     {
@@ -32,7 +32,7 @@ namespace OdinNative.Odin.Room
     }
 
     /// <summary>
-    /// Room left arguments after the room is destroyed
+    /// Arguments for RoomLeft events when the room handle was destroyed
     /// </summary>
     public class RoomLeftEventArgs : EventArgs
     {
@@ -40,7 +40,7 @@ namespace OdinNative.Odin.Room
     }
 
     /// <summary>
-    /// Peer joined arguments after a peer used <see cref="OdinHandler.JoinRoom"/>
+    /// Arguments for PeerJoined events in the current room
     /// </summary>
     public class PeerJoinedEventArgs : EventArgs
     {
@@ -51,15 +51,16 @@ namespace OdinNative.Odin.Room
     public delegate void RoomPeerJoinedEventHandler(object sender, PeerJoinedEventArgs e);
 
     /// <summary>
-    /// Peer left arguments
+    /// Arguments for PeerLeft events in the current room
     /// </summary>
     public class PeerLeftEventArgs : EventArgs
     {
         public ulong PeerId { get; internal set; }
     }
     public delegate void RoomPeerLeftEventHandler(object sender, PeerLeftEventArgs e);
+
     /// <summary>
-    /// Peer updated arguments with arbitrary data
+    /// Arguments for PeerUserDataChanged events in the current room
     /// </summary>
     public class PeerUserDataChangedEventArgs : EventArgs
     {
@@ -70,7 +71,7 @@ namespace OdinNative.Odin.Room
     public delegate void RoomPeerUserDataChangedEventHandler(object sender, PeerUserDataChangedEventArgs e);
 
     /// <summary>
-    /// Media added arguments in the current room
+    /// Arguments for MediaAdded events in the current room
     /// </summary>
     public class MediaAddedEventArgs : EventArgs
     {
@@ -81,18 +82,17 @@ namespace OdinNative.Odin.Room
     public delegate void RoomMediaAddedEventHandler(object sender, MediaAddedEventArgs e);
 
     /// <summary>
-    /// Media removed arguments in the current room
+    /// Arguments for MediaRemoved events in the current room
     /// </summary>
     public class MediaRemovedEventArgs : EventArgs
     {
         public ushort MediaId { get; internal set; }
         public Peer.Peer Peer;
-        public MediaStream Media;
     }
     public delegate void RoomMediaRemovedEventHandler(object sender, MediaRemovedEventArgs e);
 
     /// <summary>
-    /// Media activity changed arguments
+    /// Arguments for MediaActiveStateChanged events in the current room
     /// </summary>
     public class MediaActiveStateChangedEventArgs : EventArgs
     {
@@ -103,7 +103,7 @@ namespace OdinNative.Odin.Room
     public delegate void MediaActiveStateChangedEventHandler(object sender, MediaActiveStateChangedEventArgs e);
 
     /// <summary>
-    /// RoomUserData changed arguments in the current room
+    /// Arguments for RoomUserDataChanged events in the current room
     /// </summary>
     public class RoomUserDataChangedEventArgs : EventArgs
     {
@@ -113,7 +113,7 @@ namespace OdinNative.Odin.Room
     public delegate void RoomUserDataChangedEventHandler(object sender, RoomUserDataChangedEventArgs e);
 
     /// <summary>
-    /// Message received arguments in the current room
+    /// Arguments for MessageReceived events in the current room
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {

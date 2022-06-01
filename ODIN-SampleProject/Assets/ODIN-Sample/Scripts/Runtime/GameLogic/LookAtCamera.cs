@@ -32,7 +32,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         {
             if (!_current || !_current.enabled || !_current.gameObject.activeInHierarchy)
             {
-                _current = Camera.main;
+                _current = Camera.current;
             }
 
             if (_current)
@@ -42,6 +42,8 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, deltaSpeed);
             }
         }
+        
+        
 
         /// <summary>
         /// Retrieves the rotation for this object to look at the current target camera.

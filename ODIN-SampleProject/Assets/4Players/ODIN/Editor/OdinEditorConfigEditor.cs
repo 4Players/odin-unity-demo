@@ -23,6 +23,11 @@ namespace OdinNative.Unity.UIEditor
         SerializedProperty RemoteChannels;
 
         SerializedProperty VoiceActivityDetection;
+        SerializedProperty VoiceActivityDetectionAttackProbability;
+        SerializedProperty VoiceActivityDetectionReleaseProbability;
+        SerializedProperty VolumeGate;
+        SerializedProperty VolumeGateAttackLoudness;
+        SerializedProperty VolumeGateReleaseLoudness;
         SerializedProperty EchoCanceller;
         SerializedProperty HighPassFilter;
         SerializedProperty PreAmplifier;
@@ -50,6 +55,11 @@ namespace OdinNative.Unity.UIEditor
             RemoteChannels = serializedObject.FindProperty("RemoteChannels");
 
             VoiceActivityDetection = serializedObject.FindProperty("VoiceActivityDetection");
+            VoiceActivityDetectionAttackProbability = serializedObject.FindProperty("VoiceActivityDetectionAttackProbability");
+            VoiceActivityDetectionReleaseProbability = serializedObject.FindProperty("VoiceActivityDetectionReleaseProbability");
+            VolumeGate = serializedObject.FindProperty("VolumeGate");
+            VolumeGateAttackLoudness = serializedObject.FindProperty("VolumeGateAttackLoudness");
+            VolumeGateReleaseLoudness = serializedObject.FindProperty("VolumeGateReleaseLoudness");
             EchoCanceller = serializedObject.FindProperty("EchoCanceller");
             HighPassFilter = serializedObject.FindProperty("HighPassFilter");
             PreAmplifier = serializedObject.FindProperty("PreAmplifier");
@@ -146,8 +156,26 @@ namespace OdinNative.Unity.UIEditor
             drawRect(2);
             if (toggleRoomSettings)
             {
-                EditorGUILayout.PropertyField(VoiceActivityDetection, new GUIContent("Voice activity detection", "Use intelligent algorithms to determine speech presence probability in the microphone input signal."));
-                //EditorGUILayout.PropertyField(EchoCanceller, new GUIContent("Echo cancellation", "Improve voice quality by preventing echo from being created.")); // TODO
+                if (VoiceActivityDetection.boolValue = EditorGUILayout.Toggle(new GUIContent("Voice activity detection", "Use intelligent algorithms to determine speech presence probability in the microphone input signal."), VoiceActivityDetection.boolValue))
+                {
+                    float vadl = 0f, vadr = 1.0f;
+                    EditorGUILayout.Slider(VoiceActivityDetectionAttackProbability, vadl, vadr, new GUIContent("\tattack probability", "When the voice activity detection should engage."));
+                    EditorGUILayout.Slider(VoiceActivityDetectionReleaseProbability, vadl, vadr, new GUIContent("\trelease probability", "When the voice activity detection should disengage after previously being engaged."));
+                    drawRect(2);
+                }
+
+                if (VolumeGate.boolValue = EditorGUILayout.Toggle(new GUIContent("Volume gate", "Use intelligent algorithms to determine speech presence probability in the microphone input signal."), VolumeGate.boolValue))
+                {
+                    float vgl = -90, vgr = 0f;
+                    EditorGUILayout.Slider(VolumeGateAttackLoudness, vgl, vgr, new GUIContent("\tattack loudness", "When the volume gate should engage."));
+                    EditorGUILayout.Slider(VolumeGateReleaseLoudness, vgl, vgr, new GUIContent("\trelease loudness", "When the volume gate should disengage after previously being engaged."));
+                    drawRect(2);
+                }
+
+                EditorGUILayout.PropertyField(EchoCanceller, new GUIContent("Echo cancellation", "Improve voice quality by preventing echo from being created."));
+                if (EchoCanceller.boolValue)
+                    EditorGUILayout.HelpBox("Echo cancellation only in use with Unity sounds!", MessageType.Warning);
+
                 EditorGUILayout.PropertyField(HighPassFilter, new GUIContent("High-pass filter", "Reduce lower frequencies of the microphone input signal."));
                 EditorGUILayout.PropertyField(PreAmplifier, new GUIContent("Input Amplifier", "Amplify the microphone input signal when needed."));
                 EditorGUILayout.PropertyField(NoiseSuppressionLevel, new GUIContent("Noise Suppression", "Remove background noise from the microphone input signal."));

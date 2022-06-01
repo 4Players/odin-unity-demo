@@ -16,12 +16,12 @@ namespace OdinNative.Odin.Media
     public abstract class MediaStream : IVideoStream, IAudioStream, IDisposable
     {
         /// <summary>
-        /// Media id
+        /// Internal ID of the media stream
         /// </summary>
         public ushort Id { get; internal set; }
         internal ulong PeerId => GetPeerId();
         /// <summary>
-        /// Audio config
+        /// Audio config of the media stream
         /// </summary>
         public OdinMediaConfig MediaConfig { get; private set; }
         /// <summary>
@@ -29,12 +29,12 @@ namespace OdinNative.Odin.Media
         /// </summary>
         public CancellationTokenSource CancellationSource { get; internal set; }
         /// <summary>
-        /// Determine to send and/or read data
+        /// Indicates wether or not the media stream is muted
         /// </summary>
-        /// <remarks> if true no function call to ODIN ffi at all</remarks>
+        /// <remarks>If true, no data will be read/pushed for the media handle</remarks>
         public bool IsMuted { get; set; }
         /// <summary>
-        /// Determine if this media is currently active and is playing
+        /// Indicates wether or not the media stream is active and sending/receiving data
         /// </summary>
         public bool IsActive { get; internal set; }
 
@@ -53,7 +53,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Refresh the media id and set <see cref="Id"/>
+        /// Returns the media stream ID and updates <see cref="Id"/>.
         /// </summary>
         /// <returns>id value</returns>
         public int GetMediaId()
@@ -63,7 +63,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Get the peer id
+        /// Returns the ID of the peer that own this media stream.
         /// </summary>
         /// <returns>id</returns>
         public ulong GetPeerId()
@@ -73,7 +73,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Set <see cref="IsMuted"/>
+        /// Sets <see cref="IsMuted"/>.
         /// </summary>
         /// <param name="mute">true for NOP or false to call ffi on read/write</param>
         public void SetMute(bool mute)
@@ -82,7 +82,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Toggle <see cref="IsMuted"/>
+        /// Toggles <see cref="IsMuted"/>.
         /// </summary>
         public void ToggleMute()
         {
@@ -90,7 +90,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Add this media to a room
+        /// Adds this media stream to a room.
         /// </summary>
         /// <param name="roomHandle"><see cref="Room.Room"/> handle</param>
         /// <returns>true on success or false</returns>
@@ -140,7 +140,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Send audio data and use custom <see cref="CancellationSource"/>
+        /// Sends audio data using a custom <see cref="CancellationSource"/>.
         /// The data has to be interleaved [-1, 1] float data.
         /// </summary>
         /// <remarks>if <see cref="IsMuted"/> NOP</remarks>
@@ -151,7 +151,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Read audio data
+        /// Reads data from the audio stream.
         /// </summary>
         /// <remarks>if <see cref="IsMuted"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
@@ -164,7 +164,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Read audio data
+        /// Reads data from the audio stream.
         /// </summary>
         /// <remarks>if <see cref="IsMuted"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
@@ -178,7 +178,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Read audio data
+        /// Reads data from the audio stream.
         /// </summary>
         /// <remarks>if <see cref="IsMuted"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
@@ -194,7 +194,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Read audio data and use custom <see cref="CancellationSource"/>
+        /// Read audio data using a custom custom <see cref="CancellationSource"/>.
         /// </summary>
         /// <param name="buffer">buffer to write into</param>
         /// <returns>count of written bytes into buffer</returns>
@@ -204,7 +204,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Get the number of available sample available in the audio buffer.
+        /// Get the number of samples available in the audio buffer.
         /// </summary>
         /// <returns>floats available to read with <see cref="AudioReadData"/></returns>
         public virtual int AudioDataLength()
@@ -213,9 +213,9 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Cancel the custom <see cref="CancellationSource"/>
+        /// Cancel the custom <see cref="CancellationSource"/>.
         /// </summary>
-        /// <returns>true if the token can and was canceled or false</returns>
+        /// <returns>true if the token was canceled or false</returns>
         public bool Cancel()
         {
             if (CancellationSource.Token.CanBeCanceled)

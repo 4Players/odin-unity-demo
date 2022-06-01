@@ -14,9 +14,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         ///     The list of settings for different rooms. Allows definition of different push-to-talk buttons for different
         ///     ODIN rooms.
         /// </summary>
-        [SerializeField] private OdinPushToTalkSettings pushToTalkSettings;
+        [SerializeField] protected OdinPushToTalkSettings pushToTalkSettings;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Assert.IsNotNull(pushToTalkSettings);
             foreach (OdinPushToTalkSettings.OdinPushToTalkData data in pushToTalkSettings.settings)
@@ -26,13 +26,13 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (!(OdinHandler.Instance && null != OdinHandler.Instance.Rooms))
                 return;
 
             foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
-                HandleRoomMutedStatus(pushToTalkData);
+                HandleRoomMutedStatus(pushToTalkData.connectedRoom);
         }
 
         private void OnEnable()
@@ -53,6 +53,27 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 yield return null;
 
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+        }
+
+        protected virtual bool IsMicrophoneMuted(string roomName)
+        {
+            if (OdinHandler.Instance.Rooms.Contains(roomName))
+            {
+                Room room = OdinHandler.Instance.Rooms[roomName];
+                foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
+                    if (pushToTalkData.connectedRoom == room.Config.Name)
+                    {
+                        if (!pushToTalkData.pushToTalkIsActive) return false;
+                        return !IsPushToTalkButtonPressed(pushToTalkData);
+                    }
+            }
+            return false;
+        }
+
+        protected virtual bool IsPushToTalkButtonPressed(OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData)
+        {
+            bool isPushToTalkPressed = Input.GetKey(pushToTalkData.pushToTalkButton);
+            return isPushToTalkPressed;
         }
 
 
@@ -85,23 +106,18 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         ///     Push To Talk data container, containing information on the push to talk button,
         ///     the room to target and whether push to talk is currently activated.
         /// </param>
-        private void HandleRoomMutedStatus(OdinPushToTalkSettings.OdinPushToTalkData data)
+        protected void HandleRoomMutedStatus(string roomName)
         {
-            if (OdinHandler.Instance.Rooms.Contains(data.connectedRoom))
+            SetRoomMicrophoneMutedState(roomName, IsMicrophoneMuted(roomName));
+        }
+
+        protected void SetRoomMicrophoneMutedState(string roomName, bool newIsMuted)
+        {
+            if (OdinHandler.Instance.Rooms.Contains(roomName))
             {
-                Room roomToCheck = OdinHandler.Instance.Rooms[data.connectedRoom];
+                Room roomToCheck = OdinHandler.Instance.Rooms[roomName];
                 if (null != roomToCheck.MicrophoneMedia)
-                {
-                    if (!data.pushToTalkIsActive)
-                    {
-                        roomToCheck.MicrophoneMedia.SetMute(false);
-                    }
-                    else
-                    {
-                        bool isPushToTalkPressed = Input.GetKey(data.pushToTalkButton);
-                        roomToCheck.MicrophoneMedia.SetMute(!isPushToTalkPressed);
-                    }
-                }
+                    roomToCheck.MicrophoneMedia.SetMute(newIsMuted);
             }
         }
     }

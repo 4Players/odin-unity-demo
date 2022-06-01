@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7497f29558364cb4a41588605ce52b3a, type: 3}
   m_Name: Button_PushToTalk_Radio
   m_EditorClassIdentifier: 
-  value: v
+  value: b

@@ -53,16 +53,25 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             AudioSource audioSource = data.ConnectedSource;
 
             // Determine ray origins and ray direction
+
             Vector3[] rayOrigins = { audioListener.transform.position, audioSource.transform.position };
             Vector3 toAudioSource = rayOrigins[1] - rayOrigins[0];
+            // place the origins a centimeter away from their position in the opposite direction of the other ray origin 
+            rayOrigins[1] = rayOrigins[0] + toAudioSource + toAudioSource.normalized * 0.001f;
+            rayOrigins[0] = rayOrigins[1] - toAudioSource - toAudioSource.normalized * 0.002f;
+            toAudioSource = rayOrigins[1] - rayOrigins[0];
 
-            // Retrieve all colliders on the 
+            // Retrieve all colliders on the parent object
             Collider[] audioSourceColliders = audioSource.GetComponentsInParent<Collider>();
 
+            bool removeParentColliders = data.GetApplicator().RemoveParentCollidersForOcclusion;
             // Get all hits from audio listener to audio source and from source to listener
-            List<RaycastHit> forwardHits = GetOccludingHits(rayOrigins[0], toAudioSource, audioSourceColliders);
-            List<RaycastHit> backwardsHits = GetOccludingHits(rayOrigins[1], -toAudioSource, audioSourceColliders);
+            List<RaycastHit> forwardHits = GetOccludingHits(rayOrigins[0], toAudioSource, audioSourceColliders, removeParentColliders);
+            List<RaycastHit> backwardsHits = GetOccludingHits(rayOrigins[1], -toAudioSource, audioSourceColliders, removeParentColliders);
 
+            // foreach (RaycastHit forwardHit in forwardHits)
+            //     Debug.Log($"Found forwardhit collider on: {forwardHit.collider.gameObject}");
+            
             // Initialise with default, non-audible effect
             AudioEffectData combinedEffect = AudioEffectData.Default;
             foreach (RaycastHit forwardHit in forwardHits)
@@ -75,13 +84,17 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         }
 
         private List<RaycastHit> GetOccludingHits(Vector3 rayOrigin, Vector3 rayDirection,
-            Collider[] audioSourceColliders)
+            Collider[] audioSourceColliders, bool RemoveParentColliders)
         {
-            List<RaycastHit> forwardHits = GetSortedHits(rayOrigin, rayDirection);
+            List<RaycastHit> hits = GetSortedHits(rayOrigin, rayDirection);
             // Remove colliders, that are inside the audio listener or inside the audio source
-            RemoveOriginCollisions(ref forwardHits, _collidersOnAudiolistener);
-            RemoveOriginCollisions(ref forwardHits, audioSourceColliders);
-            return forwardHits;
+            if (RemoveParentColliders)
+            {
+                RemoveOriginCollisions(ref hits, _collidersOnAudiolistener);
+                RemoveOriginCollisions(ref hits, audioSourceColliders);
+            }
+            
+            return hits;
         }
 
         private AudioEffectData AddOcclusionEffect(RaycastHit forwardHit, List<RaycastHit> backwardsHits,
@@ -151,9 +164,11 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             var occludingHits = new List<RaycastHit>(
                 Physics.RaycastAll(
                     occluderRay,
-                    rayDirection.magnitude + float.Epsilon,
+                    rayDirection.magnitude + 0.001f,
                     audioSourceDetectionLayer,
                     QueryTriggerInteraction.Ignore));
+
+        
             // Sort by distance
             occludingHits.Sort(delegate(RaycastHit hit1, RaycastHit hit2)
             {

@@ -1,4 +1,5 @@
 using System.Text;
+using OdinNative.Odin.Media;
 using OdinNative.Odin.Peer;
 using OdinNative.Odin.Room;
 using TMPro;
@@ -47,10 +48,20 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                         if (null != room.Self && peer.Id == room.Self.Id)
                             displayBuilder.Append("Current Name: ");
                         else
-                            displayBuilder.Append("Remote Name:");
+                            displayBuilder.Append("Remote Name: ");
 
-                        displayBuilder.AppendLine(
-                            $"{fromUserData.name}, Room: {room.Config.Name}, Self peer Id: {peer.Id}, Unique Id: {fromUserData.uniqueUserId}");
+                        displayBuilder.Append(
+                            $"{fromUserData.name}, Room: {room.Config.Name}, Peer Id: {peer.Id}, Unique Id: {fromUserData.uniqueUserId}");
+
+                        displayBuilder.Append(" Medias: ");
+                        foreach (MediaStream mediaStream in peer.Medias)
+                        {
+                            displayBuilder.Append($" ID {mediaStream.Id}");
+                        }
+
+                        displayBuilder.AppendLine();
+
+
                     }
 
                     if (null != room.MicrophoneMedia)

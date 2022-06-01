@@ -55,6 +55,11 @@ namespace OdinNative.Odin
 
         #region Apm
         public static bool VoiceActivityDetection = true;
+        public static float VoiceActivityDetectionAttackProbability = 0.9f;
+        public static float VoiceActivityDetectionReleaseProbability = 0.8f;
+        public static bool VolumeGate = false;
+        public static float VolumeGateAttackLoudness = -30;
+        public static float VolumeGateReleaseLoudness = -40;
         public static bool EchoCanceller = false;
         public static bool HighPassFilter = false;
         public static bool PreAmplifier = false;

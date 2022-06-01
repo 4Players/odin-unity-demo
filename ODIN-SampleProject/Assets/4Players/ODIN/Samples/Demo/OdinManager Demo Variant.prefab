@@ -79,6 +79,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545,
         type: 3}
+      propertyPath: CreatePlayback
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
       propertyPath: PlaybackAudioMixer
       value: 
       objectReference: {fileID: 24100000, guid: b40b1ae88375a9b42a7b6af8163e3036,

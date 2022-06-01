@@ -142,7 +142,7 @@ namespace OdinNative.Unity.Audio
             if (OverrideSampleRate == false)
             {
                 if (InputMinFreq == 0 /* any */ && InputMaxFreq == 0 /* any */)
-                    SampleRate = OdinHandler.Config.DeviceSampleRate;
+                    SampleRate = MediaSampleRate.Hz48000;
                 else if (OdinHandler.Config.DeviceSampleRate == MediaSampleRate.Device_Min)
                     SampleRate = (MediaSampleRate)InputMinFreq;
                 else if (OdinHandler.Config.DeviceSampleRate == MediaSampleRate.Device_Max)

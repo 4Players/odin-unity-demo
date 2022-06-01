@@ -42,6 +42,40 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(instantiationTarget);
         }
 
+        protected void DestroyAllPlaybacks()
+        {
+            foreach (PlaybackComponent playbackComponent in _registeredRemoteMedia.Values)
+            {
+                if(playbackComponent)
+                    Destroy(playbackComponent.gameObject);
+            }
+            _registeredRemoteMedia.Clear();
+        }
+
+        protected void DestroyAllPlaybacksInRoom(string roomName)
+        {
+            List<OdinConnectionIdentifier> idsToRemove = new List<OdinConnectionIdentifier>();
+            foreach (var idToPlayback in _registeredRemoteMedia)
+            {
+                if (idToPlayback.Key.RoomName == roomName)
+                {
+                    idsToRemove.Add(idToPlayback.Key);
+                    Destroy(idToPlayback.Value.gameObject);
+                }
+            }
+
+            foreach (OdinConnectionIdentifier identifier in idsToRemove)
+            {
+                _registeredRemoteMedia.Remove(identifier);
+            }
+        }
+
+        protected bool DestroyPlayback(OdinConnectionIdentifier odinId)
+        {
+            return DestroyPlayback(odinId.RoomName, odinId.PeerId,
+                odinId.MediaId);
+        }
+
         /// <summary>
         /// Destroys the <see cref="PlaybackComponent"/> identified by the tuple roomName, peerId and mediaId.
         /// </summary>
@@ -49,7 +83,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <param name="peerId">The ODIN peers Id.</param>
         /// <param name="mediaId">The media id the peer is transmitting on.</param>
         /// <returns>True, if an object was destroyed, false if no reference identified by the tuple was found.</returns>
-        protected bool DestroyPlaybackAudioSource(string roomName, ulong peerId, int mediaId)
+        protected bool DestroyPlayback(string roomName, ulong peerId, int mediaId)
         {
             PlaybackComponent removed = RemovePlaybackComponent(roomName, peerId, mediaId);
             if(removed)
@@ -97,7 +131,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
                 spawned = Instantiate(playbackComponentPrefab.gameObject, parentTransform)
                     .GetComponent<PlaybackComponent>();
                 
-                Debug.Log($"Spawned PlaybackComponent for {dictionaryKey}: {spawned}");
+                Debug.Log($"ODIN: Spawned PlaybackComponent for {dictionaryKey}: {spawned}");
 
 
                 spawned.RoomName = roomName;
@@ -110,5 +144,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
 
             return spawned;
         }
+        
+        
     }
 }

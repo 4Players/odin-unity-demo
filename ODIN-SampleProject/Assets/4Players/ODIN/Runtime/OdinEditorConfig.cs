@@ -72,9 +72,29 @@ namespace OdinNative.Unity
 
         #region Apm
         /// <summary>
-        /// Turns VAC on and off
+        /// Turns VAD on and off
         /// </summary>
         public bool VoiceActivityDetection = OdinDefaults.VoiceActivityDetection;
+        /// <summary>
+        /// Setup engage of VAD
+        /// </summary>
+        public float VoiceActivityDetectionAttackProbability = OdinDefaults.VoiceActivityDetectionAttackProbability;
+        /// <summary>
+        /// Setup disengage of VAD
+        /// </summary>
+        public float VoiceActivityDetectionReleaseProbability = OdinDefaults.VoiceActivityDetectionReleaseProbability;
+        /// <summary>
+        /// Turns volume gate on and off
+        /// </summary>
+        public bool VolumeGate = OdinDefaults.VolumeGate;
+        /// <summary>
+        /// Setup engage of volume gate
+        /// </summary>
+        public float VolumeGateAttackLoudness = OdinDefaults.VolumeGateAttackLoudness;
+        /// <summary>
+        /// Setup disengage of volume gate
+        /// </summary>
+        public float VolumeGateReleaseLoudness = OdinDefaults.VolumeGateReleaseLoudness;
         /// <summary>
         /// Turns Echo cancellation on and off
         /// </summary>

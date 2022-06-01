@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OdinNative.Odin.Media
 {
     /// <summary>
-    /// Intern media dictionary
+    /// Internal collection of available media streams
     /// </summary>
     /// <remarks>Used by <see cref="OdinNative.Odin.Peer.Peer"/></remarks>
     public class MediaCollection : IReadOnlyCollection<MediaStream>, IEqualityComparer<MediaStream>
@@ -22,7 +22,7 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Try to get Media by id
+        /// Try to get a media stream by ID
         /// </summary>
         /// <param name="key">MediaId</param>
         /// <returns>MediaStream or null</returns>
