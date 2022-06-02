@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using Photon.Pun;
@@ -14,11 +15,12 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     public class PhotonLeaveRoom : MonoBehaviour, IMatchmakingCallbacks
     {
         /// <summary>
-        /// Leave the Photon Room and load scene <see cref="sceneToLoad"/> when pressing this Unity button.
+        ///     Leave the Photon Room and load scene <see cref="sceneToLoad" /> when pressing this Unity button.
         /// </summary>
         [SerializeField] private OdinStringVariable leaveRoomsButton;
+
         /// <summary>
-        /// Reference to the name of the Unity scene we should load.
+        ///     Reference to the name of the Unity scene we should load.
         /// </summary>
         [SerializeField] private OdinStringVariable sceneToLoad;
 
@@ -31,18 +33,8 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
 
         private void Update()
         {
-            if (Input.GetKeyDown(leaveRoomsButton) && !_wasSceneLoadRequested)
-            {
-                LeavePhotonRoom();
-            }
-        }
-
-        public void LeavePhotonRoom()
-        {
-            // Leave the photon room
-            if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
-
-            _wasSceneLoadRequested = true;
+            if (null != leaveRoomsButton && Input.GetKeyDown(leaveRoomsButton) &&
+                !_wasSceneLoadRequested) LeavePhotonRoom();
         }
 
         private void OnEnable()
@@ -54,14 +46,34 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             PhotonNetwork.RemoveCallbackTarget(this);
         }
-        
+
         /// <summary>
-        /// Load lobby scene after successfully leaving the photon room.
+        ///     Load lobby scene after successfully leaving the photon room.
         /// </summary>
         public void OnLeftRoom()
         {
             if (_wasSceneLoadRequested)
-                SceneManager.LoadScene(sceneToLoad.Value);
+                StartCoroutine(LeaveOdinRooms());
+        }
+
+        public void LeavePhotonRoom()
+        {
+            // Leave the photon room
+            if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
+
+            _wasSceneLoadRequested = true;
+        }
+
+        private IEnumerator LeaveOdinRooms()
+        {
+            if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
+                foreach (var room in OdinHandler.Instance.Rooms)
+                {
+                    OdinHandler.Instance.LeaveRoom(room.Config.Name);
+                    yield return null;
+                }
+
+            SceneManager.LoadScene(sceneToLoad.Value);
         }
 
         #region Unused Photon Callbacks
@@ -89,8 +101,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         public void OnJoinRandomFailed(short returnCode, string message)
         {
         }
-
-        
 
         #endregion
     }
