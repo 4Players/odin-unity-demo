@@ -1,12 +1,20 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
+using OdinNative.Core.Imports;
+using OdinNative.Odin;
+using OdinNative.Odin.Room;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
+    /// <summary>
+    ///     Data structure for setting a boolean property of the OdinHandler Config from the referenced toggle.
+    /// </summary>
     [Serializable]
     public class OdinBoolSetting
     {
@@ -14,6 +22,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         public Toggle toggle;
     }
 
+    /// <summary>
+    ///     Data structure for setting a float property of the OdinHandler Config from the referenced slider.
+    /// </summary>
     [Serializable]
     public class OdinFloatSetting
     {
@@ -21,15 +32,32 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         public Slider slider;
     }
 
+    /// <summary>
+    ///     Data structure for setting a float property of the OdinHandler Config from the referenced slider.
+    /// </summary>
+    [Serializable]
+    public class OdinEnumSetting
+    {
+        public string configProperty;
+        public TMP_Dropdown dropdown;
+    }
+
+    /// <summary>
+    ///     Script containing all view references (Unity UI sliders, toggles etc.) for adjusting the ODIN Audio Processing
+    ///     settings.
+    /// </summary>
     public class OdinAudioFilterSettingsController : MonoBehaviour
     {
         [SerializeField] private OdinBoolSetting[] boolSettings;
         [SerializeField] private OdinFloatSetting[] floatSettings;
+        [SerializeField] private OdinEnumSetting noiseSuppressionSetting;
+
 
         private void Awake()
         {
             foreach (OdinBoolSetting boolSetting in boolSettings) Assert.IsNotNull(boolSetting.toggle);
             foreach (OdinFloatSetting floatSetting in floatSettings) Assert.IsNotNull(floatSetting.slider);
+            Assert.IsNotNull(noiseSuppressionSetting.dropdown);
         }
 
         private void OnEnable()
@@ -44,6 +72,8 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
             foreach (OdinFloatSetting setting in floatSettings)
                 setting.slider.onValueChanged.RemoveAllListeners();
+
+            noiseSuppressionSetting.dropdown.onValueChanged.RemoveAllListeners();
         }
 
         private IEnumerator InitOnOdinHandlerAvailable()
@@ -65,6 +95,63 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                     SetFloatValue(setting.configProperty, newValue);
                 });
             }
+
+            NativeBindings.OdinNoiseSuppressionLevel noiseSuppressionLevel =
+                GetValue<NativeBindings.OdinNoiseSuppressionLevel>(noiseSuppressionSetting.configProperty);
+            noiseSuppressionSetting.dropdown.value = (int)noiseSuppressionLevel;
+            noiseSuppressionSetting.dropdown.onValueChanged.AddListener(newValue =>
+            {
+                SetEnumValueFromInt(noiseSuppressionSetting.configProperty, newValue);
+            });
+        }
+
+        public void ApplyOdinConfig()
+        {
+            if (OdinHandler.Instance) StartCoroutine(DelayedApplyRoomConfig());
+
+            // if (OdinHandler.Instance)
+            //     foreach (Room room in OdinHandler.Instance.Rooms)
+            //     {
+            //         OdinEditorConfig cfg = OdinHandler.Config;
+            //         room.SetApmConfig(new OdinRoomConfig
+            //         {
+            //             VoiceActivityDetection = cfg.VoiceActivityDetection,
+            //             VoiceActivityDetectionAttackProbability = cfg.VoiceActivityDetectionAttackProbability,
+            //             VoiceActivityDetectionReleaseProbability = cfg.VoiceActivityDetectionReleaseProbability,
+            //             VolumeGate = cfg.VolumeGate,
+            //             VolumeGateAttackLoudness = cfg.VolumeGateAttackLoudness,
+            //             VolumeGateReleaseLoudness = cfg.VolumeGateReleaseLoudness,
+            //             EchoCanceller = cfg.EchoCanceller,
+            //             HighPassFilter = cfg.HighPassFilter,
+            //             PreAmplifier = cfg.PreAmplifier,
+            //             OdinNoiseSuppressionLevel = cfg.NoiseSuppressionLevel,
+            //             TransientSuppressor = cfg.TransientSuppressor
+            //         });
+            //     }
+        }
+
+        private IEnumerator DelayedApplyRoomConfig()
+        {
+            List<string> roomNames = new List<string>();
+            UserData userData = OdinHandler.Instance.GetUserData();
+
+            foreach (Room room in OdinHandler.Instance.Rooms)
+            {
+                roomNames.Add(room.Config.Name);
+            }
+
+            foreach (Room room in OdinHandler.Instance.Rooms)
+            {
+                OdinHandler.Instance.LeaveRoom(room.Config.Name);
+                yield return null;
+            }
+            yield return null;
+
+            foreach (string roomName in roomNames)
+            {
+                OdinHandler.Instance.JoinRoom(roomName, userData);
+                yield return null;
+            }
         }
 
         public T GetValue<T>(string property)
@@ -83,6 +170,15 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             SetFieldInfo(property, newActive);
         }
 
+        public void SetEnumValueFromInt(string property, int value)
+        {
+            FieldInfo fieldInfo = GetFieldInfo(property);
+            if (Enum.IsDefined(fieldInfo.FieldType, 3))
+                SetFieldInfo(property, value);
+            else
+                Debug.LogError($"Invalid enum range selected for property {property}: Value {value}.");
+        }
+
         private static FieldInfo GetFieldInfo(string property)
         {
             Type configType = OdinHandler.Config.GetType();
@@ -95,9 +191,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             FieldInfo field = GetFieldInfo(property);
             if (null != field)
             {
-                if (field.FieldType != value.GetType())
+                if (field.FieldType != value.GetType() && !Enum.IsDefined(field.FieldType, value))
                     Debug.LogError(
-                        $"Tried setting field info of type {field.GetType()} to value of type {value.GetType()}");
+                        $"Tried setting field info of type {field.GetType()} to value {value} of type {value.GetType()}");
                 else
                     field.SetValue(OdinHandler.Config, value);
             }

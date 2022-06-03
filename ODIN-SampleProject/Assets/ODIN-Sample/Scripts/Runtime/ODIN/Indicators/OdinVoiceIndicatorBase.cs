@@ -18,7 +18,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         /// </summary>
         [SerializeField] private OdinStringVariable odinRoomName;
 
-        private int _numActivePlaybacks;
+        // private int _numActivePlaybacks;
 
         protected virtual void Awake()
         {
@@ -46,10 +46,13 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
             OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaStateChanged);
         }
 
+        
+
 
         private void OnMediaStateChanged(object sender,
             MediaActiveStateChangedEventArgs args)
         {
+
             if (sender is Room sendingRoom && sendingRoom.Config.Name == odinRoomName.Value)
             {
                 OdinSampleUserData userdata;
@@ -65,14 +68,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
                 if (null != userdata && adapter.GetUniqueUserId() == userdata.uniqueUserId)
                 {
-                    if (args.Active)
-                        _numActivePlaybacks++;
-                    else
-                        _numActivePlaybacks--;
+                    // if (args.Active)
+                    //     _numActivePlaybacks++;
+                    // else
+                    //     _numActivePlaybacks--;
+                    UpdateFeedback(args.Active);
                 }
             }
-
-            UpdateFeedback(_numActivePlaybacks > 0);
+            // _numActivePlaybacks = Mathf.Max(_numActivePlaybacks, 0);
         }
 
         protected abstract void UpdateFeedback(bool isVoiceOn);

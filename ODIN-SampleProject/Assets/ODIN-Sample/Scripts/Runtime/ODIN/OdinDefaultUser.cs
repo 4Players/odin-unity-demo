@@ -51,12 +51,31 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
             OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
+            OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
+            OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
 
             while (null == OdinHandler.Instance.Rooms)
                 yield return null;
             UpdateRoomPlayback();
         }
-        
+
+        private void OnRoomLeft(RoomLeftEventArgs arg0)
+        {
+            DestroyAllPlaybacksInRoom(arg0.RoomName);
+        }
+
+        private void OnRoomJoined(RoomJoinedEventArgs arg0)
+        {
+            StartCoroutine(DeferredOnRoomJoined());
+        }
+
+        private IEnumerator DeferredOnRoomJoined()
+        {
+            yield return null;
+            UpdateRoomPlayback();
+            
+        }
+
         /// <summary>
         ///     Checks for each mediastream connected to any peer in the room <see cref="odinRoomName" />
         ///     whether a Playback Components was already created and initialized.
