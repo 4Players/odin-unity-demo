@@ -108,26 +108,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         public void ApplyOdinConfig()
         {
             if (OdinHandler.Instance) StartCoroutine(DelayedApplyRoomConfig());
-
-            // if (OdinHandler.Instance)
-            //     foreach (Room room in OdinHandler.Instance.Rooms)
-            //     {
-            //         OdinEditorConfig cfg = OdinHandler.Config;
-            //         room.SetApmConfig(new OdinRoomConfig
-            //         {
-            //             VoiceActivityDetection = cfg.VoiceActivityDetection,
-            //             VoiceActivityDetectionAttackProbability = cfg.VoiceActivityDetectionAttackProbability,
-            //             VoiceActivityDetectionReleaseProbability = cfg.VoiceActivityDetectionReleaseProbability,
-            //             VolumeGate = cfg.VolumeGate,
-            //             VolumeGateAttackLoudness = cfg.VolumeGateAttackLoudness,
-            //             VolumeGateReleaseLoudness = cfg.VolumeGateReleaseLoudness,
-            //             EchoCanceller = cfg.EchoCanceller,
-            //             HighPassFilter = cfg.HighPassFilter,
-            //             PreAmplifier = cfg.PreAmplifier,
-            //             OdinNoiseSuppressionLevel = cfg.NoiseSuppressionLevel,
-            //             TransientSuppressor = cfg.TransientSuppressor
-            //         });
-            //     }
         }
 
         private IEnumerator DelayedApplyRoomConfig()
