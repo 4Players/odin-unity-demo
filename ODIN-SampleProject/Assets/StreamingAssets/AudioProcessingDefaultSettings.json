@@ -1,0 +1,52 @@
+{
+    "boolSettings": [
+        {
+            "configProperty": "VoiceActivityDetection",
+            "value": true
+        },
+        {
+            "configProperty": "VolumeGate",
+            "value": true
+        },
+        {
+            "configProperty": "EchoCanceller",
+            "value": true
+        },
+        {
+            "configProperty": "HighPassFilter",
+            "value": true
+        },
+        {
+            "configProperty": "PreAmplifier",
+            "value": true
+        },
+        {
+            "configProperty": "TransientSuppressor",
+            "value": true
+        }
+    ],
+    "floatSettings": [
+        {
+            "configProperty": "VoiceActivityDetectionAttackProbability",
+            "value": 0.8999999761581421
+        },
+        {
+            "configProperty": "VoiceActivityDetectionReleaseProbability",
+            "value": 0.800000011920929
+        },
+        {
+            "configProperty": "VolumeGateAttackLoudness",
+            "value": -30.0
+        },
+        {
+            "configProperty": "VolumeGateReleaseLoudness",
+            "value": -40.0
+        }
+    ],
+    "enumSettings": [
+        {
+            "configProperty": "NoiseSuppressionLevel",
+            "value": 4
+        }
+    ]
+}

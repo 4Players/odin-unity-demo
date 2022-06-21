@@ -31,6 +31,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 yield return null;
 
             Debug.Log("Odin Handler now available.");
+
+            yield return null;
             // Important: We have to disperse the Join Room Calls over multiple frames. If called in the same frame, build will crash.
             foreach (OdinStringVariable refRoomName in refRoomNames)
             {
