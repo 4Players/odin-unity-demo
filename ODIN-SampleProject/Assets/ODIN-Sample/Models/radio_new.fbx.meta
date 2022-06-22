@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 224bcdcf454619f4fb35fb88e8ffab30
+guid: 0e56d8563c222de46be43d550d58b1a2
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
@@ -7,12 +7,12 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_RadioInner
+      name: RadioInner
     second: {fileID: 2100000, guid: d8218d3eb4f5de84ebe2bf9e18af61e4, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: M_RadioOuter
+      name: RadioOuter
     second: {fileID: 2100000, guid: ecf02d5f5350d7f47ad1d9f36276bfb3, type: 2}
   materials:
     materialImportMode: 2
@@ -24,7 +24,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    removeConstantScaleCurves: 0
+    removeConstantScaleCurves: 1
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -54,7 +54,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
-    nodeNameCollisionStrategy: 0
+    nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 1

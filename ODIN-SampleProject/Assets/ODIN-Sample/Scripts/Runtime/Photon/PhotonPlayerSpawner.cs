@@ -14,16 +14,19 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         /// Prefab of the player object. Has to be located in a resources folder! (Photon requirement)
         /// </summary>
         [SerializeField] private GameObject playerPrefab;
+        
         /// <summary>
         /// The location at which we should spawn the player.
         /// </summary>
-        [SerializeField] private Vector3 spawnLocation;
+        [SerializeField] private Transform playerSpawn;
+        
 
         private GameObject _instantiatedPlayer = null;
 
         private void Awake()
         {
             Assert.IsNotNull(playerPrefab);
+            Assert.IsNotNull(playerSpawn);
         }
 
         private void Start()
@@ -37,12 +40,12 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             {
                 // Try to adjust spawn location, if we find a collision. Doesn't work very well when using
                 // Unity's CharacterController script as collider.
-                Vector3 adjustedSpawnLocation = spawnLocation;
+                Vector3 adjustedSpawnLocation = playerSpawn.position + Vector3.up * 2.0f;
                 Collider playerCollider = playerPrefab.GetComponent<Collider>();
                 if (playerCollider)
                 {
                     Bounds playerBounds = playerCollider.bounds;
-                    bool hitSomething = Physics.BoxCast(spawnLocation, playerBounds.extents, Vector3.down);
+                    bool hitSomething = Physics.BoxCast(adjustedSpawnLocation, playerBounds.extents, Vector3.down);
                     if (hitSomething)
                     {
                         adjustedSpawnLocation.y = adjustedSpawnLocation.y + 2.0f;

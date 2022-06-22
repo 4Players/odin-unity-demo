@@ -36,11 +36,11 @@
         },
         {
             "configProperty": "VolumeGateAttackLoudness",
-            "value": -30.0
+            "value": -40.0
         },
         {
             "configProperty": "VolumeGateReleaseLoudness",
-            "value": -40.0
+            "value": -50.0
         }
     ],
     "enumSettings": [

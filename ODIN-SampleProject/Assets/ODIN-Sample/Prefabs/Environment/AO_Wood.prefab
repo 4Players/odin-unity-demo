@@ -83,6 +83,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 1870600810458566222, guid: 3a425007c08ebad448917cc5cf1f7a1e, type: 2}
+    - target: {fileID: 7762956238348017648, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_text
+      value: Wood
+      objectReference: {fileID: 0}
     - target: {fileID: 8208957543244139321, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: effect
       value: 

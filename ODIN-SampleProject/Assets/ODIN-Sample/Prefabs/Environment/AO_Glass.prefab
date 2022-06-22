@@ -103,6 +103,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.11
       objectReference: {fileID: 0}
+    - target: {fileID: 7762956238348017648, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_text
+      value: Glass
+      objectReference: {fileID: 0}
     - target: {fileID: 8208957543244139321, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: effect
       value: 

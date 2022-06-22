@@ -71,6 +71,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Brick
       objectReference: {fileID: 0}
+    - target: {fileID: 7762956238348017648, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
+      propertyPath: m_text
+      value: Brick
+      objectReference: {fileID: 0}
     - target: {fileID: 7896258752762639072, guid: 5c715b479b19b7044a88e3af63010136, type: 3}
       propertyPath: m_RootOrder
       value: 0
