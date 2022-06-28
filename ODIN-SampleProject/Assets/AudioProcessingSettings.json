@@ -2,27 +2,27 @@
     "boolSettings": [
         {
             "configProperty": "VoiceActivityDetection",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "VolumeGate",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "EchoCanceller",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "HighPassFilter",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "PreAmplifier",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "TransientSuppressor",
-            "value": false
+            "value": true
         }
     ],
     "floatSettings": [
@@ -46,7 +46,7 @@
     "enumSettings": [
         {
             "configProperty": "NoiseSuppressionLevel",
-            "value": 0
+            "value": 4
         }
     ]
 }

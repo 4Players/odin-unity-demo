@@ -6,3 +6,4 @@ Thumbs.db
 # Builds
 /[Bb]uild/
 /[Bb]uilds/
+Profiling/
