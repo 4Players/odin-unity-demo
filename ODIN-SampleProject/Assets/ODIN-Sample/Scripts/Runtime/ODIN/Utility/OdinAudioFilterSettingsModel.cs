@@ -7,68 +7,47 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 {
-    [Serializable]
-    public class BoolSettingSchema
-    {
-        public string configProperty;
-        public bool value;
-    }
 
     [Serializable]
-    public class FloatSettingSchema
+    public class AudioFilterSettingsSchema<T>
     {
         public string configProperty;
-        public float value;
-    }
-
-    [Serializable]
-    public class EnumSettingSchema
-    {
-        public string configProperty;
-        public int value;
+        public T value;
     }
 
     [Serializable]
     public class OdinAudioFilterSettingsModel
     {
-        public List<BoolSettingSchema> boolSettings = new List<BoolSettingSchema>();
-        public List<FloatSettingSchema> floatSettings = new List<FloatSettingSchema>();
-        public List<EnumSettingSchema> enumSettings = new List<EnumSettingSchema>();
+        public List<AudioFilterSettingsSchema<bool>> boolSettings = new List<AudioFilterSettingsSchema<bool>>();
+        public List<AudioFilterSettingsSchema<float>> floatSettings = new List<AudioFilterSettingsSchema<float>>();
+        public List<AudioFilterSettingsSchema<int>> enumSettings = new List<AudioFilterSettingsSchema<int>>();
 
         public void UpdateBool(string fieldName, bool newValue)
         {
-            foreach (BoolSettingSchema boolSetting in boolSettings)
-                if (boolSetting.configProperty == fieldName)
+            UpdateValue(fieldName, newValue, boolSettings);
+        }
+
+        public void UpdateValue<T>(string fieldname, T newValue, List<AudioFilterSettingsSchema<T>> settings)
+        {
+            foreach (var setting in settings)
+            {
+                if (setting.configProperty == fieldname)
                 {
-                    boolSetting.value = newValue;
+                    setting.value = newValue;
                     return;
                 }
-
-            boolSettings.Add(new BoolSettingSchema { configProperty = fieldName, value = newValue });
-        }
+            } 
+            settings.Add(new AudioFilterSettingsSchema<T>(){configProperty = fieldname,value = newValue});
+        }  
 
         public void UpdateFloat(string fieldName, float newValue)
         {
-            foreach (FloatSettingSchema floatSetting in floatSettings)
-                if (floatSetting.configProperty == fieldName)
-                {
-                    floatSetting.value = newValue;
-                    return;
-                }
-
-            floatSettings.Add(new FloatSettingSchema { configProperty = fieldName, value = newValue });
+            UpdateValue(fieldName, newValue, floatSettings);
         }
 
         public void UpdateEnum(string fieldName, int newValue)
         {
-            foreach (EnumSettingSchema enumSetting in enumSettings)
-                if (enumSetting.configProperty == fieldName)
-                {
-                    enumSetting.value = newValue;
-                    return;
-                }
-
-            enumSettings.Add(new EnumSettingSchema { configProperty = fieldName, value = newValue });
+            UpdateValue(fieldName, newValue, enumSettings);
         }
 
         private static string GetCustomSavePath()

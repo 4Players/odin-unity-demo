@@ -126,7 +126,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             if (null == _model)
             {
                 _model = new OdinAudioFilterSettingsModel();
-                InitModel(_model);
+                InitModel(ref _model);
                 OdinAudioFilterSettingsModel.OverwriteDefaultData(_model);
             }
             ApplySavedModel(_model);
@@ -165,7 +165,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             });
         }
 
-        private void InitModel(OdinAudioFilterSettingsModel model)
+        /// <summary>
+        /// Applies the current settings of the OdinHandler.Config Instance to the given model
+        /// </summary>
+        /// <param name="model"></param>
+        private void InitModel(ref OdinAudioFilterSettingsModel model)
         {
             foreach (OdinBoolSetting boolSetting in boolSettings)
             {
@@ -179,6 +183,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             model.UpdateEnum(noiseSuppressionSetting.configProperty, (int) GetValue<NativeBindings.OdinNoiseSuppressionLevel>(noiseSuppressionSetting.configProperty));
         }
 
+        /// <summary>
+        /// Updates the views (toggles, sliders and dropdowns) to display the currently set values.
+        /// </summary>
         private void UpdateViews()
         {
             // Set Bool Settings toggles to current value.
@@ -199,19 +206,23 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             noiseSuppressionSetting.dropdown.value = (int)noiseSuppressionLevel;
         }
 
+        /// <summary>
+        /// Apply the values from te given settings model to the OdinHandler.Config Instance.
+        /// </summary>
+        /// <param name="model">Model containing the data to apply</param>
         private void ApplySavedModel(OdinAudioFilterSettingsModel model)
         {
             if (null != model)
             {
-                foreach (BoolSettingSchema boolSetting in _model.boolSettings)
+                foreach (var boolSetting in _model.boolSettings)
                 {
                     SetBoolValue(boolSetting.configProperty, boolSetting.value);
                 }
-                foreach (FloatSettingSchema floatSetting in model.floatSettings)
+                foreach (var floatSetting in model.floatSettings)
                 {
                     SetFloatValue(floatSetting.configProperty, floatSetting.value);
                 }
-                foreach (EnumSettingSchema enumSetting in model.enumSettings)
+                foreach (var enumSetting in model.enumSettings)
                 {
                     SetEnumValueFromInt(enumSetting.configProperty, enumSetting.value);
                 }
@@ -232,6 +243,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
+        /// <summary>
+        /// Resets the audio filter settings to the default values defined in the default configuration file.
+        /// </summary>
         public void ResetOdinConfig()
         {
             OdinAudioFilterSettingsModel defaultData = OdinAudioFilterSettingsModel.LoadDefaultData();
@@ -250,10 +264,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <returns></returns>
         private IEnumerator DelayedApplyRoomConfig()
         {
+            
             // Leave all rooms
             List<string> roomNames = new List<string>();
             foreach (Room room in OdinHandler.Instance.Rooms)
             {
+                
                 roomNames.Add(room.Config.Name);
             }
             foreach (Room room in OdinHandler.Instance.Rooms)

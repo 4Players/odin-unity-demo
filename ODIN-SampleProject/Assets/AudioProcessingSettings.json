@@ -6,15 +6,15 @@
         },
         {
             "configProperty": "VolumeGate",
-            "value": true
+            "value": false
         },
         {
             "configProperty": "EchoCanceller",
-            "value": true
+            "value": false
         },
         {
             "configProperty": "HighPassFilter",
-            "value": true
+            "value": false
         },
         {
             "configProperty": "PreAmplifier",
