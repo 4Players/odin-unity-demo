@@ -2,7 +2,7 @@
     "boolSettings": [
         {
             "configProperty": "VoiceActivityDetection",
-            "value": true
+            "value": false
         },
         {
             "configProperty": "VolumeGate",
@@ -18,11 +18,11 @@
         },
         {
             "configProperty": "PreAmplifier",
-            "value": true
+            "value": false
         },
         {
             "configProperty": "TransientSuppressor",
-            "value": true
+            "value": false
         }
     ],
     "floatSettings": [
@@ -46,7 +46,7 @@
     "enumSettings": [
         {
             "configProperty": "NoiseSuppressionLevel",
-            "value": 4
+            "value": 0
         }
     ]
 }

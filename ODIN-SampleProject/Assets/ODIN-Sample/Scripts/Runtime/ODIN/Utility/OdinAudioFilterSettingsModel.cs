@@ -92,9 +92,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
             return result;
         }
 
-        public static OdinAudioFilterSettingsModel LoadData()
+        public static OdinAudioFilterSettingsModel LoadCustomOrDefaultData()
         {
-            return LoadData(GetCustomSavePath());
+            OdinAudioFilterSettingsModel loadResult = LoadData(GetCustomSavePath());
+            if (null == loadResult)
+                loadResult = LoadDefaultData();
+            return loadResult;
         }
 
         public static OdinAudioFilterSettingsModel LoadDefaultData()

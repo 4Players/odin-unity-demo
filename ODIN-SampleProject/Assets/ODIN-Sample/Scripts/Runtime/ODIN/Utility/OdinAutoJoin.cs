@@ -33,6 +33,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             Debug.Log("Odin Handler now available.");
 
             yield return null;
+            yield return null;
             // Important: We have to disperse the Join Room Calls over multiple frames. If called in the same frame, build will crash.
             foreach (OdinStringVariable refRoomName in refRoomNames)
             {
@@ -43,7 +44,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                     OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
                     OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
                     
-                    yield return null;
+                    // yield return null;
                 }
             }
         }

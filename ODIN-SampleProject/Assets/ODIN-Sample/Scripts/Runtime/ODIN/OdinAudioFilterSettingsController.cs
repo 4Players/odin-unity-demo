@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using ODIN_Sample.Scripts.Runtime.ODIN.Utility;
+using OdinNative.Core;
 using OdinNative.Core.Imports;
 using OdinNative.Odin;
 using OdinNative.Odin.Room;
@@ -104,6 +105,8 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 setting.slider.onValueChanged.RemoveAllListeners();
 
             noiseSuppressionSetting.dropdown.onValueChanged.RemoveAllListeners();
+            if(OdinHandler.Instance)
+                OdinHandler.Instance.OnRoomJoined.RemoveListener(OnOdinRoomJoined);
         }
 
         /// <summary>
@@ -117,16 +120,13 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             while (!OdinHandler.Instance)
                 yield return null;
             
-            _model = OdinAudioFilterSettingsModel.LoadData();
-            if (null == _model)
-            {
-                _model = OdinAudioFilterSettingsModel.LoadDefaultData();
-            }
+            _model = OdinAudioFilterSettingsModel.LoadCustomOrDefaultData();
 
+            // if theres no default or custom save data.
             if (null == _model)
             {
                 _model = new OdinAudioFilterSettingsModel();
-                InitModel(ref _model);
+                InitModelFromOdinConfig(ref _model);
                 OdinAudioFilterSettingsModel.OverwriteDefaultData(_model);
             }
             ApplySavedModel(_model);
@@ -141,7 +141,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                     {
                         _model.UpdateBool(boolSetting.configProperty, newValue);
                     }
-                    SetBoolValue(boolSetting.configProperty, newValue);
+                    SetValue(boolSetting.configProperty, newValue);
                 });
             }
             foreach (OdinFloatSetting setting in floatSettings)
@@ -152,7 +152,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                     {
                         _model.UpdateFloat(setting.configProperty, newValue);
                     }
-                    SetFloatValue(setting.configProperty, newValue);
+                    SetValue(setting.configProperty, newValue);
                 });
             }
             noiseSuppressionSetting.dropdown.onValueChanged.AddListener(newValue =>
@@ -161,15 +161,25 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 {
                     _model.UpdateEnum(noiseSuppressionSetting.configProperty, newValue);
                 }
-                SetEnumValueFromInt(noiseSuppressionSetting.configProperty, newValue);
+                SetValue(noiseSuppressionSetting.configProperty, newValue);
             });
+            
+            OdinHandler.Instance.OnRoomJoined.AddListener(OnOdinRoomJoined);
+        }
+
+        private void OnOdinRoomJoined(RoomJoinedEventArgs eventArgs)
+        {
+            if (null != eventArgs && null != eventArgs.Room)
+            {
+                eventArgs.Room.SetApmConfig(GetConfigFromOdinHandler());
+            }
         }
 
         /// <summary>
         /// Applies the current settings of the OdinHandler.Config Instance to the given model
         /// </summary>
         /// <param name="model"></param>
-        private void InitModel(ref OdinAudioFilterSettingsModel model)
+        private void InitModelFromOdinConfig(ref OdinAudioFilterSettingsModel model)
         {
             foreach (OdinBoolSetting boolSetting in boolSettings)
             {
@@ -195,9 +205,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
 
             // Set Float Settings sliders to current value.
-            foreach (OdinFloatSetting setting in floatSettings)
+            foreach (OdinFloatSetting floatSetting in floatSettings)
             {
-                setting.slider.value = GetValue<float>(setting.configProperty);
+                floatSetting.slider.value = GetValue<float>(floatSetting.configProperty);
             }
 
             // Set Enum dropdowns to current value.
@@ -216,15 +226,15 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             {
                 foreach (var boolSetting in _model.boolSettings)
                 {
-                    SetBoolValue(boolSetting.configProperty, boolSetting.value);
+                    SetValue(boolSetting.configProperty, boolSetting.value);
                 }
                 foreach (var floatSetting in model.floatSettings)
                 {
-                    SetFloatValue(floatSetting.configProperty, floatSetting.value);
+                    SetValue(floatSetting.configProperty, floatSetting.value);
                 }
                 foreach (var enumSetting in model.enumSettings)
                 {
-                    SetEnumValueFromInt(enumSetting.configProperty, enumSetting.value);
+                    SetValue(enumSetting.configProperty, enumSetting.value);
                 }
                 
                 UpdateViews();
@@ -264,28 +274,32 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <returns></returns>
         private IEnumerator DelayedApplyRoomConfig()
         {
-            
-            // Leave all rooms
-            List<string> roomNames = new List<string>();
-            foreach (Room room in OdinHandler.Instance.Rooms)
-            {
-                
-                roomNames.Add(room.Config.Name);
-            }
-            foreach (Room room in OdinHandler.Instance.Rooms)
-            {
-                OdinHandler.Instance.LeaveRoom(room.Config.Name);
-                yield return null;
-            }
             yield return null;
-
-            // reenter all rooms
-            UserData userData = OdinHandler.Instance.GetUserData();
-            foreach (string roomName in roomNames)
+            foreach (Room room in OdinHandler.Instance.Rooms)
             {
-                OdinHandler.Instance.JoinRoom(roomName, userData);
-                yield return null;
+                OdinRoomConfig config = GetConfigFromOdinHandler();
+                room.SetApmConfig(config);
             }
+        }
+
+        private OdinRoomConfig GetConfigFromOdinHandler()
+        {
+            return new OdinRoomConfig()
+            {
+                EchoCanceller = OdinHandler.Config.EchoCanceller,
+                HighPassFilter = OdinHandler.Config.HighPassFilter,
+                OdinNoiseSuppressionLevel = OdinHandler.Config.NoiseSuppressionLevel,
+                PreAmplifier = OdinHandler.Config.PreAmplifier,
+                TransientSuppressor = OdinHandler.Config.TransientSuppressor,
+                VoiceActivityDetection = OdinHandler.Config.VoiceActivityDetection,
+                VoiceActivityDetectionAttackProbability =
+                    OdinHandler.Config.VoiceActivityDetectionAttackProbability,
+                VoiceActivityDetectionReleaseProbability =
+                    OdinHandler.Config.VoiceActivityDetectionReleaseProbability,
+                VolumeGate = OdinHandler.Config.VolumeGate,
+                VolumeGateAttackLoudness = OdinHandler.Config.VolumeGateAttackLoudness,
+                VolumeGateReleaseLoudness = OdinHandler.Config.VolumeGateReleaseLoudness
+            };
         }
 
         
@@ -303,38 +317,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             return (T)fieldInfo.GetValue(OdinHandler.Config);
         }
 
-        /// <summary>
-        /// Sets a float field in the <c>OdinHandler.Config</c>.
-        /// </summary>
-        /// <param name="property">Float field name.</param>
-        /// <param name="newValue">New Value.</param>
-        private void SetFloatValue(string property, float newValue)
+        private void SetValue<T>(string property, T newValue)
         {
             SetFieldInfo(property, newValue);
-        }
-
-        /// <summary>
-        /// Sets a bool field in the <c>OdinHandler.Config</c>.
-        /// </summary>
-        /// <param name="property">Bool field name.</param>
-        /// <param name="newActive">New Value.</param>
-        private void SetBoolValue(string property, bool newActive)
-        {
-            SetFieldInfo(property, newActive);
-        }
-
-        /// <summary>
-        /// Sets an enum in the <c>OdinHandler.Config</c> from a given int value.
-        /// </summary>
-        /// <param name="property">Enum field name.</param>
-        /// <param name="value">Enum Value to set to.</param>
-        private void SetEnumValueFromInt(string property, int value)
-        {
-            FieldInfo fieldInfo = GetFieldInfo(property);
-            if (Enum.IsDefined(fieldInfo.FieldType, 3))
-                SetFieldInfo(property, value);
-            else
-                Debug.LogError($"Invalid enum range selected for property {property}: Value {value}.");
         }
 
         /// <summary>
