@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
@@ -12,7 +11,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         [SerializeField] private OdinStringVariable[] connectedOdinRooms;
 
-
+        public void ManualUpdatePosition()
+        {
+            if (OdinHandler.Instance)
+                foreach (OdinStringVariable odinRoomName in connectedOdinRooms)
+                    if (OdinHandler.Instance.Rooms.Contains(odinRoomName))
+                        UpdateRoomPosition(OdinHandler.Instance.Rooms[odinRoomName]);
+        }
+        
         private void OnEnable()
         {
             StartCoroutine(DelayedEnable());
@@ -23,30 +29,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             if (OdinHandler.Instance) OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
         }
 
-        private void Update()
-        {
-            if (OdinHandler.Instance)
-            {
-                foreach (OdinStringVariable odinRoomName in connectedOdinRooms)
-                {
-                    if (OdinHandler.Instance.Rooms.Contains(odinRoomName))
-                    {
-                        UpdateRoomPosition(OdinHandler.Instance.Rooms[odinRoomName]);
-                    }
-                }
-            }
-        }
-
         private IEnumerator DelayedEnable()
         {
             while (!OdinHandler.Instance)
                 yield return null;
-
-
-            foreach (Room room in OdinHandler.Instance.Rooms)
-            {
-                InitRoom(room);
-            }
+            
+            foreach (Room room in OdinHandler.Instance.Rooms) InitRoom(room);
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
         }
 
@@ -59,9 +47,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             if (null != toUpdate && toUpdate.IsJoined)
             {
-                
                 var position = transform.position;
-                toUpdate.UpdatePosition(position.x, position.z);
+                bool success = toUpdate.UpdatePosition(position.x, position.z);
+                Debug.Log($"Successfully updated position: {success}");
             }
         }
 
