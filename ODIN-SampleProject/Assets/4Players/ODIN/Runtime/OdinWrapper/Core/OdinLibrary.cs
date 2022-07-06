@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace OdinNative.Core
 {
+    /// <summary>
+    /// Main lib entry class
+    /// </summary>
     public static class OdinLibrary
     {
         private static OdinHandle Handle;
@@ -74,7 +77,7 @@ namespace OdinNative.Core
         /// </summary>
         /// <param name="parameters">Information used to create the instance</param>
         /// <exception cref="System.InvalidOperationException">a <see cref="OdinLibrary"/> is already created</exception>
-        /// <exception cref="System.NullReferenceException"><paramref name="OdinLibraryParameters"/> is null</exception>
+        /// <exception cref="System.NullReferenceException"><paramref name="parameters"/> is null</exception>
         public static void Initialize(OdinLibraryParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -141,7 +144,7 @@ namespace OdinNative.Core
                 Release();
         }
 
-        internal static Exception CreateException(int error, string extraMessage = null)
+        internal static Exception CreateException(uint error, string extraMessage = null)
         {
             string message = Api.GetErrorMessage(error);
             OdinException result = new OdinException(error, message);

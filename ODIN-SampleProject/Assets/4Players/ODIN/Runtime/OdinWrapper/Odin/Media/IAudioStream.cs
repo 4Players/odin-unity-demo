@@ -9,13 +9,13 @@ namespace OdinNative.Odin.Media
 {
     interface IAudioStream
     {
-        int GetMediaId();
+        ushort GetMediaId();
         ulong GetPeerId();
         void AudioPushData(float[] buffer);
         Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken);
         void AudioPushDataAsync(float[] buffer);
-        int AudioReadData(float[] buffer);
-        Task<int> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken);
-        Task<int> AudioReadDataAsync(float[] buffer);
+        uint AudioReadData(float[] buffer);
+        Task<uint> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken);
+        Task<uint> AudioReadDataAsync(float[] buffer);
     }
 }

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace OdinNative.Core
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Utility
     {
         /// <summary>
@@ -14,9 +17,15 @@ namespace OdinNative.Core
         /// </summary>
         public const uint OK = 0;
 
-        public static int RateToSamples(MediaSampleRate sampleRate = MediaSampleRate.Hz48000, int milliseconds = 20)
+        /// <summary>
+        /// Get sample size by samplerate and time
+        /// </summary>
+        /// <param name="sampleRate">samplerate in hz</param>
+        /// <param name="ms">time in milliseconds</param>
+        /// <returns>sample size</returns>
+        public static int RateToSamples(MediaSampleRate sampleRate = MediaSampleRate.Hz48000, int ms = 20)
         {
-            return ((int)sampleRate / 1000) * milliseconds;
+            return ((int)sampleRate / 1000) * ms;
         }
 
         /// <summary>
@@ -24,9 +33,9 @@ namespace OdinNative.Core
         /// </summary>
         /// <param name="error">error code</param>
         /// <returns>true if error</returns>
-        public static bool IsError(int error)
+        public static bool IsError(uint error)
         {
-            return ((UInt32)error >> 29) > 0;
+            return (error >> 29) > 0;
         }
 
 #if UNITY_STANDALONE || UNITY_EDITOR || ENABLE_IL2CPP || ENABLE_MONO
@@ -54,39 +63,6 @@ namespace OdinNative.Core
 #pragma warning disable CS0618 // Type or member is obsolete
             Utility.Throw(new Odin.OdinWrapperException(message), true);
 #pragma warning restore CS0618 // Type or member is obsolete
-        }
-
-        public class RollingAverage
-        {
-            private readonly int pow;
-            private readonly float?[] values;
-            private int nextIndex = -1;
-
-            public RollingAverage(int maxFactor = 16, float defaultValue = 0)
-            {
-                pow = maxFactor - 1;
-                if (maxFactor == 0 || (maxFactor & pow) != 0)
-                {
-                    throw new ArgumentException("Must be power of two", nameof(maxFactor));
-                }
-                values = new float?[maxFactor];
-                for(int i = 0; i < maxFactor; i++)
-                    values[i] = defaultValue;
-            }
-
-            public void Update(float newValue)
-            {
-                var index = System.Threading.Interlocked.Increment(ref nextIndex) & pow;
-                values[index] = newValue;
-            }
-
-            public double GetAverage()
-            {
-                return values.TakeWhile(x => x.HasValue)
-                    .Select(x => x ?? 0)
-                    .DefaultIfEmpty(0)
-                    .Average();
-            }
         }
     }
 }

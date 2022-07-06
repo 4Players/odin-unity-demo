@@ -21,7 +21,11 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_shutdown", out _OdinShutdown);
             handle.GetLibraryMethod("odin_room_create", out _OdinRoomCreate);
             handle.GetLibraryMethod("odin_room_configure_apm", out _OdinRoomConfigureApm);
+            handle.GetLibraryMethod("odin_room_close", out _OdinRoomClose);
             handle.GetLibraryMethod("odin_room_destroy", out _OdinRoomDestroy);
+            handle.GetLibraryMethod("odin_room_id", out _OdinRoomId);
+            handle.GetLibraryMethod("odin_room_customer", out _OdinRoomCustomer);
+            handle.GetLibraryMethod("odin_room_peer_id", out _OdinRoomPeerId);
             handle.GetLibraryMethod("odin_room_join", out _OdinRoomJoin);
             handle.GetLibraryMethod("odin_room_add_media", out _OdinRoomAddMedia);
             handle.GetLibraryMethod("odin_room_update_user_data", out _OdinRoomUpdateUserData);
@@ -40,6 +44,9 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_audio_read_data", out _OdinAudioReadData);
             handle.GetLibraryMethod("odin_audio_mix_streams", out _OdinAudioMixStreams);
             handle.GetLibraryMethod("odin_audio_process_reverse", out _OdinAudioProcessReverse);
+            handle.GetLibraryMethod("odin_resampler_create", out _OdinResamplerCreate);
+            handle.GetLibraryMethod("odin_resampler_process", out _OdinResamplerProcess);
+            handle.GetLibraryMethod("odin_resampler_destroy", out _OdinResamplerDestroy);
             handle.GetLibraryMethod("odin_error_format", out _OdinErrorFormat);
             handle.GetLibraryMethod("odin_access_key_generate", out _OdinAccessKeyGenerate);
             handle.GetLibraryMethod("odin_access_key_public_key", out _OdinAccessKeyPublicKey);
@@ -74,7 +81,7 @@ namespace OdinNative.Core.Imports
             get { return new LockObject(Handle); }
         }
 
-        private void CheckAndThrow(int error, string message = null)
+        private void CheckAndThrow(uint error, string message = null)
         {
             if (Check(error))
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -82,24 +89,9 @@ namespace OdinNative.Core.Imports
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        private bool Check(int error)
+        private bool Check(uint error)
         {
             return IsError(error);
-        }
-
-        private string ConsumeKeyBuffer(IntPtr ptr, int ret)
-        {
-            if (ptr == IntPtr.Zero) return null;
-            if (InternalIsError(ret))
-            {
-                Marshal.FreeHGlobal(ptr);
-                return string.Empty;
-            }
-
-            byte[] buffer = new byte[ret];
-            Marshal.Copy(ptr, buffer, 0, buffer.Length);
-            Marshal.FreeHGlobal(ptr);
-            return Native.Encoding.GetString(buffer);
         }
 
         /// <summary>
@@ -108,7 +100,7 @@ namespace OdinNative.Core.Imports
         /// <param name="error">string buffer</param>
         /// <param name="bufferSize">max string buffer size</param>
         /// <returns>Error message</returns>
-        internal string GetErrorMessage(int error, int bufferSize = 1024)
+        internal string GetErrorMessage(uint error, int bufferSize = 1024)
         {
             using (Lock)
             {
@@ -126,7 +118,7 @@ namespace OdinNative.Core.Imports
         /// </summary>
         /// <param name="error">error code</param>
         /// <returns>true if error</returns>
-        internal bool InternalIsError(int error)
+        internal bool InternalIsError(uint error)
         {
             return Utility.IsError(error);
         }

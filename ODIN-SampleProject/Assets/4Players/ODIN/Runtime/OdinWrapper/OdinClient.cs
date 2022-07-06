@@ -71,6 +71,11 @@ namespace OdinNative.Odin
             AccessKey = accessKey;
         }
 
+        /// <summary>
+        /// Internal library reload
+        /// </summary>
+        /// <remarks>Consider the state of the AppDomain</remarks>
+        /// <param name="init">Idicates to directly initialize the library again after release</param>
         protected internal void ReloadLibrary(bool init = true)
         {
             if (OdinLibrary.IsInitialized)
@@ -83,7 +88,7 @@ namespace OdinNative.Odin
 
         internal static string CreateAccessKey()
         {
-            return OdinLibrary.Api.GenerateAccessKey();
+            return OdinLibrary.Api.GenerateAccessKey(out string key) == key.Length + 1 ? key : string.Empty;
         }
 
         #region Gateway
@@ -91,7 +96,7 @@ namespace OdinNative.Odin
         /// Join or create a <see cref="Room.Room"/> by name via a gateway
         /// </summary>
         /// <param name="name">Room name</param>
-        /// <param name="customerId">Customer ID</param>
+        /// <param name="userId">User ID</param>
         /// <returns><see cref="Room.Room"/> or null</returns>
         public async Task<Room.Room> JoinRoom(string name, string userId)
         {
@@ -127,7 +132,7 @@ namespace OdinNative.Odin
             {
                 var room = new Room.Room(EndPoint.ToString(), AccessKey, name);
                 setup?.Invoke(room);
-                Rooms.Add(room);
+                Rooms.InternalAdd(room);
                 if (room.Join(name, userId, UserData) == false)
                 {
                     Rooms.Remove(room);
@@ -155,7 +160,7 @@ namespace OdinNative.Odin
             {
                 var room = new Room.Room(EndPoint.ToString(), string.Empty, token, roomalias);
                 setup?.Invoke(room);
-                Rooms.Add(room);
+                Rooms.InternalAdd(room);
                 if (room.Join(token) == false)
                 {
                     Rooms.Remove(room);
@@ -182,7 +187,7 @@ namespace OdinNative.Odin
             {
                 var room = new Room.Room(EndPoint.ToString(), token);
                 setup?.Invoke(room);
-                Rooms.Add(room);
+                Rooms.InternalAdd(room);
                 if (room.Join(token) == false)
                 {
                     Rooms.Remove(room);
@@ -195,7 +200,7 @@ namespace OdinNative.Odin
         #endregion Gateway
 
         /// <summary>
-        /// Updates the <see cref="UserData"/> for all <see cref="Rooms"/>
+        /// Updates the <see cref="UserData"/> for all <see cref="Rooms"/> for the current peer
         /// </summary>
         /// <param name="userData"><see cref="OdinNative.Odin.UserData"/></param>
         public async void UpdateUserData(UserData userData)
@@ -203,11 +208,8 @@ namespace OdinNative.Odin
             if (userData == null) throw new OdinWrapperException("UserData can not be null!", new ArgumentNullException());
 
             UserData = userData;
-            await Task.Factory.StartNew(() =>
-            {
-                foreach (var room in Rooms)
-                    room.UpdateUserData(userData);
-            });
+            foreach (var room in Rooms)
+                await room.UpdatePeerUserDataAsync(userData);
         }
 
         /// <summary>
@@ -252,6 +254,7 @@ namespace OdinNative.Odin
 
             return await Task.Factory.StartNew<bool>(() =>
             {
+                Rooms.Leave(name);
                 // remove and dispose
                 return Rooms.Free(name);
             });
@@ -263,12 +266,12 @@ namespace OdinNative.Odin
         /// </summary>
         /// <remarks>Events: PeerJoined, PeerLeft, PeerUpdated, MediaAdded, MediaRemoved</remarks>
         /// <param name="roomPtr">sender room pointer</param>
-        /// <param name="event">OdinEvent struct</param>
-        /// <param name="userDataPtr">userdata pointer</param>
+        /// <param name="odinEvent">OdinEvent struct</param>
+        /// <param name="extraData">userdata pointer</param>
 #if UNITY_2019_4
         [AOT.MonoPInvokeCallback(typeof(Core.Imports.NativeMethods.OdinEventCallback))]
 #endif
-        internal static void OnEventReceivedProxy(IntPtr roomPtr, IntPtr odinEvent, IntPtr extraData)
+        internal static void OnEventReceivedProxy(IntPtr roomPtr, IntPtr odinEvent, MarshalByRefObject extraData)
         {
             try
             {
@@ -281,7 +284,7 @@ namespace OdinNative.Odin
                     sender.OnEventReceived(sender, @event, extraData);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
 #pragma warning disable CS0618 // Type or member is obsolete
             { Utility.Throw(e); }
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -300,6 +303,10 @@ namespace OdinNative.Odin
         }
 
         private bool disposedValue;
+        /// <summary>
+        /// On dispose will free all <see cref="OdinNative.Odin.Room.Room"/> and <see cref="OdinNative.Core.Imports.NativeMethods.Shutdown"/>
+        /// </summary>
+        /// <param name="disposing">Indicates to dispose the library</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -313,13 +320,16 @@ namespace OdinNative.Odin
             }
         }
 
+        /// <summary>
+        /// Default deconstructor
+        /// </summary>
         ~OdinClient()
         {
             Dispose(disposing: false);
         }
 
         /// <summary>
-        /// On dispose will free all <see cref="Room"/> and <see cref="Shutdown"/>
+        /// On dispose will free all <see cref="OdinNative.Odin.Room.Room"/> and <see cref="OdinNative.Core.Imports.NativeMethods.Shutdown"/>
         /// </summary>
         /// <remarks>Override dispose if muliple <see cref="OdinClient"/> are needed</remarks>
         public void Dispose()

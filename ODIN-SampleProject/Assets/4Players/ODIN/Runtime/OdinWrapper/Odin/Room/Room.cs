@@ -17,14 +17,23 @@ namespace OdinNative.Odin.Room
     /// </summary>
     public class Room : IDisposable
     {
+        /// <summary>
+        /// ConnectionState of the Room that is set by ODIN
+        /// </summary>
         public static KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason> ConnectionState { get; private set; } = new KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason>(OdinRoomConnectionState.Disconnected, OdinRoomConnectionStateChangeReason.ClientRequested);
+        /// <summary>
+        /// The count of ConnectionState <see cref="OdinNative.Core.Imports.NativeBindings.OdinRoomConnectionState.Connecting"/> retry for reconnects. Reset on Connected
+        /// </summary>
+        public int ConnectionRetry { get; private set; }
+
+        internal string RoomId => GetRoomId();
 
         /// <summary>
         /// Room configuration
         /// </summary>
         public readonly RoomConfig Config;
         /// <summary>
-        /// true on successful <see cref="Join"/> or false
+        /// true on successful Join or false
         /// </summary>
         public bool IsJoined { get; private set; }
 
@@ -71,7 +80,8 @@ namespace OdinNative.Odin.Room
         /// Create a ODIN ffi room 
         /// </summary>
         /// <param name="server">Endpoint</param>
-        /// <param name="accessKey">Room access Key</param>
+        /// <param name="accessKey">Access Key</param>
+        /// <param name="token">Room token</param>
         /// <param name="name">Room name</param>
         /// <param name="playbackMediaConfig">Config to use for <see cref="OdinNative.Odin.Media.MediaStream"/> on new medias</param>
         /// <param name="apmConfig">Config to use for <see cref="OdinNative.Core.OdinRoomConfig"/></param>
@@ -96,6 +106,8 @@ namespace OdinNative.Odin.Room
         {
             Config = config;
             IsJoined = false;
+            RoomUserData = new UserData();
+            PeerUserData = new UserData();
             Init();
         }
 
@@ -114,6 +126,36 @@ namespace OdinNative.Odin.Room
             }
 
             SetApmConfig(Config.ApmConfig);
+        }
+
+        /// <summary>
+        /// Retrieves the room ID (e.g. the name of the room)
+        /// </summary>
+        /// <returns>room name</returns>
+        public string GetRoomId()
+        {
+            OdinLibrary.Api.RoomGetId(_Handle, out string roomId);
+            return roomId;
+        }
+
+        /// <summary>
+        /// Retrieves the identifier of the customer the room
+        /// </summary>
+        /// <returns>customer</returns>
+        public string GetRoomCustomer()
+        {
+            OdinLibrary.Api.RoomGetCustomer(_Handle, out string customer);
+            return customer;
+        }
+
+        /// <summary>
+        /// Retrieves your own peer ID
+        /// </summary>
+        /// <returns>peer id</returns>
+        public ulong GetRoomPeerId()
+        {
+            OdinLibrary.Api.RoomGetPeerId(_Handle, out ulong peerId);
+            return peerId;
         }
 
         /// <summary>
@@ -140,11 +182,11 @@ namespace OdinNative.Odin.Room
             if(Test(IsJoined == false, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
 
             Utility.Assert(!string.IsNullOrEmpty(this.Config.AccessKey), "Can not join a room by name without an accesskey. Use Join with token instead!");
-            if (AuthHandle == null || AuthHandle == IntPtr.Zero) return false;
+            if (AuthHandle == IntPtr.Zero) return false;
 
-            string token = OdinLibrary.Api.TokenGeneratorCreateToken(_AuthHandle, name, userId);
+            OdinLibrary.Api.TokenGeneratorCreateToken(_AuthHandle, name, userId, out string token);
             this.Config.Token = token;
-            if (!string.IsNullOrEmpty(token) && UpdateUserData(userData ?? PeerUserData))
+            if (!string.IsNullOrEmpty(token) && UpdatePeerUserData(userData ?? PeerUserData))
                 return Join(token);
 
             return false;
@@ -153,7 +195,7 @@ namespace OdinNative.Odin.Room
         /// <summary>
         /// Join the room via Odin gateway
         /// </summary>
-        /// <remarks>The room token should be generated *SERVER SIDE* by <see cref="OdinNative.Core.Imports.NativeMethods.TokenGeneratorCreateToken(TokenGeneratorHandle, string, string, int)"/></remarks>
+        /// <remarks>The room token should be generated *SERVER SIDE* by <see cref="OdinNative.Core.Imports.NativeMethods.TokenGeneratorCreateToken"/></remarks>
         /// <param name="token">room token</param>
         /// <returns>true on successful join or false</returns>
         public bool Join(string token)
@@ -199,95 +241,104 @@ namespace OdinNative.Odin.Room
         /// The server will populate this data to all other visible peers in the same room.
         /// </summary>
         /// <param name="userData">Userdata to send</param>
-        /// <returns>true if userdata was set for the room or false</returns>
-        public bool UpdateUserData(IUserData userData)
+        /// <returns>true if userdata was set for the peer or false</returns>
+        public bool UpdatePeerUserData(IUserData userData)
         {
-            byte[] data = (userData as UserData)?.ToBytes() ?? new byte[0];
+            byte[] data = userData?.ToBytes() ?? new byte[0];
             return OdinLibrary.Api.RoomUpdateUserData(_Handle, data, (ulong)data.Length) == Utility.OK;
         }
 
         /// <summary>
-        /// Sends arbitrary data to a peer that the <see cref="OdinNative.Odin.Media.MediaStream"/> belongs to.
+        /// Updates the user data for our own peer.
+        /// The server will populate this data to all other visible peers in the same room.
         /// </summary>
-        /// <remarks>media that belongs to the peer must be in the same room</remarks>
-        /// <param name="media">media that belongs to a peer</param>
-        /// <param name="data">arbitrary byte array</param>
-        /// <returns>true if data was send or false</returns>
-        public bool SendMessage(MediaStream media, byte[] data)
+        /// <param name="userData">Userdata to send</param>
+        /// <returns>true if userdata was set for the peer or false</returns>
+        public async Task<bool> UpdatePeerUserDataAsync(IUserData userData)
         {
-            return SendMessage(media.GetPeerId(), data);
+            return await Task.Run(() => {
+                return UpdatePeerUserData(userData);
+            });
         }
 
         /// <summary>
-        /// Sends arbitrary data to a peer.
+        /// Updates the user data for the current room.
         /// </summary>
-        /// <remarks>Peer must be in the same room</remarks>
-        /// <param name="peer">peer to send</param>
-        /// <param name="data">arbitrary byte array</param>
-        /// <returns>true if data was send or false</returns>
-        public bool SendMessage(Peer.Peer peer, byte[] data)
+        /// <param name="userData">Userdata to send</param>
+        /// <returns>true if userdata was set for the room or false</returns>
+        public bool UpdateRoomUserData(IUserData userData)
         {
-            return SendMessage(peer.Id, data);
+            byte[] data = userData?.ToBytes() ?? new byte[0];
+            return OdinLibrary.Api.RoomUpdateUserData(_Handle, data, (ulong)data.Length, OdinUserDataTarget.OdinUserDataTarget_Room) == Utility.OK;
         }
 
         /// <summary>
-        /// Sends arbitrary data to a peer by id.
+        /// Updates the user data for the current room.
         /// </summary>
-        /// <remarks>associated id of a peer must be in the same room</remarks>
-        /// <param name="peerId">id of a peer</param>
-        /// <param name="data">arbitrary byte array</param>
-        /// <returns>true if data was send or false</returns>
-        public bool SendMessage(ulong peerId, byte[] data)
+        /// <param name="userData">Userdata to send</param>
+        /// <returns>true if userdata was set for the room or false</returns>
+        public async Task<bool> UpdateRoomUserDataAsync(IUserData userData)
         {
-            return SendMessage(new ulong[] { peerId }, data);
-        }
-
-        /// <summary>
-        /// Sends arbitrary data to a list of target peers.
-        /// </summary>
-        /// <remarks>peers must be in the same room</remarks>
-        /// <param name="peerIdList">list of peers(<see cref="Peer.Peer"/>)</param>
-        /// <param name="data">arbitrary byte array</param>
-        /// <returns>true if data was send or false</returns>
-        public bool SendMessage(IEnumerable<Peer.Peer> peerList, byte[] data)
-        {
-            return SendMessage(peerList.Select(p => p.Id), data);
-        }
-
-        /// <summary>
-        /// Sends arbitrary data to a list of target peerIds.
-        /// </summary>
-        /// <remarks>associated ids of peers must be in the same room</remarks>
-        /// <param name="peerIdList">list of ids(<see cref="Peer.Peer.Id"/>)</param>
-        /// <param name="data">arbitrary byte array</param>
-        /// <returns>true if data was send or false</returns>
-        public bool SendMessage(IEnumerable<ulong> peerIdList, byte[] data)
-        {
-            return SendMessage(peerIdList.ToArray(), data);
+            return await Task.Run(() => {
+                return UpdateRoomUserData(userData);
+            });
         }
 
         /// <summary>
         /// Sends arbitrary data to a array of target peerIds.
         /// </summary>
-        /// <remarks>associated ids of peers must be in the same room</remarks>
+        /// <remarks>associated ids of peers must be in the same room and should not be empty</remarks>
         /// <param name="peerIdList">array of ids(<see cref="Peer.Peer.Id"/>)</param>
         /// <param name="data">arbitrary byte array</param>
         /// <returns>true if data was send or false</returns>
         public bool SendMessage(ulong[] peerIdList, byte[] data)
         {
             if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
+            if(Test(peerIdList != null && peerIdList.Count() <= 0, $"Odin: peer list is empty")) return false;
+            if(Test(data != null && data.Length <= 0, $"Odin: data is empty")) return false;
             return OdinLibrary.Api.RoomSendMessage(_Handle, peerIdList, (ulong)peerIdList.Length, data, (ulong)data.Length) == Utility.OK;
+        }
+
+        /// <summary>
+        /// Sends arbitrary data to a array of target peerIds.
+        /// </summary>
+        /// <remarks>associated ids of peers must be in the same room and should not be empty</remarks>
+        /// <param name="peerIdList">array of ids(<see cref="Peer.Peer.Id"/>)</param>
+        /// <param name="data">arbitrary byte array</param>
+        /// <returns>true if data was send or false</returns>
+        public async Task<bool> SendMessageAsync(ulong[] peerIdList, byte[] data)
+        {
+            if (Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
+            if (Test(peerIdList != null && peerIdList.Count() <= 0, $"Odin: peer list is empty")) return false;
+            if (Test(data != null && data.Length <= 0, $"Odin: data is empty")) return false;
+
+            return await Task.Run(() => {
+                return OdinLibrary.Api.RoomSendMessage(_Handle, peerIdList, (ulong)peerIdList.Length, data, (ulong)data.Length) == Utility.OK;
+            });
         }
 
         /// <summary>
         /// Sends arbitrary data to a all remote peers in this room.
         /// </summary>
         /// <param name="data">arbitrary byte array</param>
+        /// <param name="includeSelf">idicates whether this current peer get the message too</param>
         /// <returns>true if data was send or false</returns>
         public bool BroadcastMessage(byte[] data, bool includeSelf = false)
         {
             IEnumerable<ulong> peerIds = includeSelf ? RemotePeers.Select(p => p.Id) : RemotePeers.Where(p => p.Id != OwnId).Select(p => p.Id);
-            return SendMessage(peerIds, data);
+            return SendMessage(peerIds.ToArray(), data);
+        }
+
+        /// <summary>
+        /// Sends arbitrary data to a all remote peers in this room.
+        /// </summary>
+        /// <param name="data">arbitrary byte array</param>
+        /// <param name="includeSelf">idicates whether this current peer get the message too</param>
+        /// <returns>true if data was send or false</returns>
+        public async Task<bool> BroadcastMessageAsync(byte[] data, bool includeSelf = false)
+        {
+            ulong[] peerIds = includeSelf ? RemotePeers.Select(p => p.Id).ToArray() : RemotePeers.Where(p => p.Id != OwnId).Select(p => p.Id).ToArray();
+            return await SendMessageAsync(peerIds, data);
         }
 
         /// <summary>
@@ -326,21 +377,6 @@ namespace OdinNative.Odin.Room
         {
             if(Test(IsJoined, $"Odin: {ConnectionState.Key} {ConnectionState.Value}")) return false;
             return OdinLibrary.Api.RoomUpdatePosition(_Handle, x, y) == Utility.OK;
-        }
-
-        /// <summary>
-        /// Leave a room and free all remote peers and associated medias
-        /// </summary>
-        /// <remarks>This resets the room object for a final close use <see cref="Dispose"/></remarks>
-        public void Leave()
-        {
-            RegisterEventCallback(null);
-            RemotePeers.FreeAll();
-            _Handle.DangerousRelease();
-            _AuthHandle?.DangerousRelease();
-            IsJoined = false;
-            //Reset
-            Init(); 
         }
 
         #region Events
@@ -388,6 +424,11 @@ namespace OdinNative.Odin.Room
         /// </summary>
         /// <remarks>Default <see cref="Room"/> sender and <see cref="MessageReceivedEventArgs"/></remarks>
         public event RoomMessageReceivedEventHandler OnMessageReceived;
+        /// <summary>
+        /// Passthrough event that identified a new ConnectionStateChanged event by Event-Tag.
+        /// </summary>
+        /// <remarks>Default <see cref="Room"/> sender and <see cref="ConnectionStateChangedEventArgs"/></remarks>
+        public event RoomConnectionStateChangedEventHandler OnConnectionStateChanged;
 
         internal void RegisterEventCallback(OdinEventCallback eventCallback)
         {
@@ -401,7 +442,7 @@ namespace OdinNative.Odin.Room
         /// <param name="_">this instance</param>
         /// <param name="event">OdinEvent struct</param>
         /// <param name="extraData">userdata pointer</param>
-        internal void OnEventReceived(Room _, OdinEvent @event, IntPtr extraData)
+        internal void OnEventReceived(Room _, OdinEvent @event, MarshalByRefObject extraData)
         {
             switch (@event.tag)
             {
@@ -435,20 +476,19 @@ namespace OdinNative.Odin.Room
                     InvokePeerUserDataChanged(@event.peer_user_data_changed);
                     break;
                 case OdinEventTag.OdinEvent_MediaAdded:
-                    Utility.Assert(@event.media_added.stream != IntPtr.Zero, $"{nameof(@event.media_added.stream)} IntPtr is 0");
+                    Utility.Assert(@event.media_added.media_handle != IntPtr.Zero, $"{nameof(@event.media_added.media_handle)} IntPtr is 0");
                     Utility.Assert(@event.media_added.peer_id > 0, $"{nameof(@event.media_added.peer_id)} is invalid: " + @event.media_added.peer_id);
-                    Utility.Assert(@event.media_added.media_id > 0, $"{nameof(@event.media_added.media_id)} is invalid: " + @event.media_added.media_id);
 
                     InvokeMediaAdded(@event.media_added);
                     break;
                 case OdinEventTag.OdinEvent_MediaRemoved:
-                    Utility.Assert(@event.media_removed.media_id > 0, $"{nameof(@event.media_removed.media_id)} is invalid: " + @event.media_removed.media_id);
+                    Utility.Assert(@event.media_removed.media_handle != IntPtr.Zero, $"{nameof(@event.media_removed.media_handle)} IntPtr is 0");
 
                     InvokeMediaRemoved(@event.media_removed);
                     break;
                 case OdinEventTag.OdinEvent_MediaActiveStateChanged:
                     Utility.Assert(@event.media_active_state_changed.peer_id > 0, $"{nameof(@event.media_active_state_changed.peer_id)} is invalid: " + @event.media_active_state_changed.peer_id);
-                    Utility.Assert(@event.media_active_state_changed.media_id > 0, $"{nameof(@event.media_active_state_changed.media_id)} is invalid: " + @event.media_active_state_changed.media_id);
+                    Utility.Assert(@event.media_active_state_changed.media_handle != IntPtr.Zero, $"{nameof(@event.media_active_state_changed.media_handle)} IntPtr is 0");
 
                     InvokeMediaActiveStateChanged(@event.media_active_state_changed);
                     break;
@@ -465,16 +505,31 @@ namespace OdinNative.Odin.Room
                     InvokeMessageReceived(@event.message_received);
                     break;
 
-                case OdinEventTag.OdinEvent_ConnectionStateChanged:
-                    ConnectionState = new KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason> (@event.room_connection_state_changed.state, @event.room_connection_state_changed.reason);
-                    if (ConnectionState.Key.HasFlag(OdinRoomConnectionState.Disconnected))
-                        IsJoined = false;
+                case OdinEventTag.OdinEvent_RoomConnectionStateChanged:
+                    InvokeConnectionStateChanged(@event.room_connection_state_changed);
                     break;
-                case OdinEventTag.OdinEvent_None:
                 default:
                     OnEvent?.Invoke(this, @event);
                     break;
             }
+        }
+
+        private void InvokeConnectionStateChanged(OdinEvent_RoomConnectionStateChangedData @event)
+        {
+            ConnectionState = new KeyValuePair<OdinRoomConnectionState, OdinRoomConnectionStateChangeReason>(@event.state, @event.reason);
+            if (ConnectionState.Key.HasFlag(OdinRoomConnectionState.Disconnected))
+                IsJoined = false;
+            if (ConnectionState.Key.HasFlag(OdinRoomConnectionState.Connected))
+                ConnectionRetry = 0;
+            else
+                ConnectionRetry++;
+
+            OnConnectionStateChanged?.Invoke(this, new ConnectionStateChangedEventArgs() 
+            { 
+                ConnectionState = ConnectionState.Key,
+                ChangeReason = ConnectionState.Value,
+                Retry = ConnectionRetry,
+            });
         }
 
         private void InvokeMessageReceived(OdinEvent_MessageReceivedData @event)
@@ -496,13 +551,14 @@ namespace OdinNative.Odin.Room
         private void InvokeMediaActiveStateChanged(OdinEvent_MediaActiveStateChangedData @event)
         {
             var peer = RemotePeers[@event.peer_id];
-            MediaStream media = peer?.Medias[@event.media_id];
+            long streamId = @event.media_handle.ToInt64();
+            MediaStream media = peer?.Medias[streamId];
             if(media != null) media.IsActive = @event.active;
 
             OnMediaActiveStateChanged?.Invoke(this, new MediaActiveStateChangedEventArgs()
             {
                 PeerId = @event.peer_id,
-                MediaId = @event.media_id,
+                MediaStreamId = streamId,
                 Active = @event.active,
             });
         }
@@ -522,19 +578,20 @@ namespace OdinNative.Odin.Room
 
         private void InvokeMediaRemoved(OdinEvent_MediaRemovedData @event)
         {
-            if (Self != null && Self.Medias.Any(m => m.Id == @event.media_id))
+            long streamId = @event.media_handle.ToInt64();
+            if (Self != null && Self.Medias.Any(m => m.Id == streamId))
             {
-                Self.RemoveMedia(@event.media_id);
+                Self.RemoveMedia(streamId);
                 return;
             }
 
             // Remove media from peer
-            var peerWithMedia = RemotePeers.FirstOrDefault(p => p.Medias.Any(m => m.Id == @event.media_id));
-            peerWithMedia?.RemoveMedia(@event.media_id);
+            var peerWithMedia = RemotePeers.FirstOrDefault(p => p.Medias.Any(m => m.Id == streamId));
+            peerWithMedia?.RemoveMedia(streamId);
 
             OnMediaRemoved?.Invoke(this, new MediaRemovedEventArgs()
             {
-                MediaId = @event.media_id,
+                MediaStreamId = streamId,
                 Peer = peerWithMedia,
             });
         }
@@ -544,16 +601,15 @@ namespace OdinNative.Odin.Room
             Utility.Assert(@event.peer_id != Self?.Id, $"{nameof(@event.peer_id)} is Self");
 
             var playbackStream = new PlaybackStream(
-                @event.media_id,
                 Config.PlaybackMediaConfig,
-                new StreamHandle(@event.stream));
+                new StreamHandle(@event.media_handle));
 
             var mediaPeer = RemotePeers[@event.peer_id];
             if (mediaPeer == null) // should only happen if this client (Self) added a media 
             {
                 //add an unknown peer that never joined the room but created a media
                 mediaPeer = new Peer.Peer(@event.peer_id, this.Config.Name, new UserData());
-                RemotePeers.Add(mediaPeer);
+                RemotePeers.InternalAdd(mediaPeer);
             }
 
             mediaPeer.AddMedia(playbackStream);
@@ -593,7 +649,7 @@ namespace OdinNative.Odin.Room
                 foreach (var closingMedia in leavingPeer.Medias)
                     OnMediaRemoved?.Invoke(this, new MediaRemovedEventArgs()
                     {
-                        MediaId = (ushort)closingMedia.Id,
+                        MediaStreamId = (ushort)closingMedia.Id,
                         Peer = leavingPeer,
                     });
             }
@@ -616,7 +672,7 @@ namespace OdinNative.Odin.Room
             if (@event.user_id_len > 0)
                 peer.UserId = userId = Core.Imports.Native.ReadByteString(@event.user_id, (int)@event.user_id_len);
 
-            RemotePeers.Add(peer);
+            RemotePeers.InternalAdd(peer);
 
             OnPeerJoined?.Invoke(this, new PeerJoinedEventArgs()
             {
@@ -649,38 +705,94 @@ namespace OdinNative.Odin.Room
         {
             if(condition) return false;
 #pragma warning disable CS0618 // Type or member is obsolete
-            OdinNative.Core.Utility.Throw(new OdinUnityException(message));
+            OdinNative.Core.Utility.Throw(new OdinWrapperException(message));
 #pragma warning restore CS0618 // Type or member is obsolete
             return true;
         }
 
+        /// <summary>
+        /// Debug
+        /// </summary>
+        /// <returns>info</returns>
+        public override string ToString()
+        {
+            return $"{nameof(Room)}: {nameof(RoomId)} \"{RoomId}\"" +
+                $", {nameof(IsJoined)} {IsJoined}" +
+                $", {nameof(OwnId)} {OwnId}" +
+                $", {nameof(RemotePeers)} {RemotePeers?.Count}" +
+                $", {nameof(PlaybackMedias)} {PlaybackMedias?.Count()}\n\t" +
+                $"- {nameof(MicrophoneMedia)} {MicrophoneMedia?.ToString()}\n\t" +
+                $"- {nameof(Config)} {Config?.ToString()}";
+        }
+
+        /// <summary>
+        /// Leave a room and free all remote peers and associated medias
+        /// </summary>
+        /// <remarks>This resets the room object for a final close use Dispose</remarks>
+        public void Leave()
+        {
+            if (Free())
+                Init(); //Reset
+        }
+
+        private bool Free()
+        {
+            bool result = false;
+
+            IsJoined = false;
+            RegisterEventCallback(null);
+            EventDelegate = null;
+            RemotePeers.FreeAll();
+            MicrophoneMedia?.Dispose();
+            MicrophoneMedia = null;
+            Self?.Dispose();
+            Self = null;
+            
+            try
+            {
+                if (OdinLibrary.IsInitialized)
+                    result = OdinLibrary.Api.RoomClose(_Handle) == Utility.OK;
+            } catch { }
+
+            _AuthHandle?.Close();
+            _Handle?.Close();
+
+            return result;
+        }
+
         private bool disposedValue;
+        /// <summary>
+        /// On dispose will free the room and token generator
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    MicrophoneMedia?.Dispose();
-                    MicrophoneMedia = null;
-                    RemotePeers.FreeAll();
-                    Self?.Dispose();
-                    Self = null;
-                    EventDelegate = null;
-                    _AuthHandle?.Close();
+                    Free();
+
+                    _AuthHandle?.Dispose();
                     _AuthHandle = null;
-                    _Handle.Close();
+                    _Handle?.Dispose();
+                    _Handle = null;
                 }
 
                 disposedValue = true;
             }
         }
 
+        /// <summary>
+        /// Default deconstructor
+        /// </summary>
         ~Room()
         {
             Dispose(disposing: false);
         }
 
+        /// <summary>
+        /// On dispose will free the room and token generator
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);

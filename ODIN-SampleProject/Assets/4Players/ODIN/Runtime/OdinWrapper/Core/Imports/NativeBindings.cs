@@ -16,7 +16,7 @@ namespace OdinNative.Core.Imports
         /// <summary>
         /// ODIN_VERSION
         /// </summary>
-        public const string OdinVersion = "0.7.0";
+        public const string OdinVersion = "1.0.0";
 
         /// <summary>
         /// Valid levels for aggressiveness of the noise suppression
@@ -26,10 +26,25 @@ namespace OdinNative.Core.Imports
         /// </remarks>
         public enum OdinNoiseSuppressionLevel
         {
+            /// <summary>
+            /// None
+            /// </summary>
             None,
+            /// <summary>
+            /// 6dB
+            /// </summary>
             Low,
+            /// <summary>
+            /// 12 dB
+            /// </summary>
             Moderate,
+            /// <summary>
+            /// 18 dB
+            /// </summary>
             High,
+            /// <summary>
+            /// 21 dB
+            /// </summary>
             VeryHigh,
         }
 
@@ -38,7 +53,13 @@ namespace OdinNative.Core.Imports
         /// </summary>
         public enum OdinUserDataTarget
         {
+            /// <summary>
+            /// Peer UserData
+            /// </summary>
             OdinUserDataTarget_Peer,
+            /// <summary>
+            /// Room UserData
+            /// </summary>
             OdinUserDataTarget_Room
         }
 
@@ -66,9 +87,11 @@ namespace OdinNative.Core.Imports
 
         internal struct OdinTokenOptions
         {
+#pragma warning disable CS0649 // never assigned to, and will always have
             public string customer; // Customer identifier should not be set - unless connecting directly to an ODIN server
             public OdinTokenAudience audience;
             public ulong lifetime;
+#pragma warning restore CS0649 // never assigned to, and will always have
         }
 
         #region EventStructs
@@ -123,9 +146,8 @@ namespace OdinNative.Core.Imports
             OdinEvent_MediaRemoved,
             OdinEvent_MediaActiveStateChanged,
             OdinEvent_RoomUserDataChanged,
-            OdinEvent_ConnectionStateChanged,
+            OdinEvent_RoomConnectionStateChanged,
             OdinEvent_MessageReceived,
-            OdinEvent_None,
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -198,35 +220,30 @@ namespace OdinNative.Core.Imports
         internal struct OdinEvent_MediaAddedData
         {
             [FieldOffset(0)]
-            [MarshalAs(UnmanagedType.U2)]
-            public ushort media_id;
-            [FieldOffset(8)]
             [MarshalAs(UnmanagedType.U8)]
             public ulong peer_id;
-            [FieldOffset(16)]
-            public IntPtr stream;
+            [FieldOffset(8)]
+            public IntPtr media_handle;
         }
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct OdinEvent_MediaRemovedData
         {
             [FieldOffset(0)]
-            [MarshalAs(UnmanagedType.U2)]
-            public ushort media_id;
-            [FieldOffset(8)]
             [MarshalAs(UnmanagedType.U8)]
             public ulong peer_id;
+            [FieldOffset(8)]
+            public IntPtr media_handle;
         }
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct OdinEvent_MediaActiveStateChangedData
         {
             [FieldOffset(0)]
-            [MarshalAs(UnmanagedType.U2)]
-            public ushort media_id;
-            [FieldOffset(8)]
             [MarshalAs(UnmanagedType.U8)]
             public ulong peer_id;
+            [FieldOffset(8)]
+            public IntPtr media_handle;
             [FieldOffset(16)]
             public bool active;
         }
@@ -271,8 +288,17 @@ namespace OdinNative.Core.Imports
         /// </summary>
         public enum OdinRoomConnectionState
         {
+            /// <summary>
+            /// Connection is being established
+            /// </summary>
             Connecting,
+            /// <summary>
+            /// Connection is established
+            /// </summary>
             Connected,
+            /// <summary>
+            /// Connection is closed
+            /// </summary>
             Disconnected,
         }
         #endregion EventStructs
@@ -282,8 +308,17 @@ namespace OdinNative.Core.Imports
         /// </summary>
         public enum OdinRoomConnectionStateChangeReason
         {
+            /// <summary>
+            /// Connection state change was initiated by the user
+            /// </summary>
             ClientRequested,
+            /// <summary>
+            /// Connection state change was initiated by the server (e.g. peer was kicked)
+            /// </summary>
             ServerRequested,
+            /// <summary>
+            /// Connection state change was caused by a timeout
+            /// </summary>
             ConnectionLost,
         }
 
@@ -298,6 +333,13 @@ namespace OdinNative.Core.Imports
         {
             OdinChannelLayout_Mono,
             OdinChannelLayout_Stereo
+        }
+
+        internal enum OdinMediaStreamType
+        {
+            OdinMediaStreamType_Audio,
+            OdinMediaStreamType_Video,
+            OdinMediaStreamType_Invalid,
         }
     }
 }

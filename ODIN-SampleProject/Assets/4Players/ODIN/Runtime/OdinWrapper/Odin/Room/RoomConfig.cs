@@ -42,5 +42,22 @@ namespace OdinNative.Odin.Room
         /// Configuration for <see cref="OdinNative.Odin.Media.MediaStream"/> on new medias
         /// </summary>
         public OdinMediaConfig PlaybackMediaConfig;
+
+        /// <summary>
+        /// Debug
+        /// </summary>
+        /// <returns>info</returns>
+        public override string ToString()
+        {
+            return $"{nameof(RoomConfig)}:" +
+                $" {nameof(AccessKey)} {!string.IsNullOrEmpty(AccessKey)}" +
+                $", {nameof(TokenLifetime)} {TokenLifetime}" +
+                $", {nameof(Token)} {!string.IsNullOrEmpty(Token)}" +
+                $", {nameof(Name)} \"{Name}\"" +
+                $", {nameof(Server)} \"{Server}\"" +
+                $", {nameof(HasEventCallbacks)} {HasEventCallbacks}\n\t" +
+                $"- {nameof(ApmConfig)} {ApmConfig?.ToString()}\n\t" +
+                $"- {nameof(PlaybackMediaConfig)} {PlaybackMediaConfig?.ToString()}";
+        }
     }
 }

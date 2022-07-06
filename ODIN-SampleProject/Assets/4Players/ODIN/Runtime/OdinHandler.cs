@@ -82,6 +82,11 @@ public class OdinHandler : MonoBehaviour
     /// Called on every Peer that received message from a peer by <see cref="OdinNative.Odin.Room.Room.SendMessage(ulong, byte[])"/>
     /// </summary>
     public MessageReceivedProxy OnMessageReceived;
+    /// <summary>
+    /// Called on the Room that changed the connection state
+    /// </summary>
+    /// <remarks>If the client loses connection every connected room sends this event. Reconnect can fail and run into a timeout consequently additional events can be delayed.</remarks>
+    public ConnectionStateChangedProxy OnConnectionStateChanged;
 
     /// <summary>
     /// Called if this OdinHandler created a MediaStream that was requested by the MediaQueue
@@ -293,6 +298,7 @@ public class OdinHandler : MonoBehaviour
 
         await System.Threading.Tasks.Task.Yield();
 
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(JoinRoom)} Enqueue => {nameof(roomName)} \"{roomName}\"\n\t# {room}");
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
             this,
             new RoomJoinedEventArgs() { Room = room }));
@@ -338,6 +344,7 @@ public class OdinHandler : MonoBehaviour
 
         await System.Threading.Tasks.Task.Yield();
 
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(JoinRoom)} Enqueue => {nameof(roomAlias)} \"{roomAlias}\" {nameof(token)} \"{token}\"\n\t# {room}");
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
             this,
             new RoomJoinedEventArgs() { Room = room }));
@@ -348,6 +355,7 @@ public class OdinHandler : MonoBehaviour
         if (setup == null)
             setup = (r) =>
             {
+                r.OnConnectionStateChanged += Room_OnConnectionStateChanged;
                 var cfg = Config;
                 if (cfg.PeerJoinedEvent) r.OnPeerJoined += Room_OnPeerJoined;
                 if (cfg.PeerLeftEvent) r.OnPeerLeft += Room_OnPeerLeft;
@@ -358,20 +366,7 @@ public class OdinHandler : MonoBehaviour
                 if (cfg.MediaActiveStateChangedEvent) r.OnMediaActiveStateChanged += Room_OnMediaActiveStateChanged;
                 if (cfg.MessageReceivedEvent) r.OnMessageReceived += Room_OnMessageReceived;
 
-                r.SetApmConfig(new OdinNative.Core.OdinRoomConfig()
-                {
-                    VoiceActivityDetection = cfg.VoiceActivityDetection,
-                    VoiceActivityDetectionAttackProbability = cfg.VoiceActivityDetectionAttackProbability,
-                    VoiceActivityDetectionReleaseProbability = cfg.VoiceActivityDetectionReleaseProbability,
-                    VolumeGate = cfg.VolumeGate,
-                    VolumeGateAttackLoudness = cfg.VolumeGateAttackLoudness,
-                    VolumeGateReleaseLoudness = cfg.VolumeGateReleaseLoudness,
-                    EchoCanceller = cfg.EchoCanceller,
-                    HighPassFilter = cfg.HighPassFilter,
-                    PreAmplifier = cfg.PreAmplifier,
-                    OdinNoiseSuppressionLevel = cfg.NoiseSuppressionLevel,
-                    TransientSuppressor = cfg.TransientSuppressor,
-                });
+                r.SetApmConfig(new OdinNative.Core.OdinRoomConfig(cfg));
 
                 EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
                     this,
@@ -392,6 +387,7 @@ public class OdinHandler : MonoBehaviour
             return;
         }
 
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(LeaveRoom)} Enqueue => {nameof(roomName)} \"{roomName}\"\n\t# {Rooms[roomName]}");
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(
             this,
             new RoomLeaveEventArgs() { Room = Rooms[roomName] }));
@@ -422,8 +418,8 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">PeerJoined Args</param>
     protected virtual void Room_OnPeerJoined(object sender, PeerJoinedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User added {e.Peer} with {e.Peer.UserData}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User added {e.Peer} with {e.Peer.UserData}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnPeerJoined)}\n\t# {(sender as Room)}\n\t# {e.Peer}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -436,8 +432,8 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">PeerLeft Args</param>
     protected virtual void Room_OnPeerLeft(object sender, PeerLeftEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User left {e.PeerId}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User left {e.PeerId}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnPeerLeft)}\n\t# {(sender as Room)}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -450,8 +446,8 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">PeerUpdated Args</param>
     protected virtual void Room_OnPeerUserDataChanged(object sender, PeerUserDataChangedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User {e.PeerId} updated {e.UserData}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": User {e.PeerId} updated {e.UserData}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnPeerUserDataChanged)}\n\t# {(sender as Room)}\n\t# {e.Peer}\n\t# {e.UserData}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -465,8 +461,8 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">MediaAdded Args</param>
     protected virtual void Room_OnMediaAdded(object sender, MediaAddedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": add Media: {e.Media} PlaybackId: {e.Media.Id} to Peer: {e.Peer}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": add Media: {e.Media} PlaybackId: {e.Media.Id} to Peer: {e.Peer}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnMediaAdded)}\n\t# {(sender as Room)}\n\t# {e.Peer}\n\t# {e.Media}");
 
         // Push for unity thread
         MediaAddedQueue.Enqueue(new KeyValuePair<Room, MediaAddedEventArgs>(sender as Room, e));
@@ -481,8 +477,9 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">MediaRemoved Args with MediaId</param>
     protected virtual void Room_OnMediaRemoved(object sender, MediaRemovedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": removed Media: {e.MediaId} from Peer: {e.Peer}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": removed Media: {e.MediaStreamId} from Peer: {e.Peer}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnMediaRemoved)}\n\t# {(sender as Room)}\n\t# {e.MediaStreamId}\n\t# {e.Peer}");
+
 
         // Push for unity thread
         MediaRemovedQueue.Enqueue(new KeyValuePair<Room, MediaRemovedEventArgs>(sender as Room, e));
@@ -491,8 +488,8 @@ public class OdinHandler : MonoBehaviour
 
     protected virtual void Room_OnRoomUserDataChanged(object sender, RoomUserDataChangedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": changed {e.RoomName} data: {e.Data}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": changed {e.RoomName} data: {e.Data}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnRoomUserDataChanged)}\n\t# {(sender as Room)}\n\t# {e.RoomName}\n\t# {e.Data}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -500,8 +497,8 @@ public class OdinHandler : MonoBehaviour
 
     protected virtual void Room_OnMediaActiveStateChanged(object sender, MediaActiveStateChangedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": Media activity on {e.MediaId} from Peer: {e.PeerId}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": Media activity on {e.MediaStreamId} from Peer: {e.PeerId}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnMediaActiveStateChanged)}\n\t# {(sender as Room)}\n\t# {e.MediaStreamId}\n\t# {e.PeerId}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -514,8 +511,18 @@ public class OdinHandler : MonoBehaviour
     /// <param name="e">MessageReceivedEventArgs with peer ID and data</param>
     protected virtual void Room_OnMessageReceived(object sender, MessageReceivedEventArgs e)
     {
-        if (Config.Verbose)
-            Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": received message from Peer: {e.PeerId}");
+        if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": received message from Peer: {e.PeerId}");
+        if (Config.VerboseDebug) Debug.Log($"## {nameof(Room_OnMessageReceived)}\n\t# {(sender as Room)}\n\t# {e.PeerId}\n\t# {e.Data}");
+
+        // Push for unity thread
+        EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
+    }
+
+    private void Room_OnConnectionStateChanged(object sender, ConnectionStateChangedEventArgs e)
+    {
+        Room room = sender as Room;
+        if (room.IsJoined && e.ConnectionState.HasFlag(OdinRoomConnectionState.Connecting))
+            Debug.LogWarning($"Room \"{room.Config.Name}\" lost connection: {e.ChangeReason} retry: {e.Retry}");
 
         // Push for unity thread
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
@@ -551,8 +558,12 @@ public class OdinHandler : MonoBehaviour
         if (EventQueue == null) return;
         while (EventQueue.TryDequeue(out KeyValuePair<object, System.EventArgs> uEvent))
         {
+            if (Config.VerboseDebug) Debug.Log($"## {nameof(HandleEventQueue)} TryDequeue <= {uEvent.Value.GetType()}\n\t# {uEvent.Key}");
+
+            if (uEvent.Value is ConnectionStateChangedEventArgs)
+                OnConnectionStateChanged?.Invoke(uEvent.Key, uEvent.Value as ConnectionStateChangedEventArgs);
             //Room
-            if (uEvent.Value is RoomJoinEventArgs)
+            else if (uEvent.Value is RoomJoinEventArgs)
                 OnRoomJoin?.Invoke(uEvent.Value as RoomJoinEventArgs);
             else if (uEvent.Value is RoomJoinedEventArgs)
                 OnRoomJoined?.Invoke(uEvent.Value as RoomJoinedEventArgs);
@@ -587,6 +598,7 @@ public class OdinHandler : MonoBehaviour
         if (MediaAddedQueue == null) return;
         if (MediaAddedQueue.TryDequeue(out KeyValuePair<Room, MediaAddedEventArgs> addedEvent))
         {
+            if (Config.VerboseDebug) Debug.Log($"## {nameof(HandleNewMediaQueue)} TryDequeue <= {addedEvent.Value.GetType()}\n\t# {addedEvent.Key}");
 
             if (CreatePlayback)
             {
@@ -602,6 +614,30 @@ public class OdinHandler : MonoBehaviour
                 Debug.LogWarning($"No available consumers for playback found.");
 
             OnCreatedMediaObject?.Invoke(addedEvent.Key.Config.Name, addedEvent.Value.Peer.Id, addedEvent.Value.Media.Id);
+        }
+    }
+
+    private void HandleRemoveMediaQueue()
+    {
+        if (MediaRemovedQueue == null) return;
+        if (MediaRemovedQueue.TryDequeue(out KeyValuePair<Room, MediaRemovedEventArgs> removedEvent))
+        {
+            if (Config.VerboseDebug) Debug.Log($"## {nameof(HandleRemoveMediaQueue)} TryDequeue <= {removedEvent.Value.GetType()}\n\t# {removedEvent.Key}");
+
+            OnDeleteMediaObject?.Invoke(removedEvent.Value.MediaStreamId);
+
+            if (CreatePlayback && Use3DAudio == false)
+            {
+                var playbacks = gameObject.GetComponents<PlaybackComponent>();
+                var playback = playbacks.FirstOrDefault(p => p.MediaStreamId == removedEvent.Value.MediaStreamId);
+
+                if (playback == null)
+                    Debug.LogWarning($"No Playback for stream id {removedEvent.Value.MediaStreamId} found to destroy!");
+                else if (removedEvent.Value == null)
+                    Debug.LogWarning($"No Media for stream id {removedEvent.Value.MediaStreamId} found!");
+                else
+                    Destroy(playback);
+            }
         }
     }
 
@@ -627,15 +663,15 @@ public class OdinHandler : MonoBehaviour
     /// <param name="gameObjectTag">Tag string to find with <see href="https://docs.unity3d.com/ScriptReference/GameObject.FindGameObjectsWithTag.html">FindGameObjectsWithTag</see></param>
     /// <param name="roomName">PlaybackComponent room</param>
     /// <param name="peerId">PlaybackComponent peer</param>
-    /// <param name="mediaId">PlaybackComponent media</param>
+    /// <param name="mediaStreamId">PlaybackComponent media</param>
     /// <param name="autoDestroySource">optionally enable or disable on destroy of PlaybackComponent the destroy of the linked AudioSource</param>
     /// <returns>ScriptReference of <see cref="PlaybackComponent"/> from the GameObject or null</returns>
-    public PlaybackComponent AddPlaybackComponent(string gameObjectTag, string roomName, ulong peerId, ushort mediaId, bool autoDestroySource = true)
+    public PlaybackComponent AddPlaybackComponent(string gameObjectTag, string roomName, ulong peerId, long mediaStreamId, bool autoDestroySource = true)
     {
         return AddPlaybackComponent(FindPeerContainer(gameObjectTag),
             roomName,
             peerId,
-            mediaId,
+            mediaStreamId,
             autoDestroySource);
     }
 
@@ -657,10 +693,10 @@ public class OdinHandler : MonoBehaviour
     /// <param name="peerContainer">GameObject to attach to</param>
     /// <param name="roomName">PlaybackComponent room</param>
     /// <param name="peerId">PlaybackComponent peer</param>
-    /// <param name="mediaId">PlaybackComponent media</param>
+    /// <param name="mediaStreamId">PlaybackComponent media</param>
     /// <param name="autoDestroySource">optionally enable or disable on destroy of PlaybackComponent the destroy of the linked AudioSource</param>
     /// <returns>ScriptReference of <see cref="PlaybackComponent"/> from the GameObject or null</returns>
-    public PlaybackComponent AddPlaybackComponent(GameObject peerContainer, string roomName, ulong peerId, ushort mediaId, bool autoDestroySource = true)
+    public PlaybackComponent AddPlaybackComponent(GameObject peerContainer, string roomName, ulong peerId, long mediaStreamId, bool autoDestroySource = true)
     {
         if (peerContainer == null)
         {
@@ -672,34 +708,19 @@ public class OdinHandler : MonoBehaviour
         playback.AutoDestroyAudioSource = autoDestroySource; // We create and destroy the audiosource
         playback.RoomName = roomName;
         playback.PeerId = peerId;
-        playback.MediaId = mediaId;
+        playback.MediaStreamId = mediaStreamId;
         if (PlaybackAudioMixerGroup != null)
             playback.PlaybackSource.outputAudioMixerGroup = PlaybackAudioMixerGroup;
-        Debug.Log($"Playback created on {peerContainer.name} for Room {playback.RoomName} Peer {playback.PeerId} Media {playback.MediaId}");
-
+        Debug.Log($"Playback created on {peerContainer.name} for Room {playback.RoomName} Peer {playback.PeerId} Media {playback.MediaStreamId}");
+        if (Config.VerboseDebug)
+            Debug.Log($"## {nameof(AddPlaybackComponent)}:" +
+                $" {nameof(peerContainer)} \"{peerContainer}\"" +
+                $", {nameof(roomName)} \"{roomName}\"" +
+                $", {nameof(peerId)} {peerId}" +
+                $", {nameof(mediaStreamId)} {mediaStreamId}" +
+                $", {nameof(autoDestroySource)} {autoDestroySource}\n\t" +
+                $"- {nameof(playback.OdinMedia)} {playback.OdinMedia}");
         return playback;
-    }
-
-    private void HandleRemoveMediaQueue()
-    {
-        if (MediaRemovedQueue == null) return;
-        if (MediaRemovedQueue.TryDequeue(out KeyValuePair<Room, MediaRemovedEventArgs> removedEvent))
-        {
-            OnDeleteMediaObject?.Invoke(removedEvent.Value.MediaId);
-
-            if (CreatePlayback && Use3DAudio == false)
-            {
-                var playbacks = gameObject.GetComponents<PlaybackComponent>();
-                var playback = playbacks.FirstOrDefault(p => p.MediaId == removedEvent.Value.MediaId);
-
-                if (playback == null)
-                    Debug.LogWarning($"No Playback for stream id {removedEvent.Value.MediaId} found to destroy!");
-                else if (removedEvent.Value == null)
-                    Debug.LogWarning($"No Media for stream id {removedEvent.Value.MediaId} found!");
-                else
-                    Destroy(playback);
-            }
-        }
     }
 
     /// <summary>
@@ -795,16 +816,16 @@ public class OdinHandler : MonoBehaviour
     /// Get the PlaybackStream of a peer in the room
     /// </summary>
     /// <param name="roomId">Room identifier e.g name or token</param>
-    /// <param name="mediaId">media ID</param>
+    /// <param name="mediaStreamId">media handle ID</param>
     /// <returns>PlaybackStream or null</returns>
-    public PlaybackStream GetMedia(string roomId, ushort mediaId)
+    public PlaybackStream GetMedia(string roomId, long mediaStreamId)
     {
         Room room = GetRoom(roomId);
         if (room == null) return null;
 
         return room.PlaybackMedias
             .SelectMany(c => c)
-            .FirstOrDefault(m => m.Id == mediaId)
+            .FirstOrDefault(m => m.Id == mediaStreamId)
             as PlaybackStream;
     }
 
@@ -878,12 +899,12 @@ public class OdinHandler : MonoBehaviour
     /// Gets all <see cref="OdinNative.Unity.Audio.PlaybackComponent"/> across rooms filtered by media
     /// </summary>
     /// <remarks>A PlaybackComponent always have RoomName, PeerId and MediaId properties.</remarks>
-    /// <param name="mediaId">media ID</param>
+    /// <param name="mediaStreamId">media handle ID</param>
     /// <returns>The filtered array of objects found matching the type PlaybackComponent.</returns>
-    public PlaybackComponent[] GetPlaybackComponents(ushort mediaId)
+    public PlaybackComponent[] GetPlaybackComponents(long mediaStreamId)
     {
         return GetPlaybackComponents()
-            .Where(c => c.MediaId == mediaId)
+            .Where(c => c.MediaStreamId == mediaStreamId)
             .ToArray();
     }
 
@@ -893,12 +914,12 @@ public class OdinHandler : MonoBehaviour
     /// <remarks>A PlaybackComponent always have RoomName, PeerId and MediaId properties.</remarks>
     /// <param name="roomId">Room identifier e.g name or token</param>
     /// <param name="peerId">peer ID</param>
-    /// <param name="mediaId">media ID</param>
+    /// <param name="mediaStreamId">media handle ID</param>
     /// <returns>PlaybackComponent or null</returns>
-    public PlaybackComponent GetPlaybackComponent(string roomId, ulong peerId, ushort mediaId)
+    public PlaybackComponent GetPlaybackComponent(string roomId, ulong peerId, long mediaStreamId)
     {
         return GetPlaybackComponents()
-            .FirstOrDefault(c => c.RoomName == roomId && c.PeerId == peerId && c.MediaId == mediaId);
+            .FirstOrDefault(c => c.RoomName == roomId && c.PeerId == peerId && c.MediaStreamId == mediaStreamId);
     }
 
     /// <summary>
@@ -945,10 +966,10 @@ public class OdinHandler : MonoBehaviour
     /// <remarks>This will free the media with a PlaybackComponent and
     /// removes the associated <see href="https://docs.unity3d.com/ScriptReference/AudioSource.html">AudioSource</see>,
     /// If <see cref="OdinNative.Unity.Audio.PlaybackComponent.AutoDestroyAudioSource"/> in <see cref="OdinNative.Unity.Audio.PlaybackComponent"/> is set!</remarks>
-    /// <param name="mediaId">media ID</param>
-    public void DestroyPlaybackComponents(ushort mediaId)
+    /// <param name="mediaStreamId">media handle ID</param>
+    public void DestroyPlaybackComponents(long mediaStreamId)
     {
-        foreach (PlaybackComponent component in GetPlaybackComponents(mediaId))
+        foreach (PlaybackComponent component in GetPlaybackComponents(mediaStreamId))
             Destroy(component);
     }
     #endregion convenience 
