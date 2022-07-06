@@ -102,7 +102,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             // Debug.Log($"OnMedia Added for {mediaRoomName} and peer {mediaPeerId}");
             if (odinRoomName == mediaRoomName && localPeerId != mediaPeerId)
             {
-                ushort mediaId = mediaAddedEventArgs.Media.Id;
+                long mediaId = mediaAddedEventArgs.Media.Id;
                 // Debug.Log($"Trying to spawn playback component for {mediaRoomName} with peer {mediaPeerId} and media {mediaId}");
                 PlaybackComponent spawnedComponent = SpawnPlaybackComponent(mediaRoomName, mediaPeerId, mediaId);
                 // Debug.Log($"After spawning component: {spawnedComponent}");
@@ -115,7 +115,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             {
                 string mediaRoomName = mediaRemovedArgs.Peer.RoomName;
                 ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
-                int mediaId = mediaRemovedArgs.MediaId;
+                long mediaId = mediaRemovedArgs.MediaStreamId;
 
                 DestroyPlayback(mediaRoomName, mediaPeerId, mediaId);
             }

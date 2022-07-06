@@ -45,7 +45,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
                 if (roomName == displayedRoomName.Value)
                 {
                     ulong peerId = mediaActiveEventArgs.PeerId;
-                    int mediaId = mediaActiveEventArgs.MediaId;
+                    long mediaId = mediaActiveEventArgs.MediaStreamId;
 
                     OdinConnectionIdentifier uiKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
 

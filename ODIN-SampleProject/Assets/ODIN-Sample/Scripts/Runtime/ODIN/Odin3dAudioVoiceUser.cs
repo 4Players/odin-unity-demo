@@ -83,7 +83,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             if (roomObj is Room room && null != mediaRemovedArgs.Peer)
             {
-                DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaId);
+                DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaStreamId);
             }
         }
 

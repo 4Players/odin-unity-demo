@@ -66,7 +66,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
                     if (null != room.MicrophoneMedia)
                     {
-                        int micMediaId = room.MicrophoneMedia.Id;
+                        long micMediaId = room.MicrophoneMedia.Id;
                         Peer microphoneMediaOwner = default;
                         foreach (Peer peer in room.RemotePeers)
                             if (peer.Medias.Contains(micMediaId))
