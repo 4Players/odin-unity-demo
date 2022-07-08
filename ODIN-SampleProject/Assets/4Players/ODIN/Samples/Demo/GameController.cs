@@ -31,7 +31,7 @@ namespace OdinNative.Unity.Samples
              * can be any format/protocol like Raw-Binary, MessagePack, Protobuf, Json, ...
              */
             // optional set arbitrary data or a unique userdata on join to identify this peer
-            var customUserData = new UserData(SystemInfo.deviceUniqueIdentifier);
+            IUserData customUserData = new UserData(SystemInfo.deviceUniqueIdentifier);
             OdinHandler.Instance.JoinRoom("Unity-DemoRoom", customUserData);
         }
 

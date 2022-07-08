@@ -131,9 +131,6 @@ namespace OdinNative.Unity.Audio
 
         void OnEnable()
         {
-            if (PlaybackSource.isPlaying == false)
-                PlaybackSource.Play();
-
             if (OverrideSampleRate)
                 AudioSettings.outputSampleRate = (int)SampleRate;
 
@@ -149,6 +146,15 @@ namespace OdinNative.Unity.Audio
                 AudioSettings.GetDSPBufferSize(out int dspBufferSize, out int dspBufferCount);
                 ResamplerCapacity = dspBufferSize * ((uint)OdinDefaults.RemoteSampleRate / UnitySampleRate) / (int)AudioSettings.speakerMode;
             }
+
+            // Should be removed if Unity Issue 819365,1246661 is resolved
+            var spatialClip = AudioClip.Create("spatialClip", 1, 1, AudioSettings.outputSampleRate, false);
+            spatialClip.SetData(new float[] { 1 }, 0);
+            PlaybackSource.clip = spatialClip;
+            PlaybackSource.loop = true;
+
+            if (PlaybackSource.isPlaying == false)
+                PlaybackSource.Play();
         }
 
         void Reset()
@@ -183,28 +189,22 @@ namespace OdinNative.Unity.Audio
             else
                 SetData(ReadBuffer, 0, (int)read);
 
-            int SetData(float[] buffer, int offset, int count)
+            void SetData(float[] buffer, int offset, int count)
             {
                 int i = 0;
-                switch (channels)
-                {
-                    case 1:
-                        foreach (float sample in buffer.Skip(offset).Take(count))
-                            data[i++] = sample;
-                        break;
-                    case 2:
-                        foreach (float sample in buffer.Skip(offset).Take(count))
-                        {
-                            data[i] = sample;
-                            data[i + 1] = sample;
-                            i += channels;
-                        }
-                        break;
-                    default:
-                        Debug.LogException(new NotSupportedException($"channels {channels} is currently not supported"));
-                        break;
-                }
-                return i;
+                var samples = buffer.Skip(offset).Take(count);
+                if (channels > 1)
+                    foreach (float sample in samples)
+                    {
+                        data[i] *= sample;
+                        data[i + 1] *= sample;
+                        i += channels;
+                    }
+                else if (channels > 0)
+                    foreach (float sample in samples)
+                        data[i++] = sample;
+                else
+                    Debug.LogException(new NotSupportedException($"SetData {channels}"));
             }
         }
 

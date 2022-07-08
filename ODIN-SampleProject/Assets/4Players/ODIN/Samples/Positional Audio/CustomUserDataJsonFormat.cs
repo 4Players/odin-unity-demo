@@ -41,7 +41,7 @@ namespace OdinNative.Unity.Samples
             return new UserData(this.ToJson());
         }
 
-        public static CustomUserDataJsonFormat FromUserData(UserData userData)
+        public static CustomUserDataJsonFormat FromUserData(IUserData userData)
         {
             try
             {
@@ -82,6 +82,11 @@ namespace OdinNative.Unity.Samples
         public byte[] ToBytes()
         {
             return Encoding.UTF8.GetBytes(this.ToString());
+        }
+
+        public bool IsEmpty()
+        {
+            return string.IsNullOrEmpty(this.ToString());
         }
     }
 }

@@ -13,6 +13,11 @@ namespace OdinNative.Odin
     public interface IUserData
     {
         /// <summary>
+        /// Indicates whether data is null or empty
+        /// </summary>
+        /// <returns>true if empty</returns>
+        bool IsEmpty();
+        /// <summary>
         /// Used for converting Data on network level
         /// </summary>
         /// <returns>arbitrary data</returns>

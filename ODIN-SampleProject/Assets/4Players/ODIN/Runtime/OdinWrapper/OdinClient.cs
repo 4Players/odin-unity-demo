@@ -34,7 +34,7 @@ namespace OdinNative.Odin
         /// <summary>
         /// Client custom UserData
         /// </summary>
-        public UserData UserData { get; set; }
+        public IUserData UserData { get; set; }
 
         /// <summary>
         /// Creates a new instance for ODIN ffi C# Wrapper
@@ -123,7 +123,7 @@ namespace OdinNative.Odin
         /// <param name="userData">Set new <see cref="UserData"/> on room join</param>
         /// <param name="setup">will invoke to setup a room before adding or joining</param>
         /// <returns><see cref="Room.Room"/> or null</returns>
-        public async Task<Room.Room> JoinRoom(string name, string userId, UserData userData, Action<Room.Room> setup)
+        public async Task<Room.Room> JoinRoom(string name, string userId, IUserData userData, Action<Room.Room> setup)
         {
             if (string.IsNullOrEmpty(name)) throw new OdinWrapperException("Room name can not be null or empty!", new ArgumentNullException());
 
@@ -203,7 +203,7 @@ namespace OdinNative.Odin
         /// Updates the <see cref="UserData"/> for all <see cref="Rooms"/> for the current peer
         /// </summary>
         /// <param name="userData"><see cref="OdinNative.Odin.UserData"/></param>
-        public async void UpdateUserData(UserData userData)
+        public async void UpdateUserData(IUserData userData)
         {
             if (userData == null) throw new OdinWrapperException("UserData can not be null!", new ArgumentNullException());
 

@@ -98,6 +98,11 @@ PrefabInstance:
       propertyPath: Use3DAudio
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7715469215244056103, guid: a421abe223e2dee45b89e686a84e5545,
+        type: 3}
+      propertyPath: CreatePlayback
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a421abe223e2dee45b89e686a84e5545, type: 3}
 --- !u!1 &6283423407077655610 stripped

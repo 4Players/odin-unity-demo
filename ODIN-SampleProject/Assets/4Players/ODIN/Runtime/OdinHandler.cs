@@ -253,7 +253,7 @@ public class OdinHandler : MonoBehaviour
         if (customProxy) OnMessageReceived.AddListener(new UnityEngine.Events.UnityAction<object, MessageReceivedEventArgs>(Room_OnMessageReceived));
     }
 
-    public UserData GetUserData()
+    public IUserData GetUserData()
     {
         return Client.UserData;
     }
@@ -265,7 +265,7 @@ public class OdinHandler : MonoBehaviour
     /// <param name="roomName">Room name</param>
     /// <param name="userData">Override OdinClient default UserData</param>
     /// <param name="setup">Override default Room setup</param>
-    public async void JoinRoom(string roomName, UserData userData = null, System.Action<Room> setup = null)
+    public async void JoinRoom(string roomName, IUserData userData = null, System.Action<Room> setup = null)
     {
         if (string.IsNullOrEmpty(roomName))
         {
@@ -770,8 +770,8 @@ public class OdinHandler : MonoBehaviour
     /// <summary>
     /// Updates the <see cref="UserData"/> for all <see cref="Rooms"/>
     /// </summary>
-    /// <param name="userData"><see cref="OdinNative.Odin.UserData"/></param>
-    public void UpdateUserData(UserData userData)
+    /// <param name="userData"><see cref="OdinNative.Odin.IUserData"/></param>
+    public void UpdateUserData(IUserData userData)
     {
         Client.UpdateUserData(userData);
     }
