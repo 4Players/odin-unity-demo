@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using OdinNative.Odin;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         /// <param name="userData">The Odin native user data object.</param>
         /// <returns>The converted user data.</returns>
-        public static OdinSampleUserData ToOdinSampleUserData(this UserData userData)
+        public static OdinSampleUserData ToOdinSampleUserData(this IUserData userData)
         {
             return OdinSampleUserData.FromUserData(userData);
         }
@@ -27,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
     /// your project. This could be e.g. a photon views unique id.
     /// </summary>
     [Serializable]
-    public class OdinSampleUserData
+    public class OdinSampleUserData : IUserData
     {
         public static implicit operator UserData(OdinSampleUserData data) => data?.ToUserData() ?? null;
 
@@ -83,7 +84,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// </summary>
         /// <param name="userData">The Odin base UserData object.</param>
         /// <returns>The converted OdinSampleUserData object.</returns>
-        public static OdinSampleUserData FromUserData(UserData userData)
+        public static OdinSampleUserData FromUserData(IUserData userData)
         {
             if(null != userData)
                 return JsonUtility.FromJson<OdinSampleUserData>(userData.ToString());
@@ -99,5 +100,19 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             return JsonUtility.ToJson(this);
         }
         
+        public override string ToString()
+        {
+            return this.ToJson();
+        }
+
+        public byte[] ToBytes()
+        {
+            return Encoding.UTF8.GetBytes(this.ToString());
+        }
+
+        public bool IsEmpty()
+        {
+            return string.IsNullOrEmpty(this.ToString());
+        }
     }
 }

@@ -264,7 +264,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             yield return null;
 
             // reenter all rooms
-            UserData userData = OdinHandler.Instance.GetUserData();
+            var userData = OdinHandler.Instance.GetUserData();
             foreach (string roomName in roomNames)
             {
                 OdinHandler.Instance.JoinRoom(roomName, userData);
