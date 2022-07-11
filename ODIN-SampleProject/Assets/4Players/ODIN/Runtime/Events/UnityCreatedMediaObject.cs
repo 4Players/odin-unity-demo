@@ -9,7 +9,7 @@ using OdinNative.Odin.Room;
 namespace OdinNative.Unity.Events
 {
     [Serializable]
-    public class UnityCreatedMediaObject : UnityEvent<string, ulong, ushort>
+    public class UnityCreatedMediaObject : UnityEvent<string, ulong, long>
     {
     }
 }

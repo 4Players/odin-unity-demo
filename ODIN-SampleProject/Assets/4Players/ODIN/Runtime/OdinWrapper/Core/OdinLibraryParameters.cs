@@ -83,7 +83,6 @@ namespace OdinNative.Core
         /// </summary>
         /// <param name="nativeBinaryLocation">Location to the Aki library binary.</param>
         /// <param name="platform">Determines which platform specific code will be executed.</param>
-        /// <param name="resourcesFolder">Path pointing to the directory where the soundbackends folder is located.</param>
         public OdinLibraryParameters(string nativeBinaryLocation, SupportedPlatform platform)
         {
             PossibleNativeBinaryLocations = new string[] { nativeBinaryLocation };

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using OdinNative.Core;
+using OdinNative.Core.Imports;
 using OdinNative.Odin;
 using UnityEngine;
 using Random = System.Random;
@@ -11,13 +12,16 @@ namespace OdinNative.Unity
     /// UnityEditor UI component for instance config of <see cref="OdinNative.Odin.OdinDefaults"/>
     /// </summary>
     [DisallowMultipleComponent, ExecuteInEditMode]
-    public class OdinEditorConfig : MonoBehaviour
+    public class OdinEditorConfig : MonoBehaviour, IOdinApmConfig
     {
         /// <summary>
         /// Enable additional Logs
         /// </summary>
         public bool Verbose = OdinDefaults.Verbose;
-
+        /// <summary>
+        /// Enable additional Logs
+        /// </summary>
+        public bool VerboseDebug = OdinDefaults.Debug;
         /// <summary>
         /// Odin Client ApiKey
         /// </summary>
@@ -75,49 +79,61 @@ namespace OdinNative.Unity
         /// Turns VAD on and off
         /// </summary>
         public bool VoiceActivityDetection = OdinDefaults.VoiceActivityDetection;
+        bool IOdinApmConfig.VoiceActivityDetection { get => VoiceActivityDetection; set => VoiceActivityDetection = value; }
         /// <summary>
         /// Setup engage of VAD
         /// </summary>
         public float VoiceActivityDetectionAttackProbability = OdinDefaults.VoiceActivityDetectionAttackProbability;
+        float IOdinApmConfig.VoiceActivityDetectionAttackProbability { get => VoiceActivityDetectionAttackProbability; set => VoiceActivityDetectionAttackProbability = value; }
         /// <summary>
         /// Setup disengage of VAD
         /// </summary>
         public float VoiceActivityDetectionReleaseProbability = OdinDefaults.VoiceActivityDetectionReleaseProbability;
+        float IOdinApmConfig.VoiceActivityDetectionReleaseProbability { get => VoiceActivityDetectionReleaseProbability; set => VoiceActivityDetectionReleaseProbability = value; }
         /// <summary>
         /// Turns volume gate on and off
         /// </summary>
         public bool VolumeGate = OdinDefaults.VolumeGate;
+        bool IOdinApmConfig.VolumeGate { get => VolumeGate; set => VolumeGate = value; }
         /// <summary>
         /// Setup engage of volume gate
         /// </summary>
         public float VolumeGateAttackLoudness = OdinDefaults.VolumeGateAttackLoudness;
+        float IOdinApmConfig.VolumeGateAttackLoudness { get => VolumeGateAttackLoudness; set => VolumeGateAttackLoudness = value; }
         /// <summary>
         /// Setup disengage of volume gate
         /// </summary>
         public float VolumeGateReleaseLoudness = OdinDefaults.VolumeGateReleaseLoudness;
+        float IOdinApmConfig.VolumeGateReleaseLoudness { get => VolumeGateReleaseLoudness; set => VolumeGateReleaseLoudness = value; }
         /// <summary>
         /// Turns Echo cancellation on and off
         /// </summary>
         public bool EchoCanceller = OdinDefaults.EchoCanceller;
+        bool IOdinApmConfig.EchoCanceller { get => EchoCanceller; set => EchoCanceller = value; }
         /// <summary>
         /// Reduces lower frequencies of the input (Automatic game control)
         /// </summary>
         public bool HighPassFilter = OdinDefaults.HighPassFilter;
+        bool IOdinApmConfig.HighPassFilter { get => HighPassFilter; set => HighPassFilter = value; }
         /// <summary>
         /// Amplifies the audio input
         /// </summary>
         public bool PreAmplifier = OdinDefaults.PreAmplifier;
+        bool IOdinApmConfig.PreAmplifier { get => PreAmplifier; set => PreAmplifier = value; }
         /// <summary>
         /// Turns noise suppression on and off
         /// </summary>
         public Core.Imports.NativeBindings.OdinNoiseSuppressionLevel NoiseSuppressionLevel = OdinDefaults.NoiseSuppressionLevel;
+        NativeBindings.OdinNoiseSuppressionLevel IOdinApmConfig.NoiseSuppressionLevel { get => NoiseSuppressionLevel; set => NoiseSuppressionLevel = value; }
         /// <summary>
         /// Filters high amplitude noices
         /// </summary>
         public bool TransientSuppressor = OdinDefaults.TransientSuppressor;
+        bool IOdinApmConfig.TransientSuppressor { get => TransientSuppressor; set => TransientSuppressor = value; }
         #endregion Apm
 
         internal string Identifier => SystemInfo.deviceUniqueIdentifier;
+
 
         void Awake()
         {

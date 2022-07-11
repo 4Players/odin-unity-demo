@@ -14,26 +14,43 @@ namespace OdinNative.Odin.Media
     /// </summary>
     public class PlaybackStream : MediaStream
     {
-        internal PlaybackStream(ushort id, OdinMediaConfig config, StreamHandle stream) 
-            : base(id, config, stream)
+        internal PlaybackStream(OdinMediaConfig config, StreamHandle stream) 
+            : base(config, stream)
         { }
 
-        internal PlaybackStream(ushort id, StreamHandle stream)
-            : base(id, new OdinMediaConfig(OdinDefaults.RemoteSampleRate, OdinDefaults.RemoteChannels), stream) // Defaults match server config
+        internal PlaybackStream(StreamHandle stream)
+            : base(new OdinMediaConfig(OdinDefaults.RemoteSampleRate, OdinDefaults.RemoteChannels), stream) // Defaults match server config
         { }
 
+        /// <summary>
+        /// AudioPushDataTask and AudioPushDataAsync are not supported!
+        /// </summary>
+        /// <remarks>Remote streams are always readonly</remarks>
+        /// <param name="buffer"></param>
+        /// <exception cref="OdinWrapperException"></exception>
         public override void AudioPushData(float[] buffer)
         {
             throw new OdinWrapperException("Remote streams are always readonly!",
                 new NotSupportedException("AudioPushData, AudioPushDataTask and AudioPushDataAsync are not supported!"));
         }
-
+        /// <summary>
+        /// AudioPushDataTask and AudioPushDataAsync are not supported!
+        /// </summary>
+        /// <remarks>Remote streams are always readonly</remarks>
+        /// <param name="buffer"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="OdinWrapperException"></exception>
         public override Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken)
         {
             throw new OdinWrapperException("Remote streams are always readonly!",
                 new NotSupportedException("AudioPushData, AudioPushDataTask and AudioPushDataAsync are not supported!"));
         }
-
+        /// <summary>
+        /// AudioPushDataTask and AudioPushDataAsync are not supported!
+        /// </summary>
+        /// <remarks>Remote streams are always readonly</remarks>
+        /// <param name="buffer"></param>
+        /// <exception cref="OdinWrapperException"></exception>
         public override void AudioPushDataAsync(float[] buffer)
         {
             throw new OdinWrapperException("Remote streams are always readonly!",

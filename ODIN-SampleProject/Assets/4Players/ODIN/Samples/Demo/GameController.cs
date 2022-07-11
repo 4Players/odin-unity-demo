@@ -31,7 +31,7 @@ namespace OdinNative.Unity.Samples
              * can be any format/protocol like Raw-Binary, MessagePack, Protobuf, Json, ...
              */
             // optional set arbitrary data or a unique userdata on join to identify this peer
-            var customUserData = new UserData(SystemInfo.deviceUniqueIdentifier);
+            IUserData customUserData = new UserData(SystemInfo.deviceUniqueIdentifier);
             OdinHandler.Instance.JoinRoom("Unity-DemoRoom", customUserData);
         }
 
@@ -44,7 +44,7 @@ namespace OdinNative.Unity.Samples
 
             var playerName = GameObject.FindGameObjectsWithTag("Player").FirstOrDefault()?.name ?? "DemoPlayerName123";
             // optional ignore currently joined peers deviceUniqueIdentifier userdata and update with arbitrary data
-            if (args.Room.UpdateUserData(new UserData(playerName)))
+            if (args.Room.UpdatePeerUserData(new UserData(playerName)))
                 Debug.Log($"{nameof(GameController)} Demo: New UserData is \"{playerName}\"");
         }
 
@@ -110,7 +110,7 @@ namespace OdinNative.Unity.Samples
             // get PlaybackComponent by media id
             PlaybackComponent playback = PeersObjects
                 .Select(gameObj => gameObj.GetComponent<PlaybackComponent>())
-                .FirstOrDefault(playbackComponent => playbackComponent != null && playbackComponent.MediaId == args.MediaId);
+                .FirstOrDefault(playbackComponent => playbackComponent != null && playbackComponent.MediaStreamId == args.MediaStreamId);
 
             
             if (playback == null) return;

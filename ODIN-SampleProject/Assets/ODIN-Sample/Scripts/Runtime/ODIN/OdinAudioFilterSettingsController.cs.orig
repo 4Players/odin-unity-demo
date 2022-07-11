@@ -275,7 +275,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         private IEnumerator DelayedApplyRoomConfig()
         {
             yield return null;
+<<<<<<< HEAD
             foreach (Room room in OdinHandler.Instance.Rooms)
+=======
+
+            // reenter all rooms
+            var userData = OdinHandler.Instance.GetUserData();
+            foreach (string roomName in roomNames)
+>>>>>>> 734a4260777dd0830003c1e74ee923bcc2b878b4
             {
                 OdinRoomConfig config = GetConfigFromOdinHandler();
                 room.SetApmConfig(config);
@@ -288,7 +295,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             {
                 EchoCanceller = OdinHandler.Config.EchoCanceller,
                 HighPassFilter = OdinHandler.Config.HighPassFilter,
-                NoiseSuppressionLevel = OdinHandler.Config.NoiseSuppressionLevel,
+                OdinNoiseSuppressionLevel = OdinHandler.Config.NoiseSuppressionLevel,
                 PreAmplifier = OdinHandler.Config.PreAmplifier,
                 TransientSuppressor = OdinHandler.Config.TransientSuppressor,
                 VoiceActivityDetection = OdinHandler.Config.VoiceActivityDetection,

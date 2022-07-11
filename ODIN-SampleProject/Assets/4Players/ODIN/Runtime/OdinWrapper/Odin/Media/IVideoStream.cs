@@ -8,7 +8,7 @@ namespace OdinNative.Odin.Media
 {
     interface IVideoStream
     {
-        int GetMediaId();
+        ushort GetMediaId();
         ulong GetPeerId();
     }
 }

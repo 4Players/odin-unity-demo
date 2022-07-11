@@ -9,6 +9,7 @@
     <Import_RootNamespace>.</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Handles\ResamplerHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Handles\RoomHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Handles\SdkHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Handles\StreamHandle.cs" />
@@ -17,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Imports\NativeBindings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Imports\NativeMethodBindings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Imports\NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\IOdinApmConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\OdinException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\OdinLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\OdinLibraryParameters.cs" />

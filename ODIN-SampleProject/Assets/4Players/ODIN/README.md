@@ -4,13 +4,13 @@ ODIN is a cross-platform software development kit (SDK) that enables developers 
 
 The ODIN SDK for Unity enables you to add real-time VoIP communication to your Unity game, thus making it more social and interactive.
 
-[Online Documentation](https://developers.4players.io/odin)
+[Online Documentation](https://www.4players.io/developers/)
 
 ## Prerequisites
 
 - Unity 2019.4 or any later version
 
-This Unity version was chosen as it is Long Term Supported and provides compatibility with all targeted platfroms.
+This Unity version was chosen as it is Long Term Supported and provides compatibility with all targeted platforms.
 
 ## Installation
 
@@ -38,9 +38,7 @@ Click the + button in the upper left and select `Add package from tarball`. Next
 
 ## Samples
 
-We ship a sample package with the Unity SDK, which contains several examples and a demo scene. To import it into your project, open the Package Manager and hit import on the example you want to try.
-
-![Package Manager](https://developers.4players.io/images/odin/unity_import.png)
+We ship a sample package with the Unity SDK, which contains several examples and a demo scene. To import it into your project, open the Package Manager and hit import on on the `*`Examples` package.
 
 ### Usage
 

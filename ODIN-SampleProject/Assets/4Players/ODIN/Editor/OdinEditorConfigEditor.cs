@@ -12,6 +12,8 @@ namespace OdinNative.Unity.UIEditor
     public class OdinEditorConfigEditor : Editor
     {
         SerializedProperty Verbose;
+        SerializedProperty VerboseDebug;
+
         SerializedProperty AccessKey;
         SerializedProperty ClientId;
         SerializedProperty Server;
@@ -43,6 +45,7 @@ namespace OdinNative.Unity.UIEditor
         void OnEnable()
         {
             Verbose = serializedObject.FindProperty("Verbose");
+            VerboseDebug = serializedObject.FindProperty("VerboseDebug");
 
             AccessKey = serializedObject.FindProperty("AccessKey");
             ClientId = serializedObject.FindProperty("ClientId");
@@ -81,6 +84,8 @@ namespace OdinNative.Unity.UIEditor
             }
 
             EditorGUILayout.PropertyField(Verbose, new GUIContent("Verbose Mode", "Enable additional logs"));
+            if(Verbose.boolValue)
+                EditorGUILayout.PropertyField(VerboseDebug, new GUIContent("Debug Mode", "Enable additional debug logs"));
             GUILayout.Space(10);
             CreateClientSettingsLayout(odinEditorConfig);
             GUILayout.Space(10);

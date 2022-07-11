@@ -131,7 +131,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             var userData = OdinSampleUserData.FromUserData(OdinHandler.Instance.GetUserData());
             userData.color = GetHtmlStringRGB();
             userData.uniqueUserId = multiplayerAdapter.GetUniqueUserId();
-            room.UpdateUserData(userData.ToUserData());
+            room.UpdatePeerUserData(userData.ToUserData());
             OdinHandler.Instance.UpdateUserData(userData.ToUserData());
 
             // Debug.Log($"ColorSync: Sending color update: {userData.color}");

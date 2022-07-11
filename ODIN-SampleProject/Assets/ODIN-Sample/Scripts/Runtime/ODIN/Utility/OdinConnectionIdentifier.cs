@@ -12,14 +12,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
     {
         public string RoomName;
         public ulong PeerId;
-        public int MediaId;
+        public long MediaId;
 
         public OdinConnectionIdentifier(PlaybackComponent playbackComponent) : this(playbackComponent.RoomName,
-            playbackComponent.PeerId, playbackComponent.MediaId)
+            playbackComponent.PeerId, playbackComponent.MediaStreamId)
         {
         }
 
-        public OdinConnectionIdentifier(string roomName, ulong peerId, int mediaId)
+        public OdinConnectionIdentifier(string roomName, ulong peerId, long mediaId)
         {
             RoomName = roomName;
             PeerId = peerId;
@@ -43,7 +43,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             {
                 var hashCode = RoomName != null ? RoomName.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ PeerId.GetHashCode();
-                hashCode = (hashCode * 397) ^ MediaId;
+                hashCode = (hashCode * 397) ^ MediaId.GetHashCode();
                 return hashCode;
             }
         }

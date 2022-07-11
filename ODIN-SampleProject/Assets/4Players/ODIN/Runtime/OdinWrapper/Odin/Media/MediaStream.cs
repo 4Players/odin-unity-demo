@@ -16,9 +16,13 @@ namespace OdinNative.Odin.Media
     public abstract class MediaStream : IVideoStream, IAudioStream, IDisposable
     {
         /// <summary>
+        /// Handle ID
+        /// </summary>
+        public long Id { get; internal set; }
+        /// <summary>
         /// Internal ID of the media stream
         /// </summary>
-        public ushort Id { get; internal set; }
+        internal ushort MediaId => GetMediaId();
         internal ulong PeerId => GetPeerId();
         /// <summary>
         /// Audio config of the media stream
@@ -39,14 +43,19 @@ namespace OdinNative.Odin.Media
         public bool IsActive { get; internal set; }
 
         private StreamHandle Handle;
+        private ResamplerHandle ResamplerHandle;
 
-        public MediaStream(ushort id, OdinMediaConfig config)
-            : this(id, config, OdinLibrary.Api.AudioStreamCreate(config))
+        /// <summary>
+        /// Base stream
+        /// </summary>
+        /// <param name="config">audio stream configuration</param>
+        public MediaStream(OdinMediaConfig config)
+            : this(config, OdinLibrary.Api.AudioStreamCreate(config))
         { }
 
-        internal MediaStream(ushort id, OdinMediaConfig config, StreamHandle handle)
+        internal MediaStream(OdinMediaConfig config, StreamHandle handle)
         {
-            Id = id;
+            Id = ((IntPtr)handle).ToInt64();
             MediaConfig = config;
             Handle = handle;
             CancellationSource = new CancellationTokenSource();
@@ -56,10 +65,10 @@ namespace OdinNative.Odin.Media
         /// Returns the media stream ID and updates <see cref="Id"/>.
         /// </summary>
         /// <returns>id value</returns>
-        public int GetMediaId()
-        { 
+        public ushort GetMediaId()
+        {
             OdinLibrary.Api.MediaStreamMediaId(Handle, out ushort mediaId);
-            return Id = mediaId;
+            return mediaId;
         }
 
         /// <summary>
@@ -156,7 +165,7 @@ namespace OdinNative.Odin.Media
         /// <remarks>if <see cref="IsMuted"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
         /// <returns>count of written bytes into buffer</returns>
-        public virtual int AudioReadData(float[] buffer)
+        public virtual uint AudioReadData(float[] buffer)
         {
             if (IsMuted) return 0;
 
@@ -170,7 +179,7 @@ namespace OdinNative.Odin.Media
         /// <param name="buffer">buffer to write into</param>
         /// <param name="length">bytes to read</param>
         /// <returns>count of written bytes into buffer</returns>
-        public virtual int AudioReadData(float[] buffer, int length)
+        public virtual uint AudioReadData(float[] buffer, int length)
         {
             if (IsMuted) return 0;
 
@@ -184,9 +193,9 @@ namespace OdinNative.Odin.Media
         /// <param name="buffer">buffer to write into</param>
         /// <param name="cancellationToken"></param>
         /// <returns>count of written bytes into buffer</returns>
-        public virtual Task<int> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken)
+        public virtual Task<uint> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken)
         {
-            if (IsMuted) return Task.FromResult<int>(0);
+            if (IsMuted) return Task.FromResult<uint>(0);
 
             return Task.Factory.StartNew(() => {
                 return OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
@@ -198,7 +207,7 @@ namespace OdinNative.Odin.Media
         /// </summary>
         /// <param name="buffer">buffer to write into</param>
         /// <returns>count of written bytes into buffer</returns>
-        public virtual async Task<int> AudioReadDataAsync(float[] buffer)
+        public virtual async Task<uint> AudioReadDataAsync(float[] buffer)
         {
             return await AudioReadDataTask(buffer, CancellationSource.Token);
         }
@@ -206,10 +215,60 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Get the number of samples available in the audio buffer.
         /// </summary>
-        /// <returns>floats available to read with <see cref="AudioReadData"/></returns>
-        public virtual int AudioDataLength()
+        /// <returns>floats available to read with <see cref="AudioReadData(float[])"/></returns>
+        public virtual uint AudioDataLength()
         {
             return OdinLibrary.Api.AudioDataLength(Handle);
+        }
+
+        /// <summary>
+        /// Set a resampler and resamples a chunk of audio.
+        /// </summary>
+        /// <remarks>This is intended for situations where the audio output pipeline doesn't support 48kHz.</remarks>
+        /// <param name="input">current buffer</param>
+        /// <param name="outputSampleRate">resample samplerate</param>
+        /// <param name="output">resampled buffer</param>
+        /// <param name="capacity">size of resampled buffer</param>
+        /// <remarks>The current buffer samplesrate is expected to be <see cref="OdinNative.Odin.OdinDefaults.RemoteSampleRate"/> with <see cref="OdinNative.Odin.OdinDefaults.RemoteChannels"/></remarks>
+        /// <returns>true on success or false if missmatch of capacity i.e. errorcode</returns>
+        public virtual bool AudioResample(float[] input, uint outputSampleRate, out float[] output, out int capacity)
+        {
+            if (ResamplerHandle == null)
+                ResamplerHandle = OdinLibrary.Api.ResamplerCreate((uint)OdinDefaults.RemoteSampleRate, outputSampleRate, (short)OdinDefaults.RemoteChannels);
+            else if (ResamplerHandle.ToRate != outputSampleRate)
+            {
+                ResamplerHandle.Dispose();
+                ResamplerHandle = null;
+                return AudioResample(input, outputSampleRate, out output, out capacity);
+            }
+
+            output = new float[((ResamplerHandle.ToRate / ResamplerHandle.FromRate) * input.Length) * ResamplerHandle.Channels];
+            capacity = output.Length;
+            uint ret = OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
+            return ret == capacity;
+        }
+
+        /// <summary>
+        /// Set a resampler and resamples a chunk of audio.
+        /// </summary>
+        /// <remarks>This is intended for situations where the audio output pipeline doesn't support 48kHz.</remarks>
+        /// <param name="input">source buffer</param>
+        /// <param name="outputSampleRate">to samplerate</param>
+        /// <param name="output">target buffer</param>
+        /// <param name="capacity">target capacity</param>
+        /// <returns>sample count on success or errorcode on failure</returns>
+        internal virtual uint AudioResample(float[] input, uint outputSampleRate, float[] output, int capacity)
+        {
+            if (ResamplerHandle == null)
+                ResamplerHandle = OdinLibrary.Api.ResamplerCreate((uint)OdinDefaults.RemoteSampleRate, outputSampleRate, (short)OdinDefaults.RemoteChannels);
+            else if (ResamplerHandle.ToRate != outputSampleRate)
+            {
+                ResamplerHandle.Dispose();
+                ResamplerHandle = null;
+                return AudioResample(input, outputSampleRate, output, capacity);
+            }
+
+            return OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
         }
 
         /// <summary>
@@ -227,33 +286,48 @@ namespace OdinNative.Odin.Media
             return false;
         }
 
+        /// <summary>
+        /// Debug
+        /// </summary>
+        /// <returns>info</returns>
         public override string ToString()
         {
-            return Id.ToString();
+            return $"{nameof(MediaStream)}: {nameof(Id)} {Id}, {nameof(MediaId)} {MediaId}, {nameof(PeerId)} {PeerId}, {nameof(IsMuted)} {IsMuted}\n\t- {nameof(MediaConfig)} {MediaConfig?.ToString()}";
         }
 
         private bool disposedValue;
+        /// <summary>
+        /// On dispose will free the stream and resampler
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
-                    CancellationSource.Dispose();
+                    CancellationSource?.Dispose();
                     MediaConfig = null;
-                    Handle.Close();
+                    Handle?.Close();
                     Handle = null;
+                    ResamplerHandle?.Close();
+                    ResamplerHandle = null;
                 }
 
                 disposedValue = true;
             }
         }
 
+        /// <summary>
+        /// Default deconstructor
+        /// </summary>
         ~MediaStream()
         {
             Dispose(disposing: false);
         }
 
+        /// <summary>
+        /// On dispose will free the stream and resampler
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);

@@ -7,25 +7,24 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-/**
- * This class file helps covering the platform specific requirements of the ODIN package as install locations 
- * will vary based on how it is installed.
- *
- * 1) Installing from git:
- *    <PROJECT_PATH>/Library/PackageCache/io.fourplayers.odin@<COMMIT_HASH>
- *
- * 2) Installing from Unity asset store:
- *    <PROJECT_PATH>/Assets/4Players/ODIN
- *
- * 3) Installing from tarball:
- *    <PROJECT_PATH>/Assets/io.fourplayers.odin
- *
- * 4) Installing from Unity package bundle:
- *    <PROJECT_PATH>/Packages/io.fourplayers.odin
- */
-
 namespace OdinNative.Core.Platform
 {
+    /// <summary>
+    /// This class file helps covering the platform specific requirements of the ODIN package as install locations 
+    /// will vary based on how it is installed.
+    /// 
+    /// 1) Installing from git:
+    ///    $PROJECT_PATH/Library/PackageCache/io.fourplayers.odin@$COMMIT_HASH
+    /// 
+    /// 2) Installing from Unity asset store:
+    ///    $PROJECT_PATH/Assets/4Players/ODIN
+    /// 
+    /// 3) Installing from tarball:
+    ///    $PROJECT_PATH/Assets/io.fourplayers.odin
+    /// 
+    /// 4) Installing from Unity package bundle:
+    ///    $PROJECT_PATH/Packages/io.fourplayers.odin
+    /// </summary>
     internal static class PlatformSpecific
     {
         private const string PackageName = "io.fourplayers.odin";

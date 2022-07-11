@@ -80,7 +80,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         
         private void OnMediaRemoved(object arg0, MediaRemovedEventArgs arg1)
         {
-            Debug.Log($"OnMediaRemoved: {arg1.MediaId}, Peer: {arg1.Peer?.Id}, Room: {arg1.Peer?.RoomName}");
+            Debug.Log($"OnMediaRemoved: {arg1.MediaStreamId}, Peer: {arg1.Peer?.Id}, Room: {arg1.Peer?.RoomName}");
         }
     }
 }

@@ -31,7 +31,12 @@ namespace OdinNative.Odin.Peer
         /// Associated medias of this peer
         /// </summary>
         public MediaCollection Medias { get; private set; }
-
+        /// <summary>
+        /// Client/Remote peer
+        /// </summary>
+        /// <param name="id">peer id</param>
+        /// <param name="roomName">name of the room</param>
+        /// <param name="userData">initial userdata</param>
         public Peer(ulong id, string roomName, UserData userData)
         {
             Id = id;
@@ -40,14 +45,22 @@ namespace OdinNative.Odin.Peer
             Medias = new MediaCollection();
         }
 
+        /// <summary>
+        /// Associate a media with the peer
+        /// </summary>
+        /// <param name="stream">media stream</param>
         public void AddMedia(PlaybackStream stream)
         {
-            Medias.Add(stream);
+            Medias.InternalAdd(stream);
         }
 
-        public bool RemoveMedia(int mediaId)
+        /// <summary>
+        /// Remove a associated media from the peer
+        /// </summary>
+        /// <param name="mediaStreamId">stream handle id</param>
+        public bool RemoveMedia(long mediaStreamId)
         {
-            return Medias.Remove(mediaId);
+            return Medias.InternalRemove(mediaStreamId);
         }
 
         internal void SetUserData(byte[] newData)
@@ -60,12 +73,33 @@ namespace OdinNative.Odin.Peer
             UserData = userData;
         }
 
+        /// <summary>
+        /// Set IsMuted on each current associated <see cref="OdinNative.Odin.Media.MediaStream"/>
+        /// </summary>
+        /// <remarks>If true, on the stream no data will be read or pushed even if AudioPushData/AudioReadData is called</remarks>
+        /// <param name="value">true is mute or false</param>
+        public void SetMuteMedias(bool value)
+        {
+            Medias.SetMute(value);
+        }
+
+        /// <summary>
+        /// Debug
+        /// </summary>
+        /// <returns>info</returns>
         public override string ToString()
         {
-            return Id.ToString();
+            return $"{nameof(Peer)}: {nameof(Id)} {Id}" +
+                $", {nameof(RoomName)} \"{RoomName}\"" +
+                $", {nameof(UserId)} \"{UserId}\"" +
+                $", {nameof(UserData)} {!UserData?.IsEmpty()}" +
+                $", {nameof(Medias)} {Medias?.Count}";
         }
 
         private bool disposedValue;
+        /// <summary>
+        /// Free peer with all associated medias
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -80,11 +114,17 @@ namespace OdinNative.Odin.Peer
             }
         }
 
+        /// <summary>
+        /// Default deconstructor
+        /// </summary>
         ~Peer()
         {
             Dispose(disposing: false);
         }
 
+        /// <summary>
+        /// Free peer with all associated medias
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);

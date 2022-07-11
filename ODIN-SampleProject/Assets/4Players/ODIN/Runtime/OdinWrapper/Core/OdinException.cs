@@ -11,15 +11,28 @@ namespace OdinNative.Core
     /// </summary>
     public class OdinException : Exception
     {
-        public int ErrorCode;
-
-        public OdinException(int error, string message)
+        /// <summary>
+        /// OdinErrorCode
+        /// </summary>
+        public uint ErrorCode;
+        /// <summary>
+        /// OdinErrorCode container
+        /// </summary>
+        /// <param name="error">OdinErrorCode</param>
+        /// <param name="message">odin error message</param>
+        public OdinException(uint error, string message)
             : base(message)
         {
             ErrorCode = error;
         }
 
-        public OdinException(int error, string message, Exception innerException)
+        /// <summary>
+        /// OdinErrorCode container
+        /// </summary>
+        /// <param name="error">OdinErrorCode</param>
+        /// <param name="message">odin error message</param>
+        /// <param name="innerException">wrapper inner</param>
+        public OdinException(uint error, string message, Exception innerException)
             : base(message, innerException)
         {
             ErrorCode = error;

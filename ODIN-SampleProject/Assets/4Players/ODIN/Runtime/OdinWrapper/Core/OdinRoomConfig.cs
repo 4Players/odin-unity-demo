@@ -8,7 +8,7 @@ namespace OdinNative.Core
     /// <summary>
     /// Audio processing configuration of an ODIN room
     /// </summary>
-    public class OdinRoomConfig
+    public class OdinRoomConfig : IOdinApmConfig
     {
         /// <summary>
         /// Enables or disables voice activity detection (VAD)
@@ -94,7 +94,7 @@ namespace OdinNative.Core
         /// <summary>
         /// Set the aggressiveness of the suppression
         /// </summary>
-        public OdinNoiseSuppressionLevel OdinNoiseSuppressionLevel
+        public OdinNoiseSuppressionLevel NoiseSuppressionLevel
         {
             get { return ApmConfig.noise_suppression_level; }
             set { ApmConfig.noise_suppression_level = value; }
@@ -115,6 +115,20 @@ namespace OdinNative.Core
         private OdinApmConfig ApmConfig = new OdinApmConfig();
 
         private OdinRoomConfig(OdinApmConfig config) : this(config.voice_activity_detection, config.voice_activity_detection_attack_probability, config.voice_activity_detection_release_probability, config.volume_gate, config.volume_gate_attack_loudness, config.volume_gate_release_loudness, config.echo_canceller, config.high_pass_filter, config.pre_amplifier, config.noise_suppression_level, config.transient_suppressor, true) { }
+        /// <summary>
+        /// Audio processing configuration of an ODIN room
+        /// </summary>
+        /// <param name="voiceActivityDetection">Enables or disables voice activity detection (VAD)</param>
+        /// <param name="voiceActivityDetectionAttackProbability">Voice probability value when the VAD should engage.</param>
+        /// <param name="voiceActivityDetectionReleaseProbability">Voice probability value when the VAD should disengage after previously being engaged.</param>
+        /// <param name="volumeGate">Enables or disables volume gate</param>
+        /// <param name="volumeGateAttackLoudness">Root mean square power (dBFS) when the volume gate should engage.</param>
+        /// <param name="volumeGateReleaseLoudness">Root mean square power (dBFS) when the volume gate should disengage after previously being engaged.</param>
+        /// <param name="echoCanceller">Enable or disable echo cancellation</param>
+        /// <param name="highPassFilter">Enable or disable high pass filtering</param>
+        /// <param name="preAmplifier">Enable or disable the pre amplifier</param>
+        /// <param name="noiseSuppressionLevel">Set the aggressiveness of the suppression</param>
+        /// <param name="transientSuppressor">Enable or disable the transient suppressor</param>
         public OdinRoomConfig(
             bool voiceActivityDetection = false,
             float voiceActivityDetectionAttackProbability = 0f,
@@ -128,6 +142,7 @@ namespace OdinNative.Core
             OdinNoiseSuppressionLevel noiseSuppressionLevel = OdinNoiseSuppressionLevel.None,
             bool transientSuppressor = false)
             : this(voiceActivityDetection, voiceActivityDetectionAttackProbability, voiceActivityDetectionReleaseProbability, volumeGate, volumeGateAttackLoudness, volumeGateReleaseLoudness, echoCanceller, highPassFilter, preAmplifier, noiseSuppressionLevel, transientSuppressor, false) { }
+        internal OdinRoomConfig(IOdinApmConfig odinApm) : this(odinApm.VoiceActivityDetection, odinApm.VoiceActivityDetectionAttackProbability, odinApm.VoiceActivityDetectionReleaseProbability, odinApm.VolumeGate, odinApm.VolumeGateAttackLoudness, odinApm.VolumeGateReleaseLoudness, odinApm.EchoCanceller, odinApm.HighPassFilter, odinApm.PreAmplifier, odinApm.NoiseSuppressionLevel, odinApm.TransientSuppressor) { }
         internal OdinRoomConfig(bool voiceActivityDetection, float voiceActivityDetectionAttackProbability, float voiceActivityDetectionReleaseProbability, bool volumeGate, float volumeGateAttackLoudness,
             float volumeGateReleaseLoudness, bool echoCanceller, bool highPassFilter, bool preAmplifier, OdinNoiseSuppressionLevel noiseSuppressionLevel, bool transientSuppressor, bool remote = false)
         {
@@ -140,9 +155,30 @@ namespace OdinNative.Core
             EchoCanceller = echoCanceller;
             HighPassFilter = highPassFilter;
             PreAmplifier = preAmplifier;
-            OdinNoiseSuppressionLevel = noiseSuppressionLevel;
+            NoiseSuppressionLevel = noiseSuppressionLevel;
             TransientSuppressor = transientSuppressor;
             RemoteConfig = remote;
+        }
+
+        /// <summary>
+        /// Debug
+        /// </summary>
+        /// <returns>info</returns>
+        public override string ToString()
+        {
+            return $"{nameof(OdinRoomConfig)}:" +
+                $" {nameof(VoiceActivityDetection)} {VoiceActivityDetection}" +
+                $", {nameof(VoiceActivityDetectionAttackProbability)} {VoiceActivityDetectionAttackProbability}" +
+                $", {nameof(VoiceActivityDetectionReleaseProbability)} {VoiceActivityDetectionReleaseProbability}" +
+                $", {nameof(VolumeGate)} {VolumeGate}" +
+                $", {nameof(VolumeGateAttackLoudness)} {VolumeGateAttackLoudness}" +
+                $", {nameof(VolumeGateReleaseLoudness)} {VolumeGateReleaseLoudness}" +
+                $", {nameof(EchoCanceller)} {EchoCanceller}" +
+                $", {nameof(HighPassFilter)} {HighPassFilter}" +
+                $", {nameof(PreAmplifier)} {PreAmplifier}" +
+                $", {nameof(NoiseSuppressionLevel)} {Enum.GetName(typeof(OdinNoiseSuppressionLevel), NoiseSuppressionLevel)}" +
+                $", {nameof(TransientSuppressor)} {TransientSuppressor}" +
+                $", {nameof(RemoteConfig)} {RemoteConfig}";
         }
     }
 }

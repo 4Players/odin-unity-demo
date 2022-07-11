@@ -47,7 +47,7 @@ namespace OdinNative.Unity.Samples
             return Instantiate(prefab, new Vector3(0, 0.5f, 6), Quaternion.identity);
         }
 
-        private void Instance_OnCreatedMediaObject(string roomName, ulong peerId, ushort mediaId)
+        private void Instance_OnCreatedMediaObject(string roomName, ulong peerId, long mediaStreamId)
         {
             Room room = OdinHandler.Instance.Rooms[roomName];
             if (room == null || room.Self == null || room.Self.Id == peerId) return;
@@ -55,7 +55,7 @@ namespace OdinNative.Unity.Samples
             var peerContainer = CreateObject();
 
             //Add PlaybackComponent to new dummy PeerCube
-            PlaybackComponent playback = OdinHandler.Instance.AddPlaybackComponent(peerContainer, room.Config.Name, peerId, mediaId);
+            PlaybackComponent playback = OdinHandler.Instance.AddPlaybackComponent(peerContainer, room.Config.Name, peerId, mediaStreamId);
 
             //Some AudioSource test settings
             playback.PlaybackSource.spatialBlend = 1.0f;
@@ -66,8 +66,8 @@ namespace OdinNative.Unity.Samples
             //set dummy PeerCube label
             var data = CustomUserDataJsonFormat.FromUserData(room.RemotePeers[peerId]?.UserData);
             playback.gameObject.GetComponentInChildren<TextMesh>().text = data == null ?
-                $"Peer {peerId} (Media {mediaId})" :
-                $"{data.name} (Peer {peerId} Media {mediaId})";
+                $"Peer {peerId} (Media {mediaStreamId})" :
+                $"{data.name} (Peer {peerId} Media {mediaStreamId})";
 
             PeersObjects.Add(playback.gameObject);
         }
@@ -76,7 +76,7 @@ namespace OdinNative.Unity.Samples
         {
             PlaybackComponent playback = PeersObjects
                 .Select(obj => obj.GetComponent<PlaybackComponent>())
-                .FirstOrDefault(p => p.MediaId == args.MediaId);
+                .FirstOrDefault(p => p.MediaStreamId == args.MediaStreamId);
             if(playback == null) return;
 
             Material cubeMaterial = playback.GetComponentInParent<Renderer>().material;
@@ -89,9 +89,9 @@ namespace OdinNative.Unity.Samples
                 cubeMaterial.color = LastCubeColor;
         }
 
-        private void Instance_OnDeleteMediaObject(int mediaId)
+        private void Instance_OnDeleteMediaObject(long mediaStreamId)
         {
-            GameObject obj = PeersObjects.FirstOrDefault(o => o.GetComponent<PlaybackComponent>()?.MediaId == mediaId);
+            GameObject obj = PeersObjects.FirstOrDefault(o => o.GetComponent<PlaybackComponent>()?.MediaStreamId == mediaStreamId);
             if (obj == null) return;
 
             PeersObjects.Remove(obj);
