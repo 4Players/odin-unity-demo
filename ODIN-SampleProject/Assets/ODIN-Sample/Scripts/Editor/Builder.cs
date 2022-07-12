@@ -9,7 +9,7 @@ namespace ODIN_Sample.Scripts.Editor
         static void BuildAndroid()
         {
             Build($"{nameof(Builder)}.{nameof(Builder.BuildAndroid)}",
-                "sample",
+                "sample.apk",
                 BuildTarget.Android,
                 BuildOptions.None);
         }
@@ -22,7 +22,7 @@ namespace ODIN_Sample.Scripts.Editor
                 BuildOptions.None);
         }
         
-        private static UnityEditor.Build.Reporting.BuildReport Build(string _method, string name, BuildTarget target,
+        private static UnityEditor.Build.Reporting.BuildReport Build(string method, string name, BuildTarget target,
             BuildOptions options)
         {
             var args = System.Environment.GetCommandLineArgs();
@@ -30,20 +30,21 @@ namespace ODIN_Sample.Scripts.Editor
             {
                 try
                 {
-                    name = args.GetValue(Array.IndexOf(args, _method) + 1).ToString();
+                    name = args.GetValue(Array.IndexOf(args, method) + 1).ToString();
                 }
                 catch
                 {
-                    Debug.Log($"Invalid argument for {_method}! Using: {name}");
+                    Debug.Log($"Invalid argument for {method}! Using: {name}");
                 }
             }
 
-            string[] defaultScene =
+            string[] scenes =
             {
                 "Assets/ODIN-Sample/Scenes/Lobby.unity",
+                "Assets/ODIN-Sample/Scenes/DemoLevel.unity"
             };
 
-            return BuildPipeline.BuildPlayer(defaultScene, name, target, options);
+            return BuildPipeline.BuildPlayer(scenes, name, target, options);
         }
     }
 }
