@@ -69,7 +69,7 @@ build:linux:
 build:android:
   <<: *common_build
   script:
-    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Android -executeMethod Builder.BuildAndroid bin/${PRODUCT_NAME}.apk
+    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Android bin/${PRODUCT_NAME}.apk
 
 ### Packaging
 
