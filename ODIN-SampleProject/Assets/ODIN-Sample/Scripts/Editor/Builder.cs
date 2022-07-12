@@ -8,7 +8,7 @@ namespace ODIN_Sample.Scripts.Editor
     {
         static void BuildAndroid()
         {
-            Build($"{nameof(Builder)}.{nameof(Builder.BuildAndroid)}",
+            Build($"{typeof(Builder).Namespace}.{nameof(Builder)}.{nameof(Builder.BuildAndroid)}",
                 "sample.apk",
                 BuildTarget.Android,
                 BuildOptions.None);
@@ -16,7 +16,7 @@ namespace ODIN_Sample.Scripts.Editor
         
         static void BuildiOS()
         {
-            Build($"{nameof(Builder)}.{nameof(Builder.BuildiOS)}",
+            Build($"{typeof(Builder).Namespace}.{nameof(Builder)}.{nameof(Builder.BuildiOS)}",
                 "sample",
                 BuildTarget.iOS,
                 BuildOptions.None);
