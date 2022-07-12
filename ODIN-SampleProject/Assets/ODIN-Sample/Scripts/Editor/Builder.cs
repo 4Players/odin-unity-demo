@@ -44,6 +44,7 @@ namespace ODIN_Sample.Scripts.Editor
                 "Assets/ODIN-Sample/Scenes/DemoLevel.unity"
             };
 
+            Debug.Log($"Running {method} with: {name}");
             return BuildPipeline.BuildPlayer(scenes, name, target, options);
         }
     }
