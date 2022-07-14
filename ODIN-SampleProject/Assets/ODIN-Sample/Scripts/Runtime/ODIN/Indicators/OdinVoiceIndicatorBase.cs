@@ -34,7 +34,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         protected virtual void OnDisable()
         {
             if (OdinHandler.Instance)
+            {
                 OdinHandler.Instance.OnMediaActiveStateChanged.RemoveListener(OnMediaStateChanged);
+                OdinHandler.Instance.OnMediaRemoved.RemoveListener(OnMediaRemoved);
+                OdinHandler.Instance.OnPeerLeft.RemoveListener(OnPeerLeft);
+            }
         }
 
 
@@ -44,38 +48,67 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
                 yield return null;
 
             OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaStateChanged);
+            OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
+            OdinHandler.Instance.OnPeerLeft.AddListener(OnPeerLeft);
         }
 
-        
+        private void OnPeerLeft(object sender, PeerLeftEventArgs peerLeftEventArgs)
+        {
+            Debug.Log("On Peer Left.");
+            if (sender is Room sendingRoom)
+            {
+                ulong peerId = peerLeftEventArgs.PeerId;
+                if (IsEventRelevant(sendingRoom, peerId))
+                    UpdateFeedback(false);
+            }
+        }
 
+        private void OnMediaRemoved(object sender, MediaRemovedEventArgs mediaRemovedEventArgs)
+        {
+            Debug.Log("OnMediaRemoved.");
+
+            if (sender is Room sendingRoom)
+            {
+                ulong peerId = mediaRemovedEventArgs.Peer.Id;
+                if (IsEventRelevant(sendingRoom, peerId))
+                    UpdateFeedback(false);
+
+            }
+        }
 
         private void OnMediaStateChanged(object sender,
             MediaActiveStateChangedEventArgs args)
         {
+            Debug.Log($"OnMediaStateChanged: {args.Active}");
 
-            if (sender is Room sendingRoom && sendingRoom.Config.Name == odinRoomName.Value)
+            if (sender is Room sendingRoom)
             {
-                OdinSampleUserData userdata;
-                if (!sendingRoom.RemotePeers.Contains(args.PeerId))
-                {
-                    userdata = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
-                }
-                else
-                {
-                    Peer peer = sendingRoom.RemotePeers[args.PeerId];
-                    userdata = peer.UserData.ToOdinSampleUserData();
-                }
-
-                if (null != userdata && adapter.GetUniqueUserId() == userdata.uniqueUserId)
-                {
-                    // if (args.Active)
-                    //     _numActivePlaybacks++;
-                    // else
-                    //     _numActivePlaybacks--;
+                ulong peerId = args.PeerId;
+                if (IsEventRelevant(sendingRoom, peerId))
                     UpdateFeedback(args.Active);
-                }
             }
-            // _numActivePlaybacks = Mathf.Max(_numActivePlaybacks, 0);
+        }
+
+        private bool IsEventRelevant(Room sendingRoom, ulong peerId)
+        {
+            var userdata = GetUserData(sendingRoom, peerId);
+            return null != userdata && adapter.GetUniqueUserId() == userdata.uniqueUserId && sendingRoom.Config.Name == odinRoomName.Value;
+        }
+
+        private static OdinSampleUserData GetUserData(Room sendingRoom, ulong peerId)
+        {
+            OdinSampleUserData userdata;
+            if (!sendingRoom.RemotePeers.Contains(peerId))
+            {
+                userdata = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
+            }
+            else
+            {
+                Peer peer = sendingRoom.RemotePeers[peerId];
+                userdata = peer.UserData.ToOdinSampleUserData();
+            }
+
+            return userdata;
         }
 
         protected abstract void UpdateFeedback(bool isVoiceOn);

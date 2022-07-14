@@ -65,9 +65,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
             OdinHandler.Instance.OnRoomJoined.AddListener(OnJoinedRoom);
             OdinHandler.Instance.OnRoomLeft.AddListener(OnLeftRoom);
-
-
-
             OdinHandler.Instance.OnPeerUserDataChanged.AddListener(OnPeerUpdated);
 
             // yield return new WaitForSeconds(2.0f);
@@ -78,13 +75,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             DestroyAllPlaybacksInRoom(roomLeftArgs.RoomName);
         }
-        
+
         private void OnMediaRemoved(object roomObj, MediaRemovedEventArgs mediaRemovedArgs)
         {
             if (roomObj is Room room && null != mediaRemovedArgs.Peer)
-            {
                 DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaStreamId);
-            }
         }
 
         private void OnJoinedRoom(RoomJoinedEventArgs arg0)
@@ -92,6 +87,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             StartCoroutine(DeferredSpawnPlayback());
         }
 
+        /// <summary>
+        /// Defer spawning in cases where the room was not yet updated.
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator DeferredSpawnPlayback()
         {
             yield return null;
@@ -104,10 +103,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             if (sender is Room room)
-            {
                 // Debug.Log("3d Odin Voice User: On Peer Updated.");
                 UpdateRoomPlayback(room, peerUpdatedEventArgs.Peer);
-            }
         }
 
         /// <summary>
@@ -118,18 +115,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <param name="mediaAddedEventArgs"></param>
         private void OnMediaAdded(object roomObj, MediaAddedEventArgs mediaAddedEventArgs)
         {
-            // var mediaRoomName = mediaAddedEventArgs.Peer.RoomName;
-            // if (IsRoomAllowed(mediaRoomName))
-            //     if (null != mediaAddedEventArgs.Peer.UserData)
-            //     {
-            //         var userData = mediaAddedEventArgs.Peer.UserData.ToOdinSampleUserData();
-            //         if (userData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
-            //             SpawnPlaybackComponent(mediaRoomName, mediaAddedEventArgs.PeerId, mediaAddedEventArgs.Media.Id);
-            //     }
-            if (roomObj is Room room)
-            {
-                UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
-            }
+            if (roomObj is Room room) UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
         }
 
         /// <summary>

@@ -113,6 +113,24 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
+        /// Retrieves the playback component identified by identified by the given tuple from the registry or null, if none was found.
+        /// </summary>
+        /// <param name="roomName">The ODIN room name.</param>
+        /// <param name="peerId">The ODIN peers Id.</param>
+        /// <param name="mediaId">The media stream id the peer is transmitting on.</param>
+        /// <returns></returns>
+        protected PlaybackComponent GetPlaybackComponent(string roomName, ulong peerId, long mediaId)
+        {
+            var dictionaryKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
+            if (_registeredRemoteMedia.TryGetValue(dictionaryKey, out PlaybackComponent foundPlaybackComponent))
+            {
+                return foundPlaybackComponent;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Spawn a new instance of <see cref="playbackComponentPrefab"/> and connect it to an ODIN stream using the
         /// room name, peer id and media id.
         /// </summary>

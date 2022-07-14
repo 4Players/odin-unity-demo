@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using OdinNative.Odin.Peer;
-using OdinNative.Odin.Room;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
@@ -19,18 +15,18 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         ///     color will return back to the original color of the main materials' initial color.
         /// </summary>
         [SerializeField] private Renderer indicationTarget;
-        
+
         /// <summary>
         ///     The color the <see cref="indicationTarget" /> should display when the remote player is transmitting.
         /// </summary>
         [ColorUsage(true, true)] [SerializeField]
         private Color voiceOnColor = Color.green;
-        
+
         private Color _originalColor;
 
         protected override void Awake()
         {
-    base.Awake();
+            base.Awake();
             if (null == indicationTarget)
                 indicationTarget = GetComponent<Renderer>();
             Assert.IsNotNull(indicationTarget);
@@ -40,10 +36,18 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         protected override void UpdateFeedback(bool isVoiceOn)
         {
+            if (null == indicationTarget)
+                indicationTarget = GetComponent<Renderer>();
+            
+            Debug.Log($"UpdateFeedback: {isVoiceOn}");
             if (isVoiceOn)
                 indicationTarget.material.color = voiceOnColor;
             else
+            {
+                Debug.Log($"Setting feedback to: {_originalColor}");
                 indicationTarget.material.color = _originalColor;
+            }
+
         }
     }
 }

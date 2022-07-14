@@ -30,6 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -43,8 +44,7 @@ AudioSource:
   m_GameObject: {fileID: 1106984047728188998}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -2421494080382456696, guid: b7046d9e5d9f0824bab6670f346b26b8,
-    type: 2}
+  OutputAudioMixerGroup: {fileID: -2421494080382456696, guid: b7046d9e5d9f0824bab6670f346b26b8, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -144,9 +144,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlaybackSource: {fileID: 1106984047728189000}
-  AutoDestroyAudioSource: 1
-  OverrideChannels: 0
-  Channels: 1
+  AutoDestroyAudioSource: 0
+  AutoDestroyMediaStream: 0
   OverrideSampleRate: 0
   SampleRate: 48000
 --- !u!135 &-5669443469478044909

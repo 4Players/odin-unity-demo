@@ -181,6 +181,15 @@ namespace OdinNative.Unity.Audio
             }
 
             uint read = PlaybackMedia.AudioReadData(ReadBuffer, ReadBuffer.Length);
+            if (read > ReadBuffer.Length)
+            {
+                for (var dataIndex = 0; dataIndex < data.Length; dataIndex++)
+                {
+                    data[dataIndex] = 0;
+                }
+                return;
+            }
+
             if (UseResampler)
             {
                 uint readResampled = PlaybackMedia.AudioResample(ReadBuffer, (uint)UnitySampleRate, ResampleBuffer, ResampleBuffer.Length);
