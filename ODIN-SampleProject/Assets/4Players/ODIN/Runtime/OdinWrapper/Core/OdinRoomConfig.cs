@@ -142,7 +142,7 @@ namespace OdinNative.Core
             OdinNoiseSuppressionLevel noiseSuppressionLevel = OdinNoiseSuppressionLevel.None,
             bool transientSuppressor = false)
             : this(voiceActivityDetection, voiceActivityDetectionAttackProbability, voiceActivityDetectionReleaseProbability, volumeGate, volumeGateAttackLoudness, volumeGateReleaseLoudness, echoCanceller, highPassFilter, preAmplifier, noiseSuppressionLevel, transientSuppressor, false) { }
-        internal OdinRoomConfig(IOdinApmConfig odinApm) : this(odinApm.VoiceActivityDetection, odinApm.VoiceActivityDetectionAttackProbability, odinApm.VoiceActivityDetectionReleaseProbability, odinApm.VolumeGate, odinApm.VolumeGateAttackLoudness, odinApm.VolumeGateReleaseLoudness, odinApm.EchoCanceller, odinApm.HighPassFilter, odinApm.PreAmplifier, odinApm.NoiseSuppressionLevel, odinApm.TransientSuppressor) { }
+        public OdinRoomConfig(IOdinApmConfig odinApm) : this(odinApm.VoiceActivityDetection, odinApm.VoiceActivityDetectionAttackProbability, odinApm.VoiceActivityDetectionReleaseProbability, odinApm.VolumeGate, odinApm.VolumeGateAttackLoudness, odinApm.VolumeGateReleaseLoudness, odinApm.EchoCanceller, odinApm.HighPassFilter, odinApm.PreAmplifier, odinApm.NoiseSuppressionLevel, odinApm.TransientSuppressor) { }
         internal OdinRoomConfig(bool voiceActivityDetection, float voiceActivityDetectionAttackProbability, float voiceActivityDetectionReleaseProbability, bool volumeGate, float volumeGateAttackLoudness,
             float volumeGateReleaseLoudness, bool echoCanceller, bool highPassFilter, bool preAmplifier, OdinNoiseSuppressionLevel noiseSuppressionLevel, bool transientSuppressor, bool remote = false)
         {
@@ -158,6 +158,26 @@ namespace OdinNative.Core
             NoiseSuppressionLevel = noiseSuppressionLevel;
             TransientSuppressor = transientSuppressor;
             RemoteConfig = remote;
+        }
+
+        /// <summary>
+        /// Creates Apm OdinRoomConfig based on <see cref="OdinNative.Odin.OdinDefaults"/>
+        /// </summary>
+        /// <returns>default Odin Apm Room Config</returns>
+        public static OdinRoomConfig GetOdinDefault()
+        {
+            return new OdinRoomConfig(
+                Odin.OdinDefaults.VoiceActivityDetection,
+                Odin.OdinDefaults.VoiceActivityDetectionAttackProbability,
+                Odin.OdinDefaults.VoiceActivityDetectionReleaseProbability,
+                Odin.OdinDefaults.VolumeGate,
+                Odin.OdinDefaults.VolumeGateAttackLoudness,
+                Odin.OdinDefaults.VolumeGateReleaseLoudness,
+                Odin.OdinDefaults.EchoCanceller,
+                Odin.OdinDefaults.HighPassFilter,
+                Odin.OdinDefaults.PreAmplifier,
+                Odin.OdinDefaults.NoiseSuppressionLevel,
+                Odin.OdinDefaults.TransientSuppressor);
         }
 
         /// <summary>

@@ -64,10 +64,10 @@ namespace OdinNative.Odin
         /// <param name="server"><see cref="EndPoint"/> Odin Server</param>
         /// <param name="accessKey">Odin access key</param>
         /// <param name="userData"><see cref="UserData"/> to set</param>
-        public OdinClient(Uri server, string accessKey, UserData userData = null)
+        public OdinClient(Uri server, string accessKey, IUserData userData = null)
         {
             EndPoint = server;
-            UserData = userData;
+            UserData = userData ?? new UserData();
             AccessKey = accessKey;
         }
 
@@ -151,7 +151,7 @@ namespace OdinNative.Odin
         /// <param name="userData">Set new <see cref="UserData"/> on room join</param>
         /// <param name="setup">will invoke to setup a room before adding or joining</param>
         /// <returns><see cref="Room.Room"/> or null</returns>
-        public async Task<Room.Room> JoinNamedRoom(string roomalias, string token, UserData userData = null, Action<Room.Room> setup = null)
+        public async Task<Room.Room> JoinNamedRoom(string roomalias, string token, IUserData userData = null, Action<Room.Room> setup = null)
         {
             if (string.IsNullOrEmpty(token)) throw new OdinWrapperException("Room token can not be null or empty!", new ArgumentNullException());
 
@@ -178,7 +178,7 @@ namespace OdinNative.Odin
         /// <param name="userData">Set new <see cref="UserData"/> on room join</param>
         /// <param name="setup">will invoke to setup a room before adding or joining</param>
         /// <returns><see cref="Room.Room"/> or null</returns>
-        public async Task<Room.Room> JoinRoom(string token, UserData userData, Action<Room.Room> setup)
+        public async Task<Room.Room> JoinRoom(string token, IUserData userData, Action<Room.Room> setup)
         {
             if (string.IsNullOrEmpty(token)) throw new OdinWrapperException("Room token can not be null or empty!", new ArgumentNullException());
 
