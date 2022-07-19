@@ -3,6 +3,7 @@ using OdinNative.Odin.Room;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OdinNative.Odin.Peer
 {
@@ -71,6 +72,15 @@ namespace OdinNative.Odin.Peer
         internal void SetUserData(UserData userData)
         {
             UserData = userData;
+        }
+
+        /// <summary>
+        /// Get a copy of all ids of <see cref="OdinNative.Odin.Media.MediaStream"/> from this peer
+        /// </summary>
+        /// <returns>MediaStreamIds</returns>
+        public List<long> GetMediaStreamIds()
+        {
+            return Medias.Select(p => p.Id).ToList();
         }
 
         /// <summary>

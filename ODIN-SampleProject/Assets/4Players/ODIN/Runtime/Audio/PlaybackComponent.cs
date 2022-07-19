@@ -108,6 +108,9 @@ namespace OdinNative.Unity.Audio
         /// creation if <see cref="OverrideSampleRate"/> is false</remarks>
         public MediaSampleRate SampleRate;
 
+        private AudioClip SpatialClip;
+        private float SpatialClipSilenceScale = 1000f;
+
         public bool HasActivity
         {
             get
@@ -126,6 +129,10 @@ namespace OdinNative.Unity.Audio
                     .Where(s => s.clip == null)
                     .FirstOrDefault() ?? gameObject.AddComponent<AudioSource>();
 
+            // Should be removed if Unity Issue 819365,1246661 is resolved
+            SpatialClip = AudioClip.Create("spatialClip", 1, 1, AudioSettings.outputSampleRate, false);
+            SpatialClip.SetData(new float[] { 1f / SpatialClipSilenceScale }, 0);
+            PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
         }
 
@@ -147,26 +154,23 @@ namespace OdinNative.Unity.Audio
                 ResamplerCapacity = dspBufferSize * ((uint)OdinDefaults.RemoteSampleRate / UnitySampleRate) / (int)AudioSettings.speakerMode;
             }
 
-            // Should be removed if Unity Issue 819365,1246661 is resolved
-            var spatialClip = AudioClip.Create("spatialClip", 1, 1, AudioSettings.outputSampleRate, false);
-            spatialClip.SetData(new float[] { 1 }, 0);
-            PlaybackSource.clip = spatialClip;
-            PlaybackSource.loop = true;
-
             if (PlaybackSource.isPlaying == false)
                 PlaybackSource.Play();
         }
 
         void Reset()
         {
+            RedirectPlaybackAudio = true;
             OverrideSampleRate = false;
             SampleRate = OdinHandler.Config.RemoteSampleRate;
             UnitySampleRate = AudioSettings.outputSampleRate;
+            ReadBuffer = null;
+            ResampleBuffer = null;
         }
 
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (PlaybackMedia == null || PlaybackMedia.IsMuted || RedirectPlaybackAudio == false) return;
+            if (_isDestroying || PlaybackMedia == null || PlaybackMedia.IsMuted || RedirectPlaybackAudio == false) return;
 
             if (!UseResampler && ReadBuffer == null)
                 ReadBuffer = new float[data.Length / channels];
@@ -181,9 +185,21 @@ namespace OdinNative.Unity.Audio
             }
 
             uint read = PlaybackMedia.AudioReadData(ReadBuffer, ReadBuffer.Length);
+            if (Utility.IsError(read))
+            {
+                Debug.LogError($"{nameof(PlaybackComponent)} AudioReadData failed with error code {read}");
+                return;
+            }
+
             if (UseResampler)
             {
                 uint readResampled = PlaybackMedia.AudioResample(ReadBuffer, (uint)UnitySampleRate, ResampleBuffer, ResampleBuffer.Length);
+                if (Utility.IsError(readResampled))
+                {
+                    Debug.LogError($"{nameof(PlaybackComponent)} AudioResample failed with error code {readResampled}");
+                    return;
+                }
+
                 SetData(ResampleBuffer, 0, (int)readResampled);
             }
             else
@@ -196,13 +212,14 @@ namespace OdinNative.Unity.Audio
                 if (channels > 1)
                     foreach (float sample in samples)
                     {
-                        data[i] *= sample;
-                        data[i + 1] *= sample;
+                        float scaledSample = sample * SpatialClipSilenceScale;
+                        data[i] *= scaledSample;
+                        data[i + 1] *= scaledSample;
                         i += channels;
                     }
                 else if (channels > 0)
                     foreach (float sample in samples)
-                        data[i++] = sample;
+                        data[i++] *= sample * SpatialClipSilenceScale;
                 else
                     Debug.LogException(new NotSupportedException($"SetData {channels}"));
             }
@@ -210,13 +227,17 @@ namespace OdinNative.Unity.Audio
 
         void OnDisable()
         {
-            CancelInvoke();
             PlaybackSource.Stop();
             RedirectPlaybackAudio = false;
+            ReadBuffer = null;
+            ResampleBuffer = null;
         }
 
+        private bool _isDestroying = false;
         private void OnDestroy()
         {
+            _isDestroying = true;
+
             if (AutoDestroyAudioSource)
                 Destroy(PlaybackSource);
 
