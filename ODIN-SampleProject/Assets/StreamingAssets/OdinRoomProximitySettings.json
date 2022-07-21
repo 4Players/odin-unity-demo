@@ -1,0 +1,10 @@
+{
+    "updateInterval": 0.5,
+    "roomSettings": [
+        {
+            "roomName": "Voice",
+            "isActive": true,
+            "proximityRadius": 30.0
+        }
+    ]
+}

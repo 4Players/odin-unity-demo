@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInterval: 0.5
   roomSettings:
-  - roomName: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-    isActive: 1
-    proximityRadius: 25
+  - roomName: Voice
+    isActive: 0
+    proximityRadius: 10

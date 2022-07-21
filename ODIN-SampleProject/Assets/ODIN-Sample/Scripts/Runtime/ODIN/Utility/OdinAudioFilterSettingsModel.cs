@@ -22,6 +22,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         public List<AudioFilterSettingsSchema<float>> floatSettings = new List<AudioFilterSettingsSchema<float>>();
         public List<AudioFilterSettingsSchema<int>> enumSettings = new List<AudioFilterSettingsSchema<int>>();
 
+        private static readonly string SAVE_FILE_NAME = "AudioProcessingSettings.json";
+        private static readonly string DEFAULT_SAVE_FILE_NAME = "AudioProcessingDefaultSettings.json";
+        
         public void UpdateBool(string fieldName, bool newValue)
         {
             UpdateValue(fieldName, newValue, boolSettings);
@@ -49,52 +52,16 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         {
             UpdateValue(fieldName, newValue, enumSettings);
         }
-
-        private static string GetCustomSavePath()
-        {
-            return Application.dataPath + Path.AltDirectorySeparatorChar + "AudioProcessingSettings.json";
-        }
-
-        private static string GetDefaultSettingsPath()
-        {
-            return Application.streamingAssetsPath + Path.AltDirectorySeparatorChar + "AudioProcessingDefaultSettings.json";
-        }
-
-        private static void SaveData(OdinAudioFilterSettingsModel model, string savePath)
-        {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            string json = JsonUtility.ToJson(model, true);
-            Debug.Log($"Saving Settings to {savePath}");
-            using StreamWriter writer = new StreamWriter(GetCustomSavePath());
-            writer.Write(json);
-        }
-
+        
         public static void SaveData(OdinAudioFilterSettingsModel model)
         {
-            string savePath = GetCustomSavePath();
-            SaveData(model, savePath);
-        }
-
-        private static OdinAudioFilterSettingsModel LoadData(string loadPath)
-        {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-            OdinAudioFilterSettingsModel result = null;
-            if (File.Exists(loadPath))
-            {
-                using StreamReader reader = new StreamReader(loadPath);
-                string json = reader.ReadToEnd();
-
-                Debug.Log($"Loading Json from {loadPath}");
-                result = JsonUtility.FromJson<OdinAudioFilterSettingsModel>(json);
-            }
-
-            return result;
+            string savePath = SaveFileUtility.GetCustomSavePath(SAVE_FILE_NAME);
+            SaveFileUtility.SaveData(savePath, model);
         }
 
         public static OdinAudioFilterSettingsModel LoadCustomOrDefaultData()
         {
-            OdinAudioFilterSettingsModel loadResult = LoadData(GetCustomSavePath());
+            OdinAudioFilterSettingsModel loadResult = SaveFileUtility.LoadData<OdinAudioFilterSettingsModel>(SaveFileUtility.GetCustomSavePath(SAVE_FILE_NAME));
             if (null == loadResult)
                 loadResult = LoadDefaultData();
             return loadResult;
@@ -102,12 +69,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 
         public static OdinAudioFilterSettingsModel LoadDefaultData()
         {
-            return LoadData(GetDefaultSettingsPath());
+            return SaveFileUtility.LoadData<OdinAudioFilterSettingsModel>(SaveFileUtility.GetDefaultSettingsPath(DEFAULT_SAVE_FILE_NAME));
         }
 
         public static void OverwriteDefaultData(OdinAudioFilterSettingsModel newDefault)
         {
-            SaveData(newDefault, GetDefaultSettingsPath());
+            SaveFileUtility.SaveData(SaveFileUtility.GetDefaultSettingsPath(DEFAULT_SAVE_FILE_NAME), newDefault);
         }
     }
 }
