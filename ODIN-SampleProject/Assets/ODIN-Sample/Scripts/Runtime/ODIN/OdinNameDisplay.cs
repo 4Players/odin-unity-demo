@@ -103,7 +103,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         private void DisplayName(OdinSampleUserData userData)
         {
             if (null != userData)
-                nameDisplay.text = AdjustName(userData.name);
+            {
+                string formattedName = AdjustName(userData.name);
+                nameDisplay.text = formattedName;
+                multiplayerAdapter.gameObject.name = formattedName;
+            }
         }
 
         /// <summary>

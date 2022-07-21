@@ -38,16 +38,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         {
             if (null == indicationTarget)
                 indicationTarget = GetComponent<Renderer>();
-            
-            Debug.Log($"UpdateFeedback: {isVoiceOn}");
             if (isVoiceOn)
                 indicationTarget.material.color = voiceOnColor;
             else
-            {
-                Debug.Log($"Setting feedback to: {_originalColor}");
                 indicationTarget.material.color = _originalColor;
-            }
-
         }
     }
 }
