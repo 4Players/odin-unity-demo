@@ -1,17 +1,25 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using OdinNative.Odin.Room;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
+    /// <summary>
+    /// This script will update the current players position in the ODIN room on a regular interval. This enables
+    /// the ODIN optimization feature for 
+    /// </summary>
     public class OdinPositionUpdate : MonoBehaviour
     {
-        [SerializeField] private float RoomScaling = 0.1f;
-        [SerializeField] private float PositionUpdateInterval = 1.0f;
+        [SerializeField]
+        private OdinPositionUpdateSettings settings;
 
-
-        [SerializeField] private OdinStringVariable[] connectedOdinRooms;
+        private void Awake()
+        {
+            Assert.IsNotNull(settings, $"ODIN-Demo: Missing settings file in OdinPositionUpdate script on object {gameObject}");
+        }
 
         private void OnEnable()
         {
@@ -30,7 +38,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             while (!OdinHandler.Instance)
                 yield return null;
 
-            foreach (Room room in OdinHandler.Instance.Rooms) InitRoom(room);
+
+            foreach (Room room in OdinHandler.Instance.Rooms)
+            {
+                InitRoom(room);
+            }
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
 
             yield return null;
@@ -45,7 +57,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         private void InitRoom(Room toInit)
         {
-            toInit.SetPositionScale(RoomScaling);
+            OdinRoomProximityStatus status = settings.GetRoomProximityStatus(toInit.Config.Name);
+            if (null != status && status.isActive)
+            {
+                toInit.SetPositionScale(1.0f / status.proximityRadius);
+            }
         }
 
         private IEnumerator UpdatePositionRoutine()
@@ -53,16 +69,19 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             while (enabled)
             {
                 UpdateAllRoomPositions();
-                yield return new WaitForSeconds(PositionUpdateInterval);
+                yield return new WaitForSeconds(settings.updateInterval);
             }
         }
 
         private void UpdateAllRoomPositions()
         {
             if (OdinHandler.Instance)
-                foreach (OdinStringVariable odinRoomName in connectedOdinRooms)
-                    if (OdinHandler.Instance.Rooms.Contains(odinRoomName))
-                        UpdateRoomPosition(OdinHandler.Instance.Rooms[odinRoomName]);
+                foreach (var proximitySetting in settings.roomSettings)
+                {
+                    if (proximitySetting.isActive &&  OdinHandler.Instance.Rooms.Contains(proximitySetting.roomName))
+                        UpdateRoomPosition(OdinHandler.Instance.Rooms[proximitySetting.roomName]);
+                }
+                    
         }
 
         private void UpdateRoomPosition(Room toUpdate)

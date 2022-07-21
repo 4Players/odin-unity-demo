@@ -1078,10 +1078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c74d64987b0b46d8ae13b13c1ad6b5e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RoomScaling: 0.1
-  PositionUpdateInterval: 1
-  connectedOdinRooms:
-  - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  settings: {fileID: 11400000, guid: 71656779a5e361d458a61849b893f408, type: 2}
 --- !u!1 &6196065325629673390
 GameObject:
   m_ObjectHideFlags: 0
