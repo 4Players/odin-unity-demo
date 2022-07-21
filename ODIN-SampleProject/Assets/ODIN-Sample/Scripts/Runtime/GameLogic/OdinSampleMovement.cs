@@ -65,7 +65,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             float horizontal = Input.GetAxis(horizontalMovement);
             float vertical = Input.GetAxis(verticalMovement);
 
-            CurrentSprintMultiplier = Input.GetKey(sprintButton) ? sprintMultiplier : 1.0f;
+            CurrentSprintMultiplier = Input.GetButton(sprintButton) ? sprintMultiplier : 1.0f;
             PlayerInput = new Vector3(horizontal, 0.0f, vertical);
         }
     }

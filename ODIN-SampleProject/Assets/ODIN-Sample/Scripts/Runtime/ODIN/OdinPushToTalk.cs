@@ -72,7 +72,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         protected virtual bool IsPushToTalkButtonPressed(OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData)
         {
-            bool isPushToTalkPressed = Input.GetKey(pushToTalkData.pushToTalkButton);
+            bool isPushToTalkPressed = Input.GetButton(pushToTalkData.pushToTalkButton);
             return isPushToTalkPressed;
         }
 

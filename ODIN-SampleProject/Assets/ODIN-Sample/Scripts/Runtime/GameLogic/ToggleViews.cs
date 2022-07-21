@@ -38,7 +38,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void Update()
         {
-            if (Input.GetKeyDown(toggleViewButtonName))
+            if (Input.GetButtonDown(toggleViewButtonName))
             {
                 currentViewState.SwitchToNextState();
 

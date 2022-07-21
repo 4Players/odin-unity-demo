@@ -74,12 +74,12 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private float GetLeftRotation()
         {
-            return Input.GetKey(leftRotation) ? -1 : 0;
+            return Input.GetButton(leftRotation) ? -1 : 0;
         }
 
         private float GetRightRotation()
         {
-            return Input.GetKey(rightRotation) ? 1 : 0;
+            return Input.GetButton(rightRotation) ? 1 : 0;
         }
 
         /// <summary>

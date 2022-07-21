@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d41d966d7053df645bd6743f4a5267a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButton: Toggle
+  toggleButton: Interact
   toggleSource: {fileID: 1889583995457026279}
   feedbackMesh: {fileID: 8248954796653769427}
   feedbackMaterialIndex: 1
