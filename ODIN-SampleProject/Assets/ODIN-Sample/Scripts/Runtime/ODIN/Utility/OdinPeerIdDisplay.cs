@@ -24,9 +24,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         /// </summary>
         [SerializeField] private bool logOutput;
 
-        private float _smoothedFPS;
+        private readonly StringBuilder displayBuilder = new();
 
-        private readonly StringBuilder displayBuilder = new StringBuilder();
+        private float _smoothedFPS;
 
         // Update is called once per frame
         private void Update()
@@ -42,28 +42,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             if (OdinHandler.Instance)
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
-                    foreach (Peer peer in room.RemotePeers)
-                    {
-                        OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
-                        if (null != room.Self && peer.Id == room.Self.Id)
-                            displayBuilder.Append("Current Name: ");
-                        else
-                            displayBuilder.Append("Remote Name: ");
-
-                        displayBuilder.Append(
-                            $"{fromUserData.name}, Room: {room.Config.Name}, Peer Id: {peer.Id}, Unique Id: {fromUserData.uniqueUserId}");
-
-                        displayBuilder.Append(" Medias: ");
-                        foreach (MediaStream mediaStream in peer.Medias)
-                        {
-                            displayBuilder.Append($" ID {mediaStream.Id}");
-                        }
-
-                        displayBuilder.AppendLine();
-
-
-                    }
-
+                    displayBuilder.AppendLine($"Room: {room.Config.Name}");
+                    
                     if (null != room.MicrophoneMedia)
                     {
                         long micMediaId = room.MicrophoneMedia.Id;
@@ -74,8 +54,27 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
                         if (null != microphoneMediaOwner)
                             displayBuilder.AppendLine(
-                                $"Current Microphone: Microphone Id: {room.MicrophoneMedia.Id}, Owner: {microphoneMediaOwner.Id}, Room: {room.Config.Name}");
+                                $"Local Users Microphone Id: {room.MicrophoneMedia.Id}, Peer Id: {microphoneMediaOwner.Id}");
                     }
+                    
+                    foreach (Peer peer in room.RemotePeers)
+                    {
+                        OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
+                        if (null != room.Self && peer.Id == room.Self.Id)
+                            displayBuilder.Append("Local Username: ");
+                        else
+                            displayBuilder.Append("Remote Username: ");
+
+                        displayBuilder.Append(
+                            $"{fromUserData.name}, Unique Id: {fromUserData.uniqueUserId}, Peer Id: {peer.Id}; ");
+
+                        displayBuilder.Append(" Medias: ");
+                        foreach (MediaStream mediaStream in peer.Medias) displayBuilder.Append($" ID {mediaStream.Id}");
+
+                        displayBuilder.AppendLine();
+                    }
+
+                    
                 }
 
             string displayString = displayBuilder.ToString();
