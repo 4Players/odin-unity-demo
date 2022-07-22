@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
@@ -20,7 +21,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// <summary>
         /// The button for toggling the view state.
         /// </summary>
-        [SerializeField] private OdinStringVariable toggleViewButtonName;
+        [SerializeField] private InputActionReference toggleViewButton;
         /// <summary>
         /// Settings for the view states between which we'll be switching.
         /// </summary>
@@ -29,21 +30,30 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         private void Awake()
         {
             Assert.IsNotNull(currentViewState, "Missing view state reference.");
+            Assert.IsNotNull(toggleViewButton);
+            toggleViewButton.action.Enable();
+        }
+
+        private void OnEnable()
+        {
+            toggleViewButton.action.performed += ActionToggleView;
+        }
+
+        private void OnDisable()
+        {
+            toggleViewButton.action.performed -= ActionToggleView;
+        }
+
+        private void ActionToggleView(InputAction.CallbackContext context)
+        {
+            currentViewState.SwitchToNextState();
+
+            UpdateViewBehaviourStatus();
         }
 
         private void Start()
         {
             UpdateViewBehaviourStatus();
-        }
-
-        private void Update()
-        {
-            if (Input.GetButtonDown(toggleViewButtonName))
-            {
-                currentViewState.SwitchToNextState();
-
-                UpdateViewBehaviourStatus();
-            }
         }
 
         private void UpdateViewBehaviourStatus()

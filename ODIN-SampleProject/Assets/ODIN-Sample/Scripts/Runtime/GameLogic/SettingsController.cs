@@ -1,17 +1,18 @@
-﻿using ODIN_Sample.Scripts.Runtime.Odin;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     public class SettingsController : MonoBehaviour
     {
-        [SerializeField] private OdinStringVariable toggleSettingsButton;
+        [SerializeField] private InputActionReference toggleSettingsButton;
         [SerializeField] private GameObject settingsRoot;
 
         private void Awake()
         {
             Assert.IsNotNull(toggleSettingsButton);
+            toggleSettingsButton.action.Enable();
             Assert.IsNotNull(settingsRoot);
         }
 
@@ -20,10 +21,19 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             settingsRoot.gameObject.SetActive(false);
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (Input.GetButtonDown(toggleSettingsButton))
-                settingsRoot.gameObject.SetActive(!settingsRoot.activeSelf);
+            toggleSettingsButton.action.performed += ActionOnToggleSettings;
+        }
+
+        private void OnDisable()
+        {
+            toggleSettingsButton.action.performed -= ActionOnToggleSettings;
+        }
+
+        private void ActionOnToggleSettings(InputAction.CallbackContext context)
+        {
+            settingsRoot.gameObject.SetActive(!settingsRoot.activeSelf);
         }
     }
 }

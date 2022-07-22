@@ -15,11 +15,6 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
     public class PhotonLeaveRoom : MonoBehaviour, IMatchmakingCallbacks
     {
         /// <summary>
-        ///     Leave the Photon Room and load scene <see cref="sceneToLoad" /> when pressing this Unity button.
-        /// </summary>
-        [SerializeField] private OdinStringVariable leaveRoomsButton;
-
-        /// <summary>
         ///     Reference to the name of the Unity scene we should load.
         /// </summary>
         [SerializeField] private OdinStringVariable sceneToLoad;
@@ -31,10 +26,10 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             Assert.IsNotNull(sceneToLoad);
         }
 
-        private void Update()
+        public void LeaveRoom()
         {
-            if (null != leaveRoomsButton && Input.GetKeyDown(leaveRoomsButton) &&
-                !_wasSceneLoadRequested) LeavePhotonRoom();
+            if(!_wasSceneLoadRequested)
+                LeavePhotonRoom();
         }
 
         private void OnEnable()

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
   - connectedRoom: {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: 21ef755c5f5a4e547b3e0fd5e13666cd, type: 2}
+    pushToTalkButton: {fileID: -6166148685481355230, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
     pushToTalkIsActive: 0
   - connectedRoom: {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
-    pushToTalkButton: {fileID: 11400000, guid: be3444201bf8c05499e579924ae0e6e5, type: 2}
+    pushToTalkButton: {fileID: -3561278180624404131, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
     pushToTalkIsActive: 1
   playerPrefsKeyPrefix: Odin.PushToTalkSettings.

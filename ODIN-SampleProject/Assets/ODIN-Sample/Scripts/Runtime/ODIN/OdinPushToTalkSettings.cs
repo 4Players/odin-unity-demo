@@ -1,6 +1,7 @@
 ﻿using System;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN
 {
@@ -59,7 +60,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             ///     The push to talk button. If this is pressed, the microphone data
             ///     will be transmitted in the room given by <see cref="connectedRoom" />.
             /// </summary>
-            public OdinStringVariable pushToTalkButton;
+            public InputActionReference pushToTalkButton;
 
             /// <summary>
             ///     This can be set to false, if we want to give the option to leave a room voice-activated, but with the option

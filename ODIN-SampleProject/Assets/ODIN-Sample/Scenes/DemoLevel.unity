@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ad28434026545a38ba601d6a34fb702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleSettingsButton: {fileID: 11400000, guid: 40b0f229314d0f6498a083005d0b4662, type: 2}
+  toggleSettingsButton: {fileID: 8967947928277277658, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   settingsRoot: {fileID: 3460826974037050619}
 --- !u!1001 &48423420
 PrefabInstance:
@@ -18708,6 +18708,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1338686298}
   - component: {fileID: 1338686299}
+  - component: {fileID: 1338686300}
   m_Layer: 0
   m_Name: PhotonRoomLogic
   m_TagString: Untagged
@@ -18742,8 +18743,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f29559fb41c62e40b5a2316d7d0c878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leaveRoomsButton: {fileID: 11400000, guid: 2c17dc881cfa7f7489af135570468e2a, type: 2}
   sceneToLoad: {fileID: 11400000, guid: 33789366664c8ee4989923a1a503f355, type: 2}
+--- !u!114 &1338686300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338686297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7746c825edcb4d3382129096da7c958c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: -3699857819105525878, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
+  onButtonPressed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1338686299}
+        m_TargetAssemblyTypeName: ODIN_Sample.Scripts.Runtime.Photon.PhotonLeaveRoom,
+          ODIN-Sample.Runtime.Photon
+        m_MethodName: LeaveRoom
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1343085399
 GameObject:
   m_ObjectHideFlags: 0

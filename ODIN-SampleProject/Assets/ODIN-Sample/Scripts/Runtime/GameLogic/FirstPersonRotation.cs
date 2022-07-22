@@ -2,6 +2,7 @@ using System;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
@@ -10,14 +11,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </summary>
     public class FirstPersonRotation : MonoBehaviour
     {
-        /// <summary>
-        /// The name of the axis used for horizontal view rotation.
-        /// </summary>
-        [SerializeField] private OdinStringVariable mouseXAxis;
-        /// <summary>
-        /// The name of the axis used for vertical view rotation.
-        /// </summary>
-        [SerializeField] private OdinStringVariable mouseYAxis;
+        [SerializeField] private InputActionReference lookAxis;
         /// <summary>
         /// The rotation speed.
         /// </summary>
@@ -46,8 +40,8 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         {
             Assert.IsNotNull(yawTarget);
             Assert.IsNotNull(pitchTarget);
-            Assert.IsNotNull(mouseXAxis);
-            Assert.IsNotNull(mouseYAxis);
+            Assert.IsNotNull(lookAxis);
+            lookAxis.action.Enable();
         }
 
         private void OnEnable()
@@ -70,8 +64,9 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         void Update()
         {
-            float yaw = Input.GetAxis(mouseXAxis);
-            float pitch = -Input.GetAxis(mouseYAxis);
+            Vector2 lookInput = lookAxis.action.ReadValue<Vector2>();
+            float yaw = lookInput.x;
+            float pitch = lookInput.y;
 
             _currentYaw += yaw * rotationSpeed * Time.deltaTime;
             _currentPitch += pitch * rotationSpeed * Time.deltaTime;

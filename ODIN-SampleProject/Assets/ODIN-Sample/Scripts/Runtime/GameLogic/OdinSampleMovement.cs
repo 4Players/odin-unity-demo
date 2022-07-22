@@ -1,6 +1,8 @@
-﻿using ODIN_Sample.Scripts.Runtime.Odin;
+﻿using System;
+using ODIN_Sample.Scripts.Runtime.Odin;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
@@ -10,19 +12,10 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </summary>
     public class OdinSampleMovement : MonoBehaviour
     {
-        /// <summary>
-        /// The name of the axis used for left/right movement.
-        /// </summary>
+
         [Header("Input")]
-        [SerializeField] protected OdinStringVariable horizontalMovement;
-        /// <summary>
-        /// The name of the axis used for forward/backwards movement.
-        /// </summary>
-        [SerializeField] protected OdinStringVariable verticalMovement;
-        /// <summary>
-        /// The name of the button used to activate sprint.
-        /// </summary>
-        [SerializeField] protected OdinStringVariable sprintButton;
+        [SerializeField] private InputActionReference movement;
+        [SerializeField] protected InputActionReference sprintButton;
         
         /// <summary>
         /// The base movement speed.
@@ -39,34 +32,25 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// </summary>
         [Header("References")]
         [SerializeField] protected CharacterController characterController = null;
-
-        protected float CurrentSprintMultiplier;
-        protected Vector3 PlayerInput;
         
         protected virtual void Awake()
         {
             Assert.IsNotNull(characterController);
-            Assert.IsNotNull(horizontalMovement);
-            Assert.IsNotNull(verticalMovement);
+            Assert.IsNotNull(movement);
             Assert.IsNotNull(sprintButton);
+
+            movement.action.Enable();
+            sprintButton.action.Enable();
         }
 
         protected virtual void Update()
         {
-            UpdateInput();
+            Vector2 input = movement.action.ReadValue<Vector2>();
+            float currentSprintMultiplier = sprintButton.action.IsPressed() ? sprintMultiplier : 1.0f;
+            
             // don't multiply with Time.deltaTime, it's already included in characterController.SimpleMove()
-            Vector3 deltaMovement = (PlayerInput.x * transform.right + PlayerInput.z * transform.forward) * movementSpeed *
-                                    CurrentSprintMultiplier;
+            Vector3 deltaMovement = (input.x * transform.right + input.y * transform.forward) * (movementSpeed * currentSprintMultiplier);
             characterController.SimpleMove(deltaMovement);
-        }
-
-        protected virtual void UpdateInput()
-        {
-            float horizontal = Input.GetAxis(horizontalMovement);
-            float vertical = Input.GetAxis(verticalMovement);
-
-            CurrentSprintMultiplier = Input.GetButton(sprintButton) ? sprintMultiplier : 1.0f;
-            PlayerInput = new Vector3(horizontal, 0.0f, vertical);
         }
     }
 }

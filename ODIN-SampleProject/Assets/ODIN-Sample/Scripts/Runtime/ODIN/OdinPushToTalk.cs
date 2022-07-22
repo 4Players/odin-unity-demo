@@ -39,6 +39,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             StartCoroutine(WaitForConnection());
             pushToTalkSettings.Load();
+            
+            foreach (var odinPushToTalkData in pushToTalkSettings.settings)
+            {
+                odinPushToTalkData.pushToTalkButton.action.Enable();
+            }
         }
 
         private void OnDisable()
@@ -72,7 +77,8 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         protected virtual bool IsPushToTalkButtonPressed(OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData)
         {
-            bool isPushToTalkPressed = Input.GetButton(pushToTalkData.pushToTalkButton);
+
+            bool isPushToTalkPressed = pushToTalkData.pushToTalkButton.action.IsPressed();
             return isPushToTalkPressed;
         }
 

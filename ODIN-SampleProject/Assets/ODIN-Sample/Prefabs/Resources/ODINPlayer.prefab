@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentViewState: {fileID: 11400000, guid: e535f44c0d04edb41a4bea2681c745fd, type: 2}
-  toggleViewButtonName: {fileID: 11400000, guid: d5911b16c69444e4da925cc986de7233, type: 2}
+  toggleViewButton: {fileID: -8995327565564037866, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   viewSettingsList:
   - viewState: 1
     viewBehaviours: {fileID: 2753487309756592916}
@@ -1124,8 +1124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db9da2f815cfca94ebe75fc2ef417068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftRotation: {fileID: 11400000, guid: 9b635b975a270ac419a3c16d68beea0b, type: 2}
-  rightRotation: {fileID: 11400000, guid: 19bd9b4cf37ceb74db67fa51ec1fd599, type: 2}
+  rotation: {fileID: 6777128930302334623, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   rotationTarget: {fileID: 2753487309498945351}
   characterController: {fileID: 2753487309664625879}
   rotationSpeed: 5
@@ -1141,9 +1140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27eb2a7cff624f9eb21379471eb646f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontalMovement: {fileID: 11400000, guid: 0b31976b872490d4ab5431d826459718, type: 2}
-  verticalMovement: {fileID: 11400000, guid: e6ac6945a6878504da35c00614d6ddcd, type: 2}
-  sprintButton: {fileID: 11400000, guid: f5ccb927f122fea40b07a538608f0c24, type: 2}
+  movement: {fileID: 5200417100388637941, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
+  sprintButton: {fileID: 7814009303773871257, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   movementSpeed: 10
   sprintMultiplier: 1.5
   characterController: {fileID: 2753487309664625879}
@@ -1478,9 +1476,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27eb2a7cff624f9eb21379471eb646f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontalMovement: {fileID: 11400000, guid: 0b31976b872490d4ab5431d826459718, type: 2}
-  verticalMovement: {fileID: 11400000, guid: e6ac6945a6878504da35c00614d6ddcd, type: 2}
-  sprintButton: {fileID: 11400000, guid: f5ccb927f122fea40b07a538608f0c24, type: 2}
+  movement: {fileID: 5200417100388637941, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
+  sprintButton: {fileID: 7814009303773871257, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   movementSpeed: 10
   sprintMultiplier: 1.5
   characterController: {fileID: 2753487309664625879}
@@ -1496,8 +1493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63afd9245694d6642ad7a3c26b266e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseXAxis: {fileID: 11400000, guid: ab8e1cba0f34c5246908a859b4439247, type: 2}
-  mouseYAxis: {fileID: 11400000, guid: 5a7f0294cb54afa43adcc3ae76ae89a2, type: 2}
+  lookAxis: {fileID: -8589268155453388520, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   rotationSpeed: 200
   clampPitch: 80
   yawTarget: {fileID: 2753487309498945351}
