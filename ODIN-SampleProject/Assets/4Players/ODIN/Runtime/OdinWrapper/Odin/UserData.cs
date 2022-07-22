@@ -48,7 +48,7 @@ namespace OdinNative.Odin
         /// </summary>
         /// <remarks>can result in an empty string</remarks>
         /// <param name="userdata">userdata object</param>
-        public static implicit operator string(UserData userdata) => userdata?.ToString() ?? string.Empty;
+        public static explicit operator string(UserData userdata) => userdata?.ToString() ?? string.Empty;
         /// <summary>
         /// byte array to UserData
         /// </summary>
