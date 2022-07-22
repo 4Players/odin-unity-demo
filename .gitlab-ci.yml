@@ -119,3 +119,12 @@ package:linux:
   script:
     - mv bin ${PRODUCT_NAME}
     - tar -czvf dist/${PRODUCT_NAME}.tar.gz ${PRODUCT_NAME}
+
+package:android:
+  <<: *common_package
+  variables:
+    PRODUCT_OS: "android"
+  needs:
+    - build:android
+  script:
+    - mv bin/*.apk dist
