@@ -138,6 +138,9 @@ namespace OdinNative.Unity.Audio
 
         void OnEnable()
         {
+            if (PlaybackMedia != null && PlaybackMedia.HasErrors)
+                Debug.LogWarning($"{nameof(PlaybackComponent)} on {gameObject.name} had errors in {nameof(PlaybackStream)} and should be destroyed! {PlaybackMedia}");
+
             if (OverrideSampleRate)
                 AudioSettings.outputSampleRate = (int)SampleRate;
 
@@ -148,7 +151,9 @@ namespace OdinNative.Unity.Audio
             UnitySampleRate = AudioSettings.outputSampleRate;
             if (UnitySampleRate != (int)OdinHandler.Config.RemoteSampleRate)
             {
-                Debug.LogWarning($"{nameof(PlaybackComponent)} AudioSettings.outputSampleRate ({AudioSettings.outputSampleRate}) does NOT match RemoteSampleRate ({OdinHandler.Config.RemoteSampleRate})!");
+                if (OdinHandler.Config.Verbose)
+                    Debug.LogWarning($"{nameof(PlaybackComponent)} AudioSettings.outputSampleRate ({AudioSettings.outputSampleRate}) does NOT match RemoteSampleRate ({OdinHandler.Config.RemoteSampleRate})! Using Resampler...");
+
                 UseResampler = true;
                 AudioSettings.GetDSPBufferSize(out int dspBufferSize, out int dspBufferCount);
                 ResamplerCapacity = dspBufferSize * ((uint)OdinDefaults.RemoteSampleRate / UnitySampleRate) / (int)AudioSettings.speakerMode;
@@ -170,7 +175,7 @@ namespace OdinNative.Unity.Audio
 
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (_isDestroying || PlaybackMedia == null || PlaybackMedia.IsMuted || RedirectPlaybackAudio == false) return;
+            if (_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors || PlaybackMedia.IsMuted || RedirectPlaybackAudio == false) return;
 
             if (!UseResampler && ReadBuffer == null)
                 ReadBuffer = new float[data.Length / channels];

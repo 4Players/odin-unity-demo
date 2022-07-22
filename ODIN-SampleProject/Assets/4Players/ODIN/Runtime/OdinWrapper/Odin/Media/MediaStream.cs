@@ -42,6 +42,8 @@ namespace OdinNative.Odin.Media
         /// </summary>
         public bool IsActive { get; internal set; }
 
+        public bool HasErrors { get; private set; }
+        public bool IsInvalid { get { return Handle == null || Handle.IsInvalid || Handle.IsClosed; } }
         private StreamHandle Handle;
         private ResamplerHandle ResamplerHandle;
 
@@ -67,7 +69,8 @@ namespace OdinNative.Odin.Media
         /// <returns>id value</returns>
         public ushort GetMediaId()
         {
-            OdinLibrary.Api.MediaStreamMediaId(Handle, out ushort mediaId);
+            uint result = OdinLibrary.Api.MediaStreamMediaId(Handle, out ushort mediaId);
+            if(Utility.IsError(result)) HasErrors = true;
             return mediaId;
         }
 
@@ -77,7 +80,8 @@ namespace OdinNative.Odin.Media
         /// <returns>id</returns>
         public ulong GetPeerId()
         {
-            OdinLibrary.Api.MediaStreamPeerId(Handle, out ulong peerId);
+            uint result = OdinLibrary.Api.MediaStreamPeerId(Handle, out ulong peerId);
+            HasErrors = Utility.IsError(result);
             return peerId;
         }
 
@@ -105,7 +109,9 @@ namespace OdinNative.Odin.Media
         /// <returns>true on success or false</returns>
         internal bool AddMediaToRoom(RoomHandle roomHandle)
         {
-            return OdinLibrary.Api.RoomAddMedia(roomHandle, Handle) == Utility.OK;
+            uint result = OdinLibrary.Api.RoomAddMedia(roomHandle, Handle);
+            HasErrors = Utility.IsError(result);
+            return result == Utility.OK;
         }
 
         /// <summary>
@@ -169,7 +175,9 @@ namespace OdinNative.Odin.Media
         {
             if (IsMuted) return 0;
 
-            return OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
+            uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
+            HasErrors = Utility.IsError(result);
+            return result;
         }
 
         /// <summary>
@@ -183,7 +191,9 @@ namespace OdinNative.Odin.Media
         {
             if (IsMuted) return 0;
 
-            return OdinLibrary.Api.AudioReadData(Handle, buffer, length);
+            uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, length);
+            HasErrors = Utility.IsError(result);
+            return result;
         }
 
         /// <summary>
@@ -198,7 +208,9 @@ namespace OdinNative.Odin.Media
             if (IsMuted) return Task.FromResult<uint>(0);
 
             return Task.Factory.StartNew(() => {
-                return OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
+                 uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
+                 HasErrors = Utility.IsError(result);
+                 return result;
             }, cancellationToken);
         }
 
@@ -218,7 +230,9 @@ namespace OdinNative.Odin.Media
         /// <returns>floats available to read with <see cref="AudioReadData(float[])"/></returns>
         public virtual uint AudioDataLength()
         {
-            return OdinLibrary.Api.AudioDataLength(Handle);
+            uint result = OdinLibrary.Api.AudioDataLength(Handle);
+            HasErrors = Utility.IsError(result);
+            return result;
         }
 
         /// <summary>
@@ -244,8 +258,9 @@ namespace OdinNative.Odin.Media
 
             output = new float[((ResamplerHandle.ToRate / ResamplerHandle.FromRate) * input.Length) * ResamplerHandle.Channels];
             capacity = output.Length;
-            uint ret = OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
-            return ret == capacity;
+            uint result = OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
+            HasErrors = Utility.IsError(result);
+            return result == capacity;
         }
 
         /// <summary>
@@ -257,7 +272,7 @@ namespace OdinNative.Odin.Media
         /// <param name="output">target buffer</param>
         /// <param name="capacity">target capacity</param>
         /// <returns>sample count on success or errorcode on failure</returns>
-        internal virtual uint AudioResample(float[] input, uint outputSampleRate, float[] output, int capacity)
+        public virtual uint AudioResample(float[] input, uint outputSampleRate, float[] output, int capacity)
         {
             if (ResamplerHandle == null)
                 ResamplerHandle = OdinLibrary.Api.ResamplerCreate((uint)OdinDefaults.RemoteSampleRate, outputSampleRate, (short)OdinDefaults.RemoteChannels);
@@ -268,7 +283,9 @@ namespace OdinNative.Odin.Media
                 return AudioResample(input, outputSampleRate, output, capacity);
             }
 
-            return OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
+            uint result = OdinLibrary.Api.ResamplerProcess(ResamplerHandle, input, input.Length, output, ref capacity);
+            HasErrors = Utility.IsError(result);
+            return result;
         }
 
         /// <summary>
@@ -292,7 +309,7 @@ namespace OdinNative.Odin.Media
         /// <returns>info</returns>
         public override string ToString()
         {
-            return $"{nameof(MediaStream)}: {nameof(Id)} {Id}, {nameof(MediaId)} {MediaId}, {nameof(PeerId)} {PeerId}, {nameof(IsMuted)} {IsMuted}\n\t- {nameof(MediaConfig)} {MediaConfig?.ToString()}";
+            return $"{nameof(MediaStream)}: {nameof(Id)} {Id}, {nameof(MediaId)} {MediaId}, {nameof(PeerId)} {PeerId}, {nameof(IsMuted)} {IsMuted} {nameof(HasErrors)} {HasErrors} {nameof(IsInvalid)} {IsInvalid}\n\t- {nameof(MediaConfig)} {MediaConfig?.ToString()}";
         }
 
         private bool disposedValue;

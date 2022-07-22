@@ -260,7 +260,6 @@ namespace OdinNative.Odin
             });
         }
 
-
         /// <summary>
         /// Main entry for native OdinEvents sanitize and passthrough to instance room.
         /// </summary>
@@ -268,7 +267,7 @@ namespace OdinNative.Odin
         /// <param name="roomPtr">sender room pointer</param>
         /// <param name="odinEvent">OdinEvent struct</param>
         /// <param name="extraData">userdata pointer</param>
-#if UNITY_2019_4
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL || UNITY_64
         [AOT.MonoPInvokeCallback(typeof(Core.Imports.NativeMethods.OdinEventCallback))]
 #endif
         internal static void OnEventReceivedProxy(IntPtr roomPtr, IntPtr odinEvent, MarshalByRefObject extraData)

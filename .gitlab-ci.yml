@@ -66,6 +66,11 @@ build:linux:
   script:
     - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Linux64 -buildLinux64Player "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}"
 
+build:android:
+  <<: *common_build
+  script:
+    - unity-editor -2021 -logfile -batchmode -quit -projectPath ${CI_PROJECT_DIR}/${PRODUCT_NAME} -buildTarget Android -executeMethod ODIN_Sample.Scripts.Editor.Builder.BuildAndroid "${CI_PROJECT_DIR}/bin/${PRODUCT_NAME}.apk"
+
 ### Packaging
 
 .job_template: &common_package
@@ -114,3 +119,12 @@ package:linux:
   script:
     - mv bin ${PRODUCT_NAME}
     - tar -czvf dist/${PRODUCT_NAME}.tar.gz ${PRODUCT_NAME}
+
+package:android:
+  <<: *common_package
+  variables:
+    PRODUCT_OS: "android"
+  needs:
+    - build:android
+  script:
+    - mv bin/*.apk dist
