@@ -71,20 +71,42 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             StartCoroutine(DeferredSpawnPlayback());
         }
 
-        private void OnLeftRoom(RoomLeftEventArgs roomLeftArgs)
-        {
-            DestroyAllPlaybacksInRoom(roomLeftArgs.RoomName);
-        }
+        
 
+        /// <summary>
+        ///     If this is a remote player and we register that a new media has been added, request the peer id for the room
+        ///     in which the media has been created from the actual owner of the Photon View (= the actual player).
+        /// </summary>
+        /// <param name="roomObj"></param>
+        /// <param name="mediaAddedEventArgs"></param>
+        private void OnMediaAdded(object roomObj, MediaAddedEventArgs mediaAddedEventArgs)
+        {
+            if (roomObj is Room room)
+            {
+                UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
+                Debug.Log($"On Media removed: {room.Config.Name}, {mediaAddedEventArgs.Peer.Id}, {mediaAddedEventArgs.Media.Id}");
+            }
+        }
+        
         private void OnMediaRemoved(object roomObj, MediaRemovedEventArgs mediaRemovedArgs)
         {
             if (roomObj is Room room && null != mediaRemovedArgs.Peer)
+            {
                 DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaStreamId);
+                Debug.Log($"On Media removed: {room.Config.Name}, {mediaRemovedArgs.Peer.Id}, {mediaRemovedArgs.MediaStreamId}");
+            }
         }
 
         private void OnJoinedRoom(RoomJoinedEventArgs arg0)
         {
+            Debug.Log($"On Joined room: {arg0.Room.Config.Name}");
             StartCoroutine(DeferredSpawnPlayback());
+        }
+        
+        private void OnLeftRoom(RoomLeftEventArgs roomLeftArgs)
+        {
+            Debug.Log($"On Left room: {roomLeftArgs.RoomName}");
+            DestroyAllPlaybacksInRoom(roomLeftArgs.RoomName);
         }
 
         /// <summary>
@@ -105,17 +127,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (sender is Room room)
                 // Debug.Log("3d Odin Voice User: On Peer Updated.");
                 UpdateRoomPlayback(room, peerUpdatedEventArgs.Peer);
-        }
-
-        /// <summary>
-        ///     If this is a remote player and we register that a new media has been added, request the peer id for the room
-        ///     in which the media has been created from the actual owner of the Photon View (= the actual player).
-        /// </summary>
-        /// <param name="roomObj"></param>
-        /// <param name="mediaAddedEventArgs"></param>
-        private void OnMediaAdded(object roomObj, MediaAddedEventArgs mediaAddedEventArgs)
-        {
-            if (roomObj is Room room) UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
         }
 
         /// <summary>

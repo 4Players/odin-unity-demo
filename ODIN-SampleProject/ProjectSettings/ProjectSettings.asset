@@ -156,7 +156,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.A4Players.ODINTechDemo
-    Standalone: com.4Players.ODIN-TechDemo
+    Standalone: com.A4Players.ODINTechDemo
   buildNumber:
     Standalone: 0
     iPhone: 0

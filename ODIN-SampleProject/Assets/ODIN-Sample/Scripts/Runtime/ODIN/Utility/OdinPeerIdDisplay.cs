@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using OdinNative.Odin.Media;
 using OdinNative.Odin.Peer;
@@ -40,6 +41,15 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             }
 
             if (OdinHandler.Instance)
+            {
+                foreach (Room room in OdinHandler.Instance.Rooms)
+                {
+                    int streamsActive = room.PlaybackMedias.Count();
+                    displayBuilder.AppendLine($"<b><size=125%>Connections in {room.Config.Name}: {streamsActive}</size></b>");
+                }
+
+                displayBuilder.AppendLine();
+
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
                     displayBuilder.AppendLine($"Room: {room.Config.Name}");
@@ -60,6 +70,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                     AppendPeer(room.Self, "Local", false);
                     foreach (Peer peer in room.RemotePeers) AppendPeer(peer);
                 }
+            }
+
 
             string displayString = displayBuilder.ToString();
             displayBuilder.Clear();
