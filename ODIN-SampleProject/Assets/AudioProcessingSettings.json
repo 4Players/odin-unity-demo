@@ -2,7 +2,7 @@
     "boolSettings": [
         {
             "configProperty": "VoiceActivityDetection",
-            "value": false
+            "value": true
         },
         {
             "configProperty": "VolumeGate",
@@ -46,7 +46,7 @@
     "enumSettings": [
         {
             "configProperty": "NoiseSuppressionLevel",
-            "value": 0
+            "value": 4
         }
     ]
 }

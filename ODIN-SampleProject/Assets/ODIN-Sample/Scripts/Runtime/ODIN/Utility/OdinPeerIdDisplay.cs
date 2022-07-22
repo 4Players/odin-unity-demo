@@ -43,7 +43,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                 foreach (Room room in OdinHandler.Instance.Rooms)
                 {
                     displayBuilder.AppendLine($"Room: {room.Config.Name}");
-                    
+
                     if (null != room.MicrophoneMedia)
                     {
                         long micMediaId = room.MicrophoneMedia.Id;
@@ -56,25 +56,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                             displayBuilder.AppendLine(
                                 $"Local Users Microphone Id: {room.MicrophoneMedia.Id}, Peer Id: {microphoneMediaOwner.Id}");
                     }
-                    
-                    foreach (Peer peer in room.RemotePeers)
-                    {
-                        OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
-                        if (null != room.Self && peer.Id == room.Self.Id)
-                            displayBuilder.Append("Local Username: ");
-                        else
-                            displayBuilder.Append("Remote Username: ");
 
-                        displayBuilder.Append(
-                            $"{fromUserData.name}, Unique Id: {fromUserData.uniqueUserId}, Peer Id: {peer.Id}; ");
-
-                        displayBuilder.Append(" Medias: ");
-                        foreach (MediaStream mediaStream in peer.Medias) displayBuilder.Append($" ID {mediaStream.Id}");
-
-                        displayBuilder.AppendLine();
-                    }
-
-                    
+                    AppendPeer(room.Self, "Local", false);
+                    foreach (Peer peer in room.RemotePeers) AppendPeer(peer);
                 }
 
             string displayString = displayBuilder.ToString();
@@ -83,6 +67,28 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             display.text = displayString;
             if (logOutput)
                 Debug.Log(displayString);
+        }
+
+        private void AppendPeer(Peer peer, string suffix = "Remote", bool showMedias = true)
+        {
+            if (null != peer)
+            {
+                displayBuilder.Append("\t");
+                OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
+                displayBuilder.AppendLine(
+                    $"<b>{fromUserData.name}</b> ({suffix})");
+
+
+                displayBuilder.AppendLine($"\t \tUnique Id: {fromUserData.uniqueUserId}, Peer Id: {peer.Id}");
+
+                if (showMedias)
+                {
+                    displayBuilder.Append("\t \tMedias: ");
+                    foreach (MediaStream mediaStream in peer.Medias) displayBuilder.Append($" ID {mediaStream.Id}");
+
+                    displayBuilder.AppendLine();
+                }
+            }
         }
     }
 }
