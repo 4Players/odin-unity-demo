@@ -1494,7 +1494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookAxis: {fileID: -8589268155453388520, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
-  rotationSpeed: 200
+  rotationSpeed: 150
   clampPitch: 80
   yawTarget: {fileID: 2753487309498945351}
   pitchTarget: {fileID: 2488659525853046605}
