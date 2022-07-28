@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     /// <summary>
-    ///     Behavior for toggling the active status of the Game Object referenced as <see cref="toggleTarget" />. Requires an
+    ///     Behavior for toggling the active status of the Game Object referenced as <see cref="toggleTargets" />. Requires an
     ///     attached Collider with <c>isTrigger</c> set to <c>true</c>.
     ///     E.g. used to activate or deactivate the Text hovering above radios or activating the
     ///     <see cref="ToggleRadioBehaviour" />
@@ -17,16 +17,16 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// <summary>
         ///     Target Game Object to toggle.
         /// </summary>
-        [SerializeField] private GameObject toggleTarget;
+        [SerializeField] private GameObject[] toggleTargets;
 
         private void Awake()
         {
-            Assert.IsNotNull(toggleTarget);
+            Assert.IsNotNull(toggleTargets);
         }
 
         private void Start()
         {
-            toggleTarget.SetActive(false);
+            SetToggleState(false);
         }
 
         private void OnTriggerEnter(Collider other)
@@ -43,7 +43,10 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void SetToggleState(bool newActive)
         {
-            toggleTarget.SetActive(newActive);
+            foreach (GameObject target in toggleTargets)
+            {
+                target.SetActive(newActive);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
@@ -24,6 +25,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// Returns the current View State.
         /// </summary>
         public ViewState State => currentViewState;
+        
 
         /// <summary>
         /// Switch to the next <see cref="ViewState"/>. Will iterate through states based on the order of entries in

@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     public class ActivateOnViewState : MonoBehaviour
     {
+        [SerializeField] private GameObject targetToActivate;
+        
         [SerializeField] private SampleViewState.ViewState stateToActivateOn;
 
         [SerializeField] private SampleViewState viewState;
@@ -14,6 +17,8 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             Assert.IsNotNull(viewState);
         }
 
+
+
         private void Start()
         {
             UpdateOnViewStateSet(viewState.State);
@@ -21,17 +26,17 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void OnEnable()
         {
-            viewState.OnSwitchedToNewState += UpdateOnViewStateSet;
+            viewState.OnSwitchedToNewState += (UpdateOnViewStateSet);
         }
-
+        
         private void OnDisable()
         {
-            viewState.OnSwitchedToNewState -= UpdateOnViewStateSet;
+            viewState.OnSwitchedToNewState -= (UpdateOnViewStateSet);
         }
 
         private void UpdateOnViewStateSet(SampleViewState.ViewState newState)
         {
-            gameObject.SetActive(newState == stateToActivateOn);
+            targetToActivate.SetActive(newState == stateToActivateOn);
         }
     }
 }

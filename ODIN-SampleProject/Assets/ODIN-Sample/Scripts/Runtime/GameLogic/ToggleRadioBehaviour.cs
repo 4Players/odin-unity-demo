@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
@@ -14,7 +15,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// <summary>
         /// Name of the button used for toggling the radio.
         /// </summary>
-        [SerializeField] private string toggleButton = "Toggle";
+        [SerializeField] private InputActionReference toggleButton;
         /// <summary>
         /// The radio's audio source.
         /// </summary>
@@ -53,18 +54,28 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             Assert.IsNotNull(feedbackMesh, "Missing reference to feedback mesh.");
             Assert.IsTrue(feedbackMesh.materials.Length > feedbackMaterialIndex,
                 "Invalid feedbackMaterialIndex: feedbackMesh does not have that many material slots.");
+            Assert.IsNotNull(toggleButton);
 
             _originalColor = feedbackMesh.materials[feedbackMaterialIndex].GetColor(EmissionColorPropertyId);
             UpdateFeedbackColor();
 
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (Input.GetButtonDown(toggleButton))
-            {
-                ToggleRadio();
-            }
+            toggleButton.action.Enable();
+            toggleButton.action.performed += OnTogglePerformed;
+        }
+
+        private void OnDisable()
+        {
+            toggleButton.action.Disable();
+            toggleButton.action.performed -= OnTogglePerformed;
+        }
+        
+        private void OnTogglePerformed(InputAction.CallbackContext obj)
+        {
+            ToggleRadio();
         }
 
         /// <summary>
