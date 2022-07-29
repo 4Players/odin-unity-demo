@@ -31,6 +31,8 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         
         public static T LoadData<T>(string loadPath)
         {
+            // avoids issues e.g. between comma and points when using german culture vs english culture and handling
+            // floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
             T result = default(T);

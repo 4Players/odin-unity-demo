@@ -18,9 +18,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
     [Serializable]
     public class OdinAudioFilterSettingsModel
     {
-        public List<AudioFilterSettingsSchema<bool>> boolSettings = new List<AudioFilterSettingsSchema<bool>>();
-        public List<AudioFilterSettingsSchema<float>> floatSettings = new List<AudioFilterSettingsSchema<float>>();
-        public List<AudioFilterSettingsSchema<int>> enumSettings = new List<AudioFilterSettingsSchema<int>>();
+        public List<AudioFilterSettingsSchema<bool>> boolSettings = new();
+        public List<AudioFilterSettingsSchema<float>> floatSettings = new();
+        public List<AudioFilterSettingsSchema<int>> enumSettings = new();
 
         private static readonly string SAVE_FILE_NAME = "AudioProcessingSettings.json";
         private static readonly string DEFAULT_SAVE_FILE_NAME = "AudioProcessingDefaultSettings.json";
