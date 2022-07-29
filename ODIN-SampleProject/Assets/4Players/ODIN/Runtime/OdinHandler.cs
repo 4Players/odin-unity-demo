@@ -608,7 +608,11 @@ public class OdinHandler : MonoBehaviour
                     AddPlaybackComponent(UnityAudioSourceTag, addedEvent);
                 }
                 else if (addedEvent.Key.OwnId != addedEvent.Value.PeerId)
-                    AddPlaybackComponent(this.gameObject, addedEvent);
+                {
+                    GameObject pObject = new GameObject($"{addedEvent.Key.RoomId} {addedEvent.Value.PeerId}");
+                    pObject.transform.parent = this.gameObject.transform;
+                    AddPlaybackComponent(pObject, addedEvent);
+                }
             }
             else if (Config.Verbose)
                 Debug.LogWarning($"No available consumers for playback found.");
@@ -628,7 +632,7 @@ public class OdinHandler : MonoBehaviour
 
             if (CreatePlayback && Use3DAudio == false)
             {
-                var playbacks = gameObject.GetComponents<PlaybackComponent>();
+                var playbacks = gameObject.GetComponentsInChildren<PlaybackComponent>();
                 var playback = playbacks.FirstOrDefault(p => p.MediaStreamId == removedEvent.Value.MediaStreamId);
 
                 if (playback == null)
@@ -636,7 +640,7 @@ public class OdinHandler : MonoBehaviour
                 else if (removedEvent.Value == null)
                     Debug.LogWarning($"No Media for stream id {removedEvent.Value.MediaStreamId} found!");
                 else
-                    Destroy(playback);
+                    Destroy(playback.gameObject);
             }
         }
     }

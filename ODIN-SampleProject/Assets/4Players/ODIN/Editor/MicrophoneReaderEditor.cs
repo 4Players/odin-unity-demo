@@ -13,6 +13,8 @@ namespace OdinNative.Unity.UIEditor
     {
         SerializedProperty CaptureAudio;
         SerializedProperty RecordingLoop;
+        SerializedProperty CustomInputDevice;
+        SerializedProperty InputDevice;
 
         SerializedProperty AudioClipLength;
         SerializedProperty OverrideSampleRate;
@@ -30,6 +32,8 @@ namespace OdinNative.Unity.UIEditor
         {
             CaptureAudio = serializedObject.FindProperty("RedirectCapturedAudio");
             RecordingLoop = serializedObject.FindProperty("ContinueRecording");
+            CustomInputDevice = serializedObject.FindProperty("CustomInputDevice");
+            InputDevice = serializedObject.FindProperty("InputDevice");
 
             AudioClipLength = serializedObject.FindProperty("AudioClipLength");
             OverrideSampleRate = serializedObject.FindProperty("OverrideSampleRate");
@@ -54,6 +58,10 @@ namespace OdinNative.Unity.UIEditor
 
             EditorGUILayout.PropertyField(CaptureAudio, new GUIContent("Redirect Captured Audio", "Redirect the captured audio to all rooms."));
             EditorGUILayout.PropertyField(RecordingLoop, new GUIContent("Continue Recording", "Indicates whether the recording should continue recording if AudioClipLength is reached, and wrap around and record from the beginning of the AudioClip."));
+            EditorGUILayout.PropertyField(CustomInputDevice, new GUIContent("Input Device", "Enable custom input device. If Disabled the default is the first element in Microphone.devices"));
+            if(CustomInputDevice.boolValue)
+                EditorGUILayout.PropertyField(InputDevice, new GUIContent("Device Name", "The name of the device. If you pass a empty string for the device name then the default microphone will be used. You can get a list of available microphone devices from Microphone.devices"));
+
             GUILayout.Space(10);
             CreateMicSettingsLayout();
             if (toggleShowTest)

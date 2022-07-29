@@ -59,6 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Verbose: 0
+  VerboseDebug: 0
   AccessKey: 
   ClientId: 
   Server: https://gateway.odin.4players.io
@@ -136,6 +137,9 @@ MonoBehaviour:
   OnMessageReceived:
     m_PersistentCalls:
       m_Calls: []
+  OnConnectionStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
   OnCreatedMediaObject:
     m_PersistentCalls:
       m_Calls: []
@@ -164,5 +168,7 @@ MonoBehaviour:
   AudioClipLength: 3
   OverrideSampleRate: 0
   SampleRate: 1
+  CustomInputDevice: 1
+  InputDevice: 
   AutostartListen: 1
   Loopback: 0

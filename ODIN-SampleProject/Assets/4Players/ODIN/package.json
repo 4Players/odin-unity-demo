@@ -1,6 +1,6 @@
 {
   "name": "io.fourplayers.odin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "displayName": "4Players ODIN",
   "description": "A Unity integration plugin to add 4Players ODIN technology into your game.",
   "unity": "2019.4",
@@ -29,11 +29,9 @@
     "io.fourplayers.odin"
   ],
   "hideInEditor": false,
-  "samples": [
-    {
-        "displayName": "Examples",
-        "description": "Examples showcasing ODIN core features including Push-To-Talk, 3D Audio, and more.",
-        "path": "Samples"
-    }
-  ]
+  "samples": [{
+    "displayName": "Examples",
+    "description": "Examples showcasing ODIN core features including Push-To-Talk, 3D Audio, and more.",
+    "path": "Samples"
+  }]
 }

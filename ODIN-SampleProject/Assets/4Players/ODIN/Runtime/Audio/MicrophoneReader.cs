@@ -65,7 +65,8 @@ namespace OdinNative.Unity.Audio
         private bool IsInputDeviceConnected;
         private int InputMinFreq;
         private int InputMaxFreq;
-        private string InputDevice;
+        public bool CustomInputDevice;
+        public string InputDevice;
         private AudioClip InputClip;
         private int InputPosition;
         private bool IsFirstStartGlobal;
@@ -93,7 +94,7 @@ namespace OdinNative.Unity.Audio
         {
             AudioSettings.OnAudioConfigurationChanged += AudioSettings_OnAudioConfigurationChanged;
             if (InputClip != null && Microphone.IsRecording(InputDevice)) IsStreaming = true;
-            
+
             OnMicrophoneData += PushAudio;
         }
 
@@ -115,7 +116,7 @@ namespace OdinNative.Unity.Audio
         {
             SetupBuffers();
             IsFirstStartGlobal = true;
-            SetupMicrophone();
+            SetupMicrophone(InputDevice);
             if (Microphone.IsRecording(InputDevice)) IsFirstStartGlobal = false;
             if (HasPermission)
             {
@@ -124,16 +125,26 @@ namespace OdinNative.Unity.Audio
             }
         }
 
-        private string SetupMicrophone()
+        private string SetupMicrophone(string customDevice = "")
         {
             if (OdinHandler.Config.Verbose)
                 Debug.Log($"User has authorization of Microphone: {HasPermission}");
 
-            InputDevice = Microphone.devices.FirstOrDefault();
-            if (string.IsNullOrEmpty(InputDevice))
+            InputDevice = CustomInputDevice ? customDevice : Microphone.devices.FirstOrDefault();
+
+            if (string.IsNullOrEmpty(InputDevice) && CustomInputDevice == false || Microphone.devices.Length <= 0)
+            {
                 IsInputDeviceConnected = false;
+                Debug.LogWarning($"{nameof(MicrophoneReader)} no Microphone.devices found.");
+            }
             else
+            {
                 IsInputDeviceConnected = true;
+                if (string.IsNullOrEmpty(InputDevice))
+                    Debug.LogWarning($"{nameof(MicrophoneReader)} setup unknown system default device.");
+                else
+                    Debug.Log($"{nameof(MicrophoneReader)} setup device \"{InputDevice}\".");
+            }
 
             if (IsInputDeviceConnected == false) return string.Empty;
 
@@ -160,6 +171,8 @@ namespace OdinNative.Unity.Audio
         /// <remarks>if "Autostart Listen" in Editor component is true, the capture will be called in Unity-Start(void).</remarks>
         public bool StartListen()
         {
+            if (IsInputDeviceConnected == false) return false;
+
             if (OdinHandler.Config.Verbose)
                 Debug.Log($"Microphone start \"{InputDevice}\", Loop:{ContinueRecording}, {AudioClipLength}s, {(int)SampleRate}Hz");
 
@@ -182,6 +195,8 @@ namespace OdinNative.Unity.Audio
 
         void Update()
         {
+            if (IsInputDeviceConnected == false) return;
+
             if (InitialPermission == false)
             {
                 /* If the app targets Android 11 or higher and isn't used for a few months,
@@ -226,7 +241,7 @@ namespace OdinNative.Unity.Audio
             if (IsStreaming && Microphone.IsRecording(deviceName))
                 Microphone.End(deviceName);
 
-            SetupMicrophone();
+            SetupMicrophone(InputDevice);
             if (AutostartListen)
                 StartListen();
         }
@@ -338,7 +353,7 @@ namespace OdinNative.Unity.Audio
                 }
             }
         }
-#endregion Buffer
+        #endregion Buffer
 
         #region Test
         private void TestLoopback()

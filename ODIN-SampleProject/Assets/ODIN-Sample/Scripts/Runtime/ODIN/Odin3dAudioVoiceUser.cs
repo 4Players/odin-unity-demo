@@ -71,7 +71,6 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             StartCoroutine(DeferredSpawnPlayback());
         }
 
-        
 
         /// <summary>
         ///     If this is a remote player and we register that a new media has been added, request the peer id for the room
@@ -84,16 +83,18 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (roomObj is Room room)
             {
                 UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
-                Debug.Log($"On Media removed: {room.Config.Name}, {mediaAddedEventArgs.Peer.Id}, {mediaAddedEventArgs.Media.Id}");
+                Debug.Log(
+                    $"On Media removed: {room.Config.Name}, {mediaAddedEventArgs.Peer.Id}, {mediaAddedEventArgs.Media.Id}");
             }
         }
-        
+
         private void OnMediaRemoved(object roomObj, MediaRemovedEventArgs mediaRemovedArgs)
         {
             if (roomObj is Room room && null != mediaRemovedArgs.Peer)
             {
                 DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaStreamId);
-                Debug.Log($"On Media removed: {room.Config.Name}, {mediaRemovedArgs.Peer.Id}, {mediaRemovedArgs.MediaStreamId}");
+                Debug.Log(
+                    $"On Media removed: {room.Config.Name}, {mediaRemovedArgs.Peer.Id}, {mediaRemovedArgs.MediaStreamId}");
             }
         }
 
@@ -102,7 +103,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Debug.Log($"On Joined room: {arg0.Room.Config.Name}");
             StartCoroutine(DeferredSpawnPlayback());
         }
-        
+
         private void OnLeftRoom(RoomLeftEventArgs roomLeftArgs)
         {
             Debug.Log($"On Left room: {roomLeftArgs.RoomName}");
@@ -110,7 +111,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
         /// <summary>
-        /// Defer spawning in cases where the room was not yet updated.
+        ///     Defer spawning in cases where the room was not yet updated.
         /// </summary>
         /// <returns></returns>
         private IEnumerator DeferredSpawnPlayback()
@@ -137,13 +138,16 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         /// <param name="peer">The peer, for which media streams should be updated</param>
         private void UpdateRoomPlayback(Room room, Peer peer)
         {
-            OdinSampleUserData displayedPeerUserData =
-                new UserData(peer.UserData.Buffer).ToOdinSampleUserData();
-            if (null != displayedPeerUserData &&
-                displayedPeerUserData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
-                if (room.RemotePeers.Contains(peer.Id) && IsRoomAllowed(room.Config.Name))
-                    foreach (var mediaStream in peer.Medias)
-                        SpawnPlaybackComponent(room.Config.Name, peer.Id, mediaStream.Id);
+            if (null != peer && null != peer.UserData)
+            {
+                OdinSampleUserData displayedPeerUserData =
+                    new UserData(peer.UserData.Buffer).ToOdinSampleUserData();
+                if (null != displayedPeerUserData &&
+                    displayedPeerUserData.uniqueUserId == multiplayerAdapter.GetUniqueUserId())
+                    if (room.RemotePeers.Contains(peer.Id) && IsRoomAllowed(room.Config.Name))
+                        foreach (var mediaStream in peer.Medias)
+                            SpawnPlaybackComponent(room.Config.Name, peer.Id, mediaStream.Id);
+            }
         }
 
         private bool IsRoomAllowed(string roomId)

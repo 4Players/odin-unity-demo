@@ -9,12 +9,16 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
     {
         public static string GetCustomSavePath(string fileName)
         {
-            return Application.dataPath + Path.AltDirectorySeparatorChar + fileName;
+            return Application.persistentDataPath + Path.AltDirectorySeparatorChar + fileName;
         }
 
         public static string GetDefaultSettingsPath(string fileName)
         {
-            return Application.streamingAssetsPath + Path.AltDirectorySeparatorChar + fileName;
+            #if (UNITY_ANDROID || UNITY_WEBGL) && !UNITY_EDITOR
+                return GetCustomSavePath(fileName);
+            #else
+                return Application.streamingAssetsPath + Path.AltDirectorySeparatorChar + fileName;
+            #endif
         }
         
         public static void SaveData(string savePath, object model)

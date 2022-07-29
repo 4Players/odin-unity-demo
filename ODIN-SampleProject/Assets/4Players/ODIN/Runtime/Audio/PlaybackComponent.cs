@@ -192,7 +192,7 @@ namespace OdinNative.Unity.Audio
             uint read = PlaybackMedia.AudioReadData(ReadBuffer, ReadBuffer.Length);
             if (Utility.IsError(read))
             {
-                Debug.LogError($"{nameof(PlaybackComponent)} AudioReadData failed with error code {read}");
+                Debug.LogWarning($"{nameof(PlaybackComponent)} AudioReadData failed with error code {read}");
                 return;
             }
 
@@ -201,7 +201,7 @@ namespace OdinNative.Unity.Audio
                 uint readResampled = PlaybackMedia.AudioResample(ReadBuffer, (uint)UnitySampleRate, ResampleBuffer, ResampleBuffer.Length);
                 if (Utility.IsError(readResampled))
                 {
-                    Debug.LogError($"{nameof(PlaybackComponent)} AudioResample failed with error code {readResampled}");
+                    Debug.LogWarning($"{nameof(PlaybackComponent)} AudioResample failed with error code {readResampled}");
                     return;
                 }
 
