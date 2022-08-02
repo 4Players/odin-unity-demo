@@ -1493,8 +1493,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63afd9245694d6642ad7a3c26b266e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lookAxis: {fileID: -8589268155453388520, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
-  rotationSpeed: 150
+  gamepadAxis: {fileID: -8589268155453388520, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
+  mouseDelta: {fileID: 8009718129426777221, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
+  rotationSpeed: 0.6
+  mobileRotationSpeedMultiplier: 0.75
   clampPitch: 80
   yawTarget: {fileID: 2753487309498945351}
   pitchTarget: {fileID: 2488659525853046605}

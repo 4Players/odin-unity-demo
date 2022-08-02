@@ -9,12 +9,20 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </summary>
     public class FirstPersonRotation : MonoBehaviour
     {
-        [SerializeField] private InputActionReference lookAxis;
+        [SerializeField] private InputActionReference gamepadAxis;
+        [SerializeField] private InputActionReference mouseDelta;
+
 
         /// <summary>
         ///     The rotation speed.
         /// </summary>
         [SerializeField] private float rotationSpeed = 200.0f;
+
+        /// <summary>
+        ///     On mobile, a slower rotation speed is preferable.
+        /// </summary>
+        [SerializeField] private float mobileRotationSpeedMultiplier = 0.5f;
+
 
         /// <summary>
         ///     The max angle the player can look up or down.
@@ -41,18 +49,31 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         {
             Assert.IsNotNull(yawTarget);
             Assert.IsNotNull(pitchTarget);
-            Assert.IsNotNull(lookAxis);
-            lookAxis.action.Enable();
+            Assert.IsNotNull(gamepadAxis);
+            Assert.IsNotNull(mouseDelta);
+            gamepadAxis.action.Enable();
+            mouseDelta.action.Enable();
         }
 
         private void Update()
         {
-            Vector2 lookInput = lookAxis.action.ReadValue<Vector2>();
-            float yaw = lookInput.x;
-            float pitch = lookInput.y;
+            Vector2 gamepadInput = gamepadAxis.action.ReadValue<Vector2>();
+            float yaw = gamepadInput.x * Time.deltaTime;
+            float pitch = gamepadInput.y * Time.deltaTime;
 
-            _currentYaw += yaw * rotationSpeed * Time.deltaTime;
-            _currentPitch += pitch * rotationSpeed * Time.deltaTime;
+            Vector2 mouseInput = mouseDelta.action.ReadValue<Vector2>();
+            yaw += mouseInput.x;
+            pitch += mouseInput.y;
+
+            float rotationSpeedMultiplier = rotationSpeed;
+
+#if (UNITY_IPHONE || UNITY_ANDROID) && ! UNITY_EDITOR
+            rotationSpeedMultiplier *= mobileRotationSpeedMultiplier;
+#endif
+
+
+            _currentYaw += yaw * rotationSpeedMultiplier;
+            _currentPitch += pitch * rotationSpeedMultiplier;
             _currentPitch = Mathf.Clamp(_currentPitch, -clampPitch, clampPitch);
 
             Quaternion yawRotation = Quaternion.Euler(yawTarget.transform.rotation.eulerAngles.x, _currentYaw, 0.0f);

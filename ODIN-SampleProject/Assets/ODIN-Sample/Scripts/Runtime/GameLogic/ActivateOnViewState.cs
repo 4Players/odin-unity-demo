@@ -6,7 +6,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
     public class ActivateOnViewState : MonoBehaviour
     {
-        [SerializeField] private GameObject targetToActivate;
+        [SerializeField] private GameObject[] targetsToActivate;
         
         [SerializeField] private SampleViewState.ViewState stateToActivateOn;
 
@@ -36,7 +36,12 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void UpdateOnViewStateSet(SampleViewState.ViewState newState)
         {
-            targetToActivate.SetActive(newState == stateToActivateOn);
+            foreach (GameObject target in targetsToActivate)
+            {
+                target.SetActive(newState == stateToActivateOn);
+
+            }
+
         }
     }
 }

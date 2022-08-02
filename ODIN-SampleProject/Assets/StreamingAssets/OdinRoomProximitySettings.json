@@ -4,7 +4,7 @@
         {
             "roomName": "Voice",
             "isActive": true,
-            "proximityRadius": 30.0
+            "proximityRadius": 70.0
         }
     ]
 }

@@ -33,7 +33,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "FirstPersonCamera",
+                    "name": "GamepadRight",
                     "type": "Value",
                     "id": "ed8f02da-60f7-4742-a400-aa339ffb32ba",
                     "expectedControlType": "Vector2",
@@ -110,6 +110,15 @@
                     "id": "dbb45f7c-d407-4f18-9351-b8d1c70c3a44",
                     "expectedControlType": "Vector2",
                     "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "MouseDelta",
+                    "type": "Value",
+                    "id": "d919dad9-4abc-4979-a2a3-b5e8728b4671",
+                    "expectedControlType": "Vector2",
+                    "processors": "InvertVector2(invertX=false)",
                     "interactions": "",
                     "initialStateCheck": true
                 }
@@ -274,20 +283,9 @@
                     "id": "55a526e4-a328-49cb-9060-90bc19e5848d",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "StickDeadzone",
+                    "processors": "StickDeadzone(min=0.25,max=0.95),ScaleVector2(x=300,y=300)",
                     "groups": "",
-                    "action": "FirstPersonCamera",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "16c51e0a-3e90-4c43-a7f8-56d083f19c23",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "ScaleVector2(x=0.25,y=0.25)",
-                    "groups": "",
-                    "action": "FirstPersonCamera",
+                    "action": "GamepadRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -453,6 +451,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ClickPosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "987c2517-7de0-45b9-8635-34897388549e",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

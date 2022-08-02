@@ -20003,6 +20003,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1312781870}
   - component: {fileID: 1312781871}
+  - component: {fileID: 1312781872}
   m_Layer: 5
   m_Name: MobileControls
   m_TagString: Untagged
@@ -20045,8 +20046,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e3ed22def442579b736836b90693ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetToActivate: {fileID: 1129041029}
+  targetsToActivate:
+  - {fileID: 1129041029}
   stateToActivateOn: 0
+  viewState: {fileID: 11400000, guid: e535f44c0d04edb41a4bea2681c745fd, type: 2}
+--- !u!114 &1312781872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312781869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91e3ed22def442579b736836b90693ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetsToActivate:
+  - {fileID: 1469584017}
+  - {fileID: 1282975345}
+  stateToActivateOn: 1
   viewState: {fileID: 11400000, guid: e535f44c0d04edb41a4bea2681c745fd, type: 2}
 --- !u!1001 &1320129881
 PrefabInstance:
