@@ -22,6 +22,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         ///     On mobile, a slower rotation speed is preferable.
         /// </summary>
         [SerializeField] private float mobileRotationSpeedMultiplier = 0.5f;
+        [SerializeField] private float mouseRotationSpeedMultiplier = 0.25f;
 
 
         /// <summary>
@@ -61,9 +62,10 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
             float yaw = gamepadInput.x * Time.deltaTime;
             float pitch = gamepadInput.y * Time.deltaTime;
 
+            // mouse delta is already multiplied by Time.deltaTime.
             Vector2 mouseInput = mouseDelta.action.ReadValue<Vector2>();
-            yaw += mouseInput.x;
-            pitch += mouseInput.y;
+            yaw += mouseInput.x * mouseRotationSpeedMultiplier;
+            pitch += mouseInput.y * mouseRotationSpeedMultiplier;
 
             float rotationSpeedMultiplier = rotationSpeed;
 
