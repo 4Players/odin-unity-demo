@@ -1650,10 +1650,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1889583995457026279, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 8300000, guid: e0ff0898618af514b96c6c2e64049003, type: 3}
     - target: {fileID: 2230110463356426941, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
       propertyPath: sceneViewId
       value: 2
@@ -3768,6 +3764,14 @@ PrefabInstance:
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6451,6 +6455,14 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.68
       objectReference: {fileID: 0}
@@ -6959,6 +6971,14 @@ PrefabInstance:
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_LocalScale.x
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8086,7 +8106,7 @@ PrefabInstance:
     - target: {fileID: 1889583995457026279, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: ace4aa866bac5144aaae85841e29501a, type: 3}
+      objectReference: {fileID: 8300000, guid: 0fb2dd0b409d72d4ca1f57dacb841edd, type: 3}
     - target: {fileID: 2230110463356426941, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
       propertyPath: sceneViewId
       value: 3
@@ -31868,6 +31888,14 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 572128622980815940, guid: 08a0f688d3a6fcf4dbd73f2118125484, type: 3}
       propertyPath: m_LocalPosition.x
       value: 31.421663
       objectReference: {fileID: 0}
@@ -32668,10 +32696,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1889583995457026279, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
-      propertyPath: m_audioClip
-      value: 
-      objectReference: {fileID: 8300000, guid: e0ff0898618af514b96c6c2e64049003, type: 3}
     - target: {fileID: 2230110463356426941, guid: f5bfafec32a7890449570d5f0b5d587b, type: 3}
       propertyPath: sceneViewId
       value: 1
