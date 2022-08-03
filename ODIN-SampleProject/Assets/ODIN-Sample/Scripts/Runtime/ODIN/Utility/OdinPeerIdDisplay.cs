@@ -25,7 +25,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         /// </summary>
         [SerializeField] private bool logOutput;
 
-        private readonly StringBuilder displayBuilder = new();
+        private readonly StringBuilder displayBuilder = new StringBuilder();
 
         private float _smoothedFPS;
 

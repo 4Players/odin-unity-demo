@@ -25,8 +25,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             string json = JsonUtility.ToJson(model, true);
-            using StreamWriter writer = new StreamWriter(savePath);
-            writer.Write(json);
+            using (StreamWriter writer = new StreamWriter(savePath))
+            {
+                writer.Write(json);
+            }
         }
         
         public static T LoadData<T>(string loadPath)
@@ -38,11 +40,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
             T result = default(T);
             if (File.Exists(loadPath))
             {
-                using StreamReader reader = new StreamReader(loadPath);
-                string json = reader.ReadToEnd();
+                using (StreamReader reader = new StreamReader(loadPath))
+                {
+                    string json = reader.ReadToEnd();
 
-                Debug.Log($"Loading Json from {loadPath}");
-                result = JsonUtility.FromJson<T>(json);
+                    Debug.Log($"Loading Json from {loadPath}");
+                    result = JsonUtility.FromJson<T>(json);
+                }
+                
             }
 
             return result;

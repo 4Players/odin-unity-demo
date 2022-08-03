@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading;
-using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 {
@@ -18,9 +14,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
     [Serializable]
     public class OdinAudioFilterSettingsModel
     {
-        public List<AudioFilterSettingsSchema<bool>> boolSettings = new();
-        public List<AudioFilterSettingsSchema<float>> floatSettings = new();
-        public List<AudioFilterSettingsSchema<int>> enumSettings = new();
+        public List<AudioFilterSettingsSchema<bool>> boolSettings = new List<AudioFilterSettingsSchema<bool>>();
+        public List<AudioFilterSettingsSchema<float>> floatSettings = new List<AudioFilterSettingsSchema<float>>();
+        public List<AudioFilterSettingsSchema<int>> enumSettings = new List<AudioFilterSettingsSchema<int>>();
 
         private static readonly string SAVE_FILE_NAME = "AudioProcessingSettings.json";
         private static readonly string DEFAULT_SAVE_FILE_NAME = "AudioProcessingDefaultSettings.json";
