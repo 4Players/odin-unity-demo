@@ -32,15 +32,15 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         {
             _originalMask = playerMeshRoot.layer;
             int layer = (int) Mathf.Log(firstPersonLayer.value, 2);
-            SetLayerOnAll(playerMeshRoot.gameObject, layer);
+            SetLayerOnAllChildren(playerMeshRoot.gameObject, layer);
         }
 
         private void OnDisable()
         {
-            SetLayerOnAll(playerMeshRoot.gameObject, _originalMask);
+            SetLayerOnAllChildren(playerMeshRoot.gameObject, _originalMask);
         }
 
-        private static void SetLayerOnAll(GameObject obj, int layer) {
+        private static void SetLayerOnAllChildren(GameObject obj, int layer) {
             foreach (Transform trans in obj.GetComponentsInChildren<Transform>(true)) {
                 trans.gameObject.layer = layer;
             }

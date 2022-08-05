@@ -16,7 +16,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         
         private void OnEnable()
         {
-            string settingsPath = SaveFileUtility.GetDefaultSettingsPath(SAVE_FILE_NAME);
+            string settingsPath = SaveFileUtility.GetSettingsPath(SAVE_FILE_NAME);
             var saveData = SaveFileUtility.LoadData<OdinPositionUpdateSettingsSchema>(settingsPath);
             if (null != saveData)
             {

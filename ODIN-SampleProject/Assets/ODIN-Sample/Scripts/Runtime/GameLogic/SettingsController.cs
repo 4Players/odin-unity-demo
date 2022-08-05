@@ -4,9 +4,18 @@ using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// Controller script for handling the settings menu.
+    /// </summary>
     public class SettingsController : MonoBehaviour
     {
+        /// <summary>
+        /// Button for toggling the active status of the settings menu.
+        /// </summary>
         [SerializeField] private InputActionReference toggleSettingsButton;
+        /// <summary>
+        /// The root of the settings menu.
+        /// </summary>
         [SerializeField] private GameObject settingsRoot;
 
         private void Awake()

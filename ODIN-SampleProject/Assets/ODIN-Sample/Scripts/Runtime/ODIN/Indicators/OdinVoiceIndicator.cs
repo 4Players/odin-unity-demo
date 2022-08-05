@@ -4,9 +4,7 @@ using UnityEngine.Assertions;
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     /// <summary>
-    ///     Behaviour for displaying feedback on whether the remote player represented by the <see cref="adapter" /> script
-    ///     is currently transmitting in the ODIN room with the name <see cref="odinRoomName" />, by changing the color of a
-    ///     mesh.
+    ///     Changes Color of <see cref="indicationTarget"/> based on whether media is currently transmitting or not.
     /// </summary>
     public class OdinVoiceIndicator : OdinVoiceIndicatorBase
     {

@@ -13,6 +13,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
     /// </summary>
     public class OdinPeerIdDisplay : MonoBehaviour
     {
+        /// <summary>
+        /// Used for averaging out the shown fps value.
+        /// </summary>
         private const float Alpha = 0.03f;
 
         /// <summary>

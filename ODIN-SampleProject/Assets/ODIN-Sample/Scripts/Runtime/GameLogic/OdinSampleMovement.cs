@@ -13,8 +13,14 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     public class OdinSampleMovement : MonoBehaviour
     {
 
+        /// <summary>
+        /// The movement input action - e.g. WASD on keyboard or left stick on gamepad.
+        /// </summary>
         [Header("Input")]
         [SerializeField] private InputActionReference movement;
+        /// <summary>
+        /// The spring input action reference.
+        /// </summary>
         [SerializeField] protected InputActionReference sprintButton;
         
         /// <summary>

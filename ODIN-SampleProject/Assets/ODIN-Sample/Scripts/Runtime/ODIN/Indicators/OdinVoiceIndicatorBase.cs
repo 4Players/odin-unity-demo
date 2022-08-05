@@ -6,6 +6,10 @@ using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
+    /// <summary>
+    ///     Behaviour for displaying feedback on whether the remote player represented by the <see cref="adapter" /> script
+    ///     is currently transmitting in the ODIN room with the name <see cref="odinRoomName" />.
+    /// </summary>
     public abstract class OdinVoiceIndicatorBase : MonoBehaviour
     {
         /// <summary>

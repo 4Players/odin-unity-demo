@@ -5,14 +5,27 @@ using UnityEngine;
 
 namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 {
+    /// <summary>
+    /// Utility class for saving files to disk.
+    /// </summary>
     public static class SaveFileUtility
     {
-        public static string GetCustomSavePath(string fileName)
+        /// <summary>
+        /// Returns the full path to a directory, in which the file can be stored.
+        /// </summary>
+        /// <param name="fileName">The file to store.</param>
+        /// <returns>The full path to the save location.</returns>
+        public static string GetSavePath(string fileName)
         {
             return Application.persistentDataPath + Path.AltDirectorySeparatorChar + fileName;
         }
 
-        public static string GetDefaultSettingsPath(string fileName)
+        /// <summary>
+        /// Returns a path to the streaming assets directory - settings can be accessed easier from this location.
+        /// </summary>
+        /// <param name="fileName">The file to store</param>
+        /// <returns>The full path to the settings directory.</returns>
+        public static string GetSettingsPath(string fileName)
         {
             #if (UNITY_ANDROID || UNITY_WEBGL) && !UNITY_EDITOR
                 return GetCustomSavePath(fileName);
@@ -21,6 +34,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
             #endif
         }
         
+        /// <summary>
+        /// Saves given model to savepath.
+        /// </summary>
+        /// <param name="savePath">Full path to save location.</param>
+        /// <param name="model">The object to save.</param>
         public static void SaveData(string savePath, object model)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -31,6 +49,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
             }
         }
         
+        /// <summary>
+        /// Tries to load the file given by the loadPath as an object of type T.
+        /// </summary>
+        /// <param name="loadPath">The full path to the file.</param>
+        /// <typeparam name="T">Type to load</typeparam>
+        /// <returns>The loaded object or the default value, if not available.</returns>
         public static T LoadData<T>(string loadPath)
         {
             // avoids issues e.g. between comma and points when using german culture vs english culture and handling

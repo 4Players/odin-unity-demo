@@ -172,6 +172,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             OdinHandler.Instance.OnRoomJoined.AddListener(OnOdinRoomJoined);
         }
 
+        /// <summary>
+        /// Updates the model, sets the odin config settings and applies side effects, if any exist.
+        /// </summary>
+        /// <param name="property">Property to apply settings to</param>
+        /// <param name="newValue">New property value.</param>
         private void UpdateFloatSetting(string property, float newValue)
         {
             if (null != _model)
@@ -183,6 +188,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
+        /// <summary>
+        /// Applies side effects, if any were defined, to the given property.
+        /// </summary>
+        /// <param name="property">Property to check.</param>
+        /// <param name="newValue">New value of the property.</param>
         private void ApplyFloatSideEffects(string property, float newValue)
         {
             foreach (FloatSettingSideEffect sideEffect in sideEffects)
@@ -202,6 +212,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
+        /// <summary>
+        /// Updates the model and applies setting to Odin Config.
+        /// </summary>
+        /// <param name="property">Property name</param>
+        /// <param name="newValue">New property value</param>
         private void UpdateEnumSetting(string property, int newValue)
         {
             if (null != _model)
@@ -211,6 +226,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
+        /// <summary>
+        /// Updates the model and applies setting to Odin Config.
+        /// </summary>
+        /// <param name="property">Property name</param>
+        /// <param name="newValue">New property value</param>
         private void UpdateBoolSetting(string property, bool newValue)
         {
             if (null != _model)
@@ -220,6 +240,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             }
         }
 
+        /// <summary>
+        /// Applies the current audio processing settings to the newly joined room.
+        /// </summary>
+        /// <param name="eventArgs"></param>
         private void OnOdinRoomJoined(RoomJoinedEventArgs eventArgs)
         {
             if (null != eventArgs && null != eventArgs.Room)
@@ -229,7 +253,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <summary>
         ///     Applies the current settings of the OdinHandler.Config Instance to the current model
         /// </summary>
-        /// <param name="model"></param>
         private void InitModelFromOdinConfig()
         {
             foreach (OdinBoolSetting boolSetting in boolSettings)

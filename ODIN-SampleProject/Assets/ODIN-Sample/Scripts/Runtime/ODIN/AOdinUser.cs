@@ -42,6 +42,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             Assert.IsNotNull(instantiationTarget);
         }
 
+        /// <summary>
+        /// Destroys all gameobjects with registered playback components.
+        /// </summary>
         protected void DestroyAllPlaybacks()
         {
             foreach (PlaybackComponent playbackComponent in _registeredRemoteMedia.Values)
@@ -52,6 +55,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             _registeredRemoteMedia.Clear();
         }
 
+        /// <summary>
+        /// Destroys all gameobjects with registered playback components for a given room.
+        /// </summary>
+        /// <param name="roomName">The room for which the playback objects should be destroyed.</param>
         protected void DestroyAllPlaybacksInRoom(string roomName)
         {
             List<OdinConnectionIdentifier> idsToRemove = new List<OdinConnectionIdentifier>();
@@ -70,6 +77,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
+        /// <summary>
+        /// Destroys the playback gameobject based on the given connection identifier.
+        /// </summary>
+        /// <param name="odinId">The identifier uniquely identifying a playback component.</param>
+        /// <returns>True, if a playback gameobject was found and destroyed.</returns>
         protected bool DestroyPlayback(OdinConnectionIdentifier odinId)
         {
             return DestroyPlayback(odinId.RoomName, odinId.PeerId,

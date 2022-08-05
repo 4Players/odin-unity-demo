@@ -1,23 +1,32 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// Will activate the targets, if the viewstate defined in <see cref="stateToActivateOn"/> is currently active.
+    /// </summary>
     public class ActivateOnViewState : MonoBehaviour
     {
+        /// <summary>
+        /// The targets that will be actived, if <see cref="stateToActivateOn"/> is the current <see cref="viewState"/>
+        /// </summary>
         [SerializeField] private GameObject[] targetsToActivate;
-        
+
+        /// <summary>
+        /// State to activate on.
+        /// </summary>
         [SerializeField] private SampleViewState.ViewState stateToActivateOn;
 
+        /// <summary>
+        /// Reference to Scriptable Object, that contains the current view state value.
+        /// </summary>
         [SerializeField] private SampleViewState viewState;
 
         private void Awake()
         {
             Assert.IsNotNull(viewState);
         }
-
-
 
         private void Start()
         {
@@ -26,22 +35,17 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
 
         private void OnEnable()
         {
-            viewState.OnSwitchedToNewState += (UpdateOnViewStateSet);
+            viewState.OnSwitchedToNewState += UpdateOnViewStateSet;
         }
-        
+
         private void OnDisable()
         {
-            viewState.OnSwitchedToNewState -= (UpdateOnViewStateSet);
+            viewState.OnSwitchedToNewState -= UpdateOnViewStateSet;
         }
 
         private void UpdateOnViewStateSet(SampleViewState.ViewState newState)
         {
-            foreach (GameObject target in targetsToActivate)
-            {
-                target.SetActive(newState == stateToActivateOn);
-
-            }
-
+            foreach (GameObject target in targetsToActivate) target.SetActive(newState == stateToActivateOn);
         }
     }
 }

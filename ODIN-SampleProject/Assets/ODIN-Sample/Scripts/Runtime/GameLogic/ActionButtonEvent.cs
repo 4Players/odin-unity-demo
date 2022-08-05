@@ -6,9 +6,18 @@ using UnityEngine.InputSystem;
 
 namespace ODIN_Sample.Scripts.Runtime.GameLogic
 {
+    /// <summary>
+    /// Utility class for firing an UnityEvent upon registering a action button being pressed.
+    /// </summary>
     public class ActionButtonEvent : MonoBehaviour
     {
+        /// <summary>
+        /// The button that should be checked.
+        /// </summary>
         [SerializeField] private InputActionReference button;
+        /// <summary>
+        /// Will be fired when button was pressed.
+        /// </summary>
         [SerializeField] private UnityEvent onButtonPressed;
         
         private void Awake()

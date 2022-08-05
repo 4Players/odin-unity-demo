@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
-using ODIN_Sample.Scripts.Runtime.Odin.Utility;
-using OdinNative.Odin.Peer;
+﻿using ODIN_Sample.Scripts.Runtime.Odin.Utility;
 using OdinNative.Odin.Room;
-using OdinNative.Unity.Audio;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 {
     /// <summary>
-    /// Displays transmissions of all players in a room using UI.
+    ///     Displays transmissions of all players in a room using ui elements in the hierarchy.
     /// </summary>
     public class OdinTransmitterDisplay : MonoBehaviour
     {
+        /// <summary>
+        ///     The room name for which transmissions will be shown.
+        /// </summary>
+        [FormerlySerializedAs("displayedRoomName")] [SerializeField]
+        private OdinStringVariable roomName;
 
-        [SerializeField] private OdinStringVariable displayedRoomName;
 
         private OdinTransmitterUiElement[] _uiElements;
 
@@ -26,14 +27,14 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         private void OnEnable()
         {
-            if(OdinHandler.Instance)
+            if (OdinHandler.Instance)
                 OdinHandler.Instance.OnMediaActiveStateChanged.AddListener(OnMediaActiveStateChanged);
         }
 
 
         private void OnDisable()
         {
-            if(OdinHandler.Instance)
+            if (OdinHandler.Instance)
                 OdinHandler.Instance.OnMediaActiveStateChanged.RemoveListener(OnMediaActiveStateChanged);
         }
 
@@ -42,28 +43,27 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
             if (sender is Room sendingRoom)
             {
                 string roomName = sendingRoom.Config.Name;
-                if (roomName == displayedRoomName.Value)
+                if (roomName == this.roomName.Value)
                 {
                     ulong peerId = mediaActiveEventArgs.PeerId;
                     long mediaId = mediaActiveEventArgs.MediaStreamId;
 
                     OdinConnectionIdentifier uiKey = new OdinConnectionIdentifier(roomName, peerId, mediaId);
 
+                    // if media is now active, try to show element
                     if (mediaActiveEventArgs.Active)
                     {
                         var room = OdinHandler.Instance.Rooms[roomName];
                         var peer = room.RemotePeers[peerId];
+                        // retrieve user data
                         OdinSampleUserData userData = null;
                         if (null != peer)
-                        {
                             userData = OdinSampleUserData.FromUserData(peer.UserData);
-                        }
                         else
-                        {
                             userData = OdinHandler.Instance.GetUserData().ToOdinSampleUserData();
-                        }
-                        
-                        if(null != userData)
+
+                        // if user data was retrieved
+                        if (null != userData)
                             ShowElement(uiKey, userData);
                     }
                     else

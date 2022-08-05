@@ -9,7 +9,13 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </summary>
     public class FirstPersonRotation : MonoBehaviour
     {
+        /// <summary>
+        /// The action defining for gamepad and mobile onscreen control input.
+        /// </summary>
         [SerializeField] private InputActionReference gamepadAxis;
+        /// <summary>
+        /// The action returning the mouse delta.
+        /// </summary>
         [SerializeField] private InputActionReference mouseDelta;
 
 

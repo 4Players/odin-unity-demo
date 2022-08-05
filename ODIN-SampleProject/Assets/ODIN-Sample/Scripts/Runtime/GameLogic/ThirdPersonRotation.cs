@@ -15,6 +15,9 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
     /// </remarks>
     public class ThirdPersonRotation : MonoBehaviour
     {
+        /// <summary>
+        /// The 1D rotation axis, e.g. QE on keyboard or bumpers on gamepad.
+        /// </summary>
         [SerializeField] private InputActionReference rotation;
 
         /// <summary>

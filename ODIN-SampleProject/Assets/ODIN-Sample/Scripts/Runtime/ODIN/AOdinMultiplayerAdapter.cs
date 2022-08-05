@@ -25,6 +25,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             if (IsLocalUser()) OdinHandler.Instance.OnRoomJoined.RemoveListener(OnRoomJoined);
         }
 
+        /// <summary>
+        /// Behaviour to start, once connection was established. Runs as a coroutine, until user data is available.
+        /// </summary>
+        /// <returns></returns>
         protected virtual IEnumerator OnConnectionBehaviour()
         {
             while (!OdinHandler.Instance || null == OdinHandler.Instance.GetUserData())
@@ -37,6 +41,10 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
         }
 
+        /// <summary>
+        /// Called when a ODIN room was joined.
+        /// </summary>
+        /// <param name="roomJoinedEventArgs">Room join arguments</param>
         protected virtual void OnRoomJoined(RoomJoinedEventArgs roomJoinedEventArgs)
         {
             if (IsLocalUser())

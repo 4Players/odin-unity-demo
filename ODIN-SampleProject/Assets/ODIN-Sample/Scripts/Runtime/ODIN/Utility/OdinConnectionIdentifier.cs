@@ -10,8 +10,17 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
     /// </summary>
     public struct OdinConnectionIdentifier : IEquatable<OdinConnectionIdentifier>
     {
+        /// <summary>
+        /// The room name.
+        /// </summary>
         public string RoomName;
+        /// <summary>
+        /// The peer id.
+        /// </summary>
         public ulong PeerId;
+        /// <summary>
+        /// The media id.
+        /// </summary>
         public long MediaId;
 
         public OdinConnectionIdentifier(PlaybackComponent playbackComponent) : this(playbackComponent.RoomName,
@@ -27,11 +36,17 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
         }
 
 
+        /// <summary>
+        /// Checks for equal field values.
+        /// </summary>
+        /// <param name="other">Tht other identifier.</param>
+        /// <returns>True, if all field values are equal.</returns>
         public bool Equals(OdinConnectionIdentifier other)
         {
             return RoomName == other.RoomName && PeerId == other.PeerId && MediaId == other.MediaId;
         }
 
+        
         public override bool Equals(object obj)
         {
             return obj is OdinConnectionIdentifier other && Equals(other);

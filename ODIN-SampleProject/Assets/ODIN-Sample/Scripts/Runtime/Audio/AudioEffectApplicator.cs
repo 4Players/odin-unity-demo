@@ -59,7 +59,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
             foreach (var effectData in _effectList)
                 toApply = AudioEffectDefinition.GetCombinedEffect(toApply, effectData);
 
-            if (toApply.IsAudible)
+            if (toApply.IsEffectAudible)
             {
                 _lowPassFilter.enabled = true;
                 ApplyInstant(toApply);

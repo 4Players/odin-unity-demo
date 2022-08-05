@@ -88,6 +88,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
+        /// <summary>
+        /// Destroys playback components connected to the media stream that was just removed.
+        /// </summary>
+        /// <param name="roomObj"></param>
+        /// <param name="mediaRemovedArgs"></param>
         private void OnMediaRemoved(object roomObj, MediaRemovedEventArgs mediaRemovedArgs)
         {
             if (roomObj is Room room && null != mediaRemovedArgs.Peer)
@@ -98,12 +103,20 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
+        /// <summary>
+        /// Spawns a playback component for each media stream in the newly joined room.
+        /// </summary>
+        /// <param name="arg0"></param>
         private void OnJoinedRoom(RoomJoinedEventArgs arg0)
         {
             Debug.Log($"On Joined room: {arg0.Room.Config.Name}");
             StartCoroutine(DeferredSpawnPlayback());
         }
 
+        /// <summary>
+        /// Destroys all playbacks that are connected to the left room.
+        /// </summary>
+        /// <param name="roomLeftArgs"></param>
         private void OnLeftRoom(RoomLeftEventArgs roomLeftArgs)
         {
             Debug.Log($"On Left room: {roomLeftArgs.RoomName}");
@@ -123,6 +136,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         }
 
 
+        /// <summary>
+        /// Checks if a playback should be created, based on changes to the user data. E.g. if the users unique user id
+        /// was transmitted.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="peerUpdatedEventArgs"></param>
         private void OnPeerUpdated(object sender, PeerUserDataChangedEventArgs peerUpdatedEventArgs)
         {
             if (sender is Room room)
@@ -150,6 +169,11 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
+        /// <summary>
+        /// Checks, whether the room id is contained in the <see cref="connectedOdinRooms"/> list.
+        /// </summary>
+        /// <param name="roomId">Room id to check</param>
+        /// <returns>True, if playbacks should be created for this room.</returns>
         private bool IsRoomAllowed(string roomId)
         {
             foreach (var connectedOdinRoom in connectedOdinRooms)
