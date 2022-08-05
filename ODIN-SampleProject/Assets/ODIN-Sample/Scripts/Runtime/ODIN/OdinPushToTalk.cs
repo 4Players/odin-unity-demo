@@ -60,6 +60,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
         }
 
+        /// <summary>
+        /// Checks whether the microphone is muted for the given room.
+        /// </summary>
+        /// <param name="roomName">The room name.</param>
+        /// <returns>True, if push to talk is active and push to talk button is pressed or if push to talk is inactive. False otherwise.</returns>
         protected virtual bool IsMicrophoneMuted(string roomName)
         {
             if (OdinHandler.Instance.Rooms.Contains(roomName))
@@ -75,9 +80,13 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             return false;
         }
 
+        /// <summary>
+        /// Checks if the push to talk button is pressed.
+        /// </summary>
+        /// <param name="pushToTalkData"></param>
+        /// <returns></returns>
         protected virtual bool IsPushToTalkButtonPressed(OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData)
         {
-
             bool isPushToTalkPressed = pushToTalkData.pushToTalkButton.action.IsPressed();
             return isPushToTalkPressed;
         }
@@ -108,15 +117,17 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         ///     Mutes / unmutes local microphone in the room based on whether the button
         ///     given is pressed.
         /// </summary>
-        /// <param name="data">
-        ///     Push To Talk data container, containing information on the push to talk button,
-        ///     the room to target and whether push to talk is currently activated.
-        /// </param>
+        /// <param name="roomName"></param>
         protected void HandleRoomMutedStatus(string roomName)
         {
             SetRoomMicrophoneMutedState(roomName, IsMicrophoneMuted(roomName));
         }
 
+        /// <summary>
+        /// Sets the new mute status for the microphone media of the local user in the given room.
+        /// </summary>
+        /// <param name="roomName">The room name.</param>
+        /// <param name="newIsMuted">The new is muted status.</param>
         protected void SetRoomMicrophoneMutedState(string roomName, bool newIsMuted)
         {
             if (OdinHandler.Instance.Rooms.Contains(roomName))

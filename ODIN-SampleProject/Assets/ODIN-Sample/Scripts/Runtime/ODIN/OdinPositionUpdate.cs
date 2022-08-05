@@ -54,6 +54,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             if (null != eventArgs && null != eventArgs.Room) InitRoom(eventArgs.Room);
         }
 
+        /// <summary>
+        /// Initializes the position scale. The position scale should be set to the same value on each client.
+        /// </summary>
+        /// <param name="toInit">Room to initialize position scale in.</param>
         private void InitRoom(Room toInit)
         {
             OdinRoomProximityStatus status = settings.GetRoomProximityStatus(toInit.Config.Name);
