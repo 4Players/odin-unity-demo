@@ -40,13 +40,13 @@ The demo scene's hierarchy contains three root game object's used for categorizi
 
 This is a short introduction into the most important ODIN terms - for more in-depth information [please take a look at the ODIN documentation](https://developers.4players.io/odin/introduction/).
 
-#### Rooms, Peers and Media
+### Rooms, Peers and Media
 
 Every client connects an ODIN server, authenticates with an access token and joins a room. Once the client has joined a room, he is a peer inside the ODIN room. Every peer can add media to that room, linked to a physical device like a microphone. Clients can join multiple rooms at the same time and can add multiple media streams at the same time.
 
 To find more information on the basic ODIN topology, [please take a look at the Basic Concepts documentation](https://developers.4players.io/odin/introduction/structure/).
 
-#### OdinHandler
+### OdinHandler
 
 The OdinHandler script is a singleton behaviour, wrapping the functionality of the native ODIN SDK for use in Unity. You can access the script via `OdinHandler.Instance`. 
 
@@ -57,13 +57,13 @@ If you don't yet have an ODIN subscription and just want to test out ODIN's func
 ![The OdinManager prefab options in the inspector view](Documentation/OdinManager.png)
 
 
-#### PlaybackComponent
+### PlaybackComponent
 
 The ODIN SDK provides the `PlaybackComponent` script to easily play back audio data received from
 the ODIN server. Each `PlaybackComponent` represents one media stream and is identified by a media id, a
 peer id and a room name.
 
-#### User Data
+### User Data
 
 Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data at all clients and sends this message. Read more about user data in the guide: [Understanding User Data](https://developers.4players.io/odin/guides/unity/user-data/).
 
@@ -77,9 +77,13 @@ Because ODIN works framework independent, we won't go into detail on how to set 
 
 ![Image of the Lobby Scene](Documentation/ODIN-Lobby.png "The Lobby")
 
-The Behaviours in the Lobby scene simply wait for the PhotonNetwork to connect to the cloud, before allowing users to join a Photon room - in the demo we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
+We wait for a connection to the photon network, before allowing users to join a Photon room. In the demo we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
 
-
+After pressing the `Join` Button, the player will either connect to an existing Photon room or create a new Photon room as a Master Client. As a master client, we'll use the call: 
+```c#
+    PhotonNetwork.LoadLevel(sceneToLoad);
+```
+Otherwise Photon will automatically load the correct scene.
 
 ### Demo Level
 
@@ -87,7 +91,7 @@ When entering the Demo Level scene, two things happen:
 
 1. We instantiate the player over the Photon network using `PhotonNetwork.Instantiate` and the `ODINPlayer` prefab. This is kicked off by the `PhotonPlayerSpawner` script on Start. **Note:** The player prefab needs to be located in a `Resources` subdirectory, in order for Photon to be able to instantiate the player correctly.
 
-2. We automatically connect to two ODIN rooms (Voice and Radio) using 
+2. We automatically connect to two ODIN rooms (Voice and Radio) with 
 
 ```c#
 OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
@@ -98,7 +102,10 @@ We don't have to send user data when joining an ODIN room, but in this case we a
 
 `OdinSampleUserData` is a serializable C# class which implements the `IUserData` interface. This is a requirement for any userdata transmitted using ODIN. The interface member function `ToBytes()` simply provides an UTF8 encoding of a JSON representation of the class. The class contains app specific properties like the player's name, his capsule color and a unique user id. The unique user id is used to connect an ODIN media stream to a Photon View - specifically the unique user id is equal to the photon view id - and therefore required for the proximity chat.
 
-### ODIN Global Voice Chat - Radio transmissions
+## ODIN
+
+
+### Global Voice Chat - Radio transmissions
 
 In the demo project, users automatically join the ODIN room named _Radio_, in
 which players can communicate as if using radio transmitters - when pressing down the `V` key, the microphone input
@@ -114,7 +121,7 @@ instantiates the `PlaybackComponent` prefabs as children of a single game object
 the `OdinDefaultUser` script should only be used for ODIN rooms which do not use proximity voice chat.
 
 
-### ODIN Proximity Chat - connecting ODIN to the multiplayer framework
+### Proximity Chat - connecting ODIN to the multiplayer framework
 
 In a multiplayer scenario, we encounter the issue of connecting a user's ODIN media stream to the user's avatar
 in the game, e.g. in our demo project we'd want a player's voice in the proximity chat to originate
@@ -129,6 +136,8 @@ update to the other peers in the room. On receiving the update, those clients th
 to compare the remote peer's `uniqueUserId` to the id supplied by the remote adapter's `GetUniqueUserId()`.
 If both ids are equal,we know that an ODIN peer is represented by the referenced `AOdinMultiplayerAdapter`.
 
+![The OdinManager prefab options in the inspector view](Documentation/AdapterDiagram.drawio.svg)
+
 In the demo project
 we use this information to correctly play black the proximity chat audio at a player's location -
 specifically using the `Odin3dAudioVoiceUser`, which automatically creates a `PlaybackComponent` for each remote user.
@@ -139,11 +148,26 @@ The demo project uses Photon as a multiplayer framework, so we add the
 to determine whether the adapter represents a local or a remote player. To switch out Photon for another
 multiplayer framework, simply provide your own implementation of `AOdinMultiplayerAdapter`.
 
+### Proximity Chat - Distance Settings
+
+TODO
+
+
+### Proximity Chat - Room Optimization
+
+TODO
+
 ### Push-To-Talk
 
 Push-To-Talk is handled by the `OdinPushToTalk` script using settings defined in a `OdinPushToTalkSettings` scriptable object. If the push-to-talk button for a specific room is pressed, the script will access the user's mediastream and set a user's mute status using `targetRoom.MicrophoneMedia.SetMute()`.
 
 The `OdinPushToTalkSettings` scriptable object allows rooms to be either be voice-activated or require a button press to talk - if you'd like to make this available as a user-setting, you can use the `OdinPushToTalkSettingsController`, which automatically sets the room's activation method based on a Unity Toggle.
+
+
+### Microphone Filter Settings
+
+TODO
+
 
 ## Audio
 
@@ -207,6 +231,11 @@ pointing from the listener to the audio source. The
 
 Note: The implementation won't let us differentiate between sound coming from above or below. To implement this behaviour, 
 please take a look at the implementation of [Head Related Transfer Functions (HRTF)](https://en.wikipedia.org/wiki/Head-related_transfer_function).
+
+
+### Environmental Effects
+
+TODO
 
 ## Game Logic
 
