@@ -28,7 +28,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         public static string GetSettingsPath(string fileName)
         {
             #if (UNITY_ANDROID || UNITY_WEBGL) && !UNITY_EDITOR
-                return GetCustomSavePath(fileName);
+                return GetSavePath(fileName);
             #else
                 return Application.streamingAssetsPath + Path.AltDirectorySeparatorChar + fileName;
             #endif
@@ -68,7 +68,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
                 {
                     string json = reader.ReadToEnd();
 
-                    Debug.Log($"Loading Json from {loadPath}");
+                    // Debug.Log($"Loading Json from {loadPath}");
                     result = JsonUtility.FromJson<T>(json);
                 }
                 
