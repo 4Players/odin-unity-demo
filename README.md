@@ -75,7 +75,7 @@ Because ODIN works framework independent, we won't go into detail on how to set 
 
 **Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
 
-![Image of the Lobby Scene](Documentation/Lobby.png "The Lobby")
+![Image of the Lobby Scene](Documentation/ODIN-Lobby.png "The Lobby")
 
 The Behaviours in the Lobby scene simply wait for the PhotonNetwork to connect to the cloud, before allowing users to join a Photon room - in the demo we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
 
@@ -93,7 +93,10 @@ When entering the Demo Level scene, two things happen:
 OdinSampleUserData userData = new OdinSampleUserData(refPlayerName.Value);
 OdinHandler.Instance.JoinRoom(refRoomName.Value, userData);
 ```
+
 We don't have to send user data when joining an ODIN room, but in this case we already have access to the player name from the value entered in the Lobby scene, so it makes sense to supply it while joining.
+
+`OdinSampleUserData` is a serializable C# class which implements the `IUserData` interface. This is a requirement for any userdata transmitted using ODIN. The interface member function `ToBytes()` simply provides an UTF8 encoding of a JSON representation of the class. The class contains app specific properties like the player's name, his capsule color and a unique user id. The unique user id is used to connect an ODIN media stream to a Photon View - specifically the unique user id is equal to the photon view id - and therefore required for the proximity chat.
 
 ### ODIN Global Voice Chat - Radio transmissions
 
