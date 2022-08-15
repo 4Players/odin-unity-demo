@@ -99,7 +99,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// </summary>
         [Header("Enum Settings")]
         [SerializeField]
-        private OdinEnumSetting noiseSuppressionSetting;
+        private OdinEnumSetting[] enumSettings;
 
         private OdinAudioFilterSettingsModel _model;
 
@@ -108,7 +108,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             foreach (OdinBoolSetting boolSetting in boolSettings) Assert.IsNotNull(boolSetting.toggle);
             foreach (OdinFloatSetting floatSetting in floatSettings) Assert.IsNotNull(floatSetting.slider);
-            Assert.IsNotNull(noiseSuppressionSetting.dropdown);
+            foreach (OdinEnumSetting setting in enumSettings) Assert.IsNotNull(setting.dropdown);
         }
 
         private void OnEnable()
@@ -123,8 +123,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
             foreach (OdinFloatSetting setting in floatSettings)
                 setting.slider.onValueChanged.RemoveAllListeners();
+            
+            foreach (OdinEnumSetting setting in enumSettings)
+                setting.dropdown.onValueChanged.RemoveAllListeners();
 
-            noiseSuppressionSetting.dropdown.onValueChanged.RemoveAllListeners();
             if (OdinHandler.Instance)
                 OdinHandler.Instance.OnRoomJoined.RemoveListener(OnOdinRoomJoined);
         }
@@ -164,10 +166,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 {
                     UpdateFloatSetting(setting.configProperty, newValue);
                 });
-            noiseSuppressionSetting.dropdown.onValueChanged.AddListener(newValue =>
-            {
-                UpdateEnumSetting(noiseSuppressionSetting.configProperty, newValue);
-            });
+            
+            foreach (OdinEnumSetting setting in enumSettings)
+                setting.dropdown.onValueChanged.AddListener(newValue =>
+                {
+                    UpdateEnumSetting(setting.configProperty, newValue);
+                });
 
             OdinHandler.Instance.OnRoomJoined.AddListener(OnOdinRoomJoined);
         }
@@ -259,9 +263,9 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                 UpdateBoolSetting(boolSetting.configProperty, GetValue<bool>(boolSetting.configProperty));
             foreach (OdinFloatSetting floatSetting in floatSettings)
                 UpdateFloatSetting(floatSetting.configProperty, GetValue<float>(floatSetting.configProperty));
+            foreach (OdinEnumSetting enumSetting in enumSettings)
+                UpdateFloatSetting(enumSetting.configProperty, (int)GetValue<NativeBindings.OdinNoiseSuppressionLevel>(enumSetting.configProperty));
 
-            UpdateEnumSetting(noiseSuppressionSetting.configProperty,
-                (int)GetValue<NativeBindings.OdinNoiseSuppressionLevel>(noiseSuppressionSetting.configProperty));
         }
 
         /// <summary>
@@ -277,10 +281,15 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             foreach (OdinFloatSetting floatSetting in floatSettings)
                 floatSetting.slider.value = GetValue<float>(floatSetting.configProperty);
 
+            foreach (OdinEnumSetting enumSetting in enumSettings)
+            {
+                NativeBindings.OdinNoiseSuppressionLevel noiseSuppressionLevel =
+                    GetValue<NativeBindings.OdinNoiseSuppressionLevel>(enumSetting.configProperty);
+                enumSetting.dropdown.value = (int)noiseSuppressionLevel;
+            }
+
             // Set Enum dropdowns to current value.
-            NativeBindings.OdinNoiseSuppressionLevel noiseSuppressionLevel =
-                GetValue<NativeBindings.OdinNoiseSuppressionLevel>(noiseSuppressionSetting.configProperty);
-            noiseSuppressionSetting.dropdown.value = (int)noiseSuppressionLevel;
+            
         }
 
         /// <summary>
