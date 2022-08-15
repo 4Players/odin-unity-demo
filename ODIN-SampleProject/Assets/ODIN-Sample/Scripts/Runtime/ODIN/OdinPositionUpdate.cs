@@ -57,11 +57,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <summary>
         /// Initializes the position scale. The position scale should be set to the same value on each client.
         /// </summary>
-        /// <param name="toInit">Room to initialize position scale in.</param>
-        private void InitRoom(Room toInit)
+        /// <param name="targetRoom">Room to initialize position scale in.</param>
+        private void InitRoom(Room targetRoom)
         {
-            OdinRoomProximityStatus status = settings.GetRoomProximityStatus(toInit.Config.Name);
-            if (null != status && status.isActive) toInit.SetPositionScale(1.0f / status.proximityRadius);
+            OdinRoomProximityStatus status = settings.GetRoomProximityStatus(targetRoom.Config.Name);
+            if (null != status && status.isActive) targetRoom.SetPositionScale(1.0f / status.proximityRadius);
         }
 
         private IEnumerator UpdatePositionRoutine()
@@ -81,12 +81,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                         UpdateRoomPosition(OdinHandler.Instance.Rooms[proximitySetting.roomName]);
         }
 
-        private void UpdateRoomPosition(Room toUpdate)
+        private void UpdateRoomPosition(Room targetRoom)
         {
-            if (null != toUpdate && toUpdate.IsJoined)
+            if (null != targetRoom && targetRoom.IsJoined)
             {
-                var position = transform.position;
-                toUpdate.UpdatePosition(position.x, position.z);
+                Vector3 position = transform.position;
+                targetRoom.UpdatePosition(position.x, position.z);
             }
         }
     }

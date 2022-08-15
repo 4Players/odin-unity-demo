@@ -81,14 +81,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <summary>
         ///     All bool settings
         /// </summary>
-        [Header("Bool Settings")]
         [SerializeField]
         private OdinBoolSetting[] boolSettings;
 
         /// <summary>
         ///     All float settings
         /// </summary>
-        [Header("Float Settings")]
         [SerializeField]
         private OdinFloatSetting[] floatSettings;
 
@@ -97,7 +95,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <summary>
         ///     Noise suppression setting
         /// </summary>
-        [Header("Enum Settings")]
         [SerializeField]
         private OdinEnumSetting[] enumSettings;
 
