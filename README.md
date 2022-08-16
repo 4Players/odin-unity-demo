@@ -54,7 +54,7 @@ The most important use-cases are the `OdinHandler.Instance.JoinRoom` method for 
 
 If you don't yet have an ODIN subscription and just want to test out ODIN's functionality, you can use a generated key by pressing the __Manage Access__ Button and then selecting __Generate Access Key__. The resulting access keys can be used to access the ODIN network with up to 25 concurrently connected users free of charge.
 
-![The OdinManager prefab options in the inspector view](Documentation/OdinManager.webp)
+![The OdinManager prefab in the inspector view](Documentation/ODIN-TechDemo-OdinManager.webp)
 
 
 ### PlaybackComponent
@@ -75,7 +75,7 @@ Because ODIN works framework independent, we won't go too much into detail on ho
 
 **Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
 
-![Image of the Lobby Scene](Documentation/ODIN-Lobby.webp "The Lobby")
+![Image of the Lobby Scene](Documentation/ODIN-TechDemo-Lobby.webp "The Lobby")
 
 We wait for a connection to the photon network, before allowing users to join a Photon room. In the demo we'll simply add all players to the same room. We also use the `PhotonNetwork.AutomaticallySyncScene = true` option to automatically load the correct scene for each player joining.
 
@@ -139,7 +139,7 @@ update to the other peers in the room. On receiving the update, those clients th
 to compare the remote peer's `uniqueUserId` to the id supplied by the remote adapter's `GetUniqueUserId()`.
 If both ids are equal,we know that an ODIN peer is represented by the referenced `AOdinMultiplayerAdapter`.
 
-![The OdinManager prefab options in the inspector view](Documentation/AdapterDiagram.drawio.svg)
+![Diagram showcasing the adapter pattern for connecting ODIN to a multiplayer framework.](Documentation/ODIN-TechDemo-AdapterDiagram.svg)
 
 In the demo project
 we use this information to correctly play black the proximity chat audio at a player's location -
@@ -158,12 +158,12 @@ Media Stream. These Prefabs not only have a `PlaybackComponent` on them, but als
 
 The `OdinRadioAudioSource` prefab simply has a full 2D `Spatial Blend` setting and the `Bypass Reverb Zone` enabled. The latter lets us avoid Unity's Reverb Zones, e.g. Echo effects in large rooms. The most interesting setting can be found in the `Output` option - here we reference an Audio Mixer Group Controller. The Radio Group Controller defines the list of effects that the incoming Radio room Media Streams go through, before being output to the User. The combination of these effects creates the Radio's crackling effect, giving Players a more immersive experience.
 
-![The Radio Mixer Settings](Documentation/ODIN-TechDemo-RadioEffects.webp)
+![The Radio Mixer Settings for creating the crackling effect.](Documentation/ODIN-TechDemo-RadioEffects.webp)
 
 The `OdinVoiceAudioSource` prefab on the other hand has a full 3D `Spatial Blend` setting and does not bypass reverb zones - we want this `AudioSource` to simulate a human voice in the real world, which is naturally affected by the environment. The prefab uses the 3D Sound Settings of the `AudioSource` component to further specify this effect - the `Min Distance` value defines the distance at which the voice will be heared at full volume and the `Max Distance` defines the distance at which we won't hear the voice anymore.
 Additionally we can see the `Volume Rolloff` set to `Logarithmic Rolloff` - this best approximates a real world setting. If required, the rolloff can easily be customized by choosing a linear or custom setting.
 
-![The Voice Audio 3D Sound Settings](Documentation/ODIN-TechDemo-ProximitySettings.webp)
+![The AudioSource component's 3D sound settings.](Documentation/ODIN-TechDemo-ProximitySettings.webp)
 
  These three options majorly define the fading behaviour of a player's voice in the distance - at least when there aren't any objects between the audio source and listener. Occlusion effects are not part of Unity's Audio System, but we've included our own, custom solution for this in the Tech Demo, which is explained in-depth in the [Audio Occlusion paragraph](#audio-occlusion).
 
@@ -180,11 +180,11 @@ and
 ```c#
 room.UpdatePosition(position.x, position.y);
 ```
-As ODIN is not aware of the scale your game is operating at, it initially uses a Unit Circle as the cutoff radius. If we use the [previously mentioned `Max Distance`](#playback-settings---distance-and-radio-effects) to calculate `scale` as
+As ODIN is not aware of the scale your game is operating at, it initially uses a Unit Circle as the cutoff radius. If we use the [previously mentioned](#playback-settings---distance-and-radio-effects) `Max Distance` to calculate `scale` as
 ```c#
 float scale = 1.0f / MaxVoiceDistance;
 ```
-, we can automatically disable streams that wouldn't be transmitted by the `Audio Source` due to distance anyway. 
+we can automatically disable streams that wouldn't be transmitted by the `Audio Source` due to distance anyway. 
 
 __Note:__ The position scale should be set to the same value for all Peers in the ODIN room. The scale value also has to be set individually for each room that will utilize ODIN's optimization feature.
 
@@ -194,7 +194,7 @@ For ODIN to be able to use the distance values for optimization, we have to tran
 
  In the Tech Demo, the `OdinPositionUpdate` component regularly updates the player's position. Using entries to the Room Settings array on the `OdinPositionUpdateSettings` scriptable object, we can define the activation status and the cutoff radius for each ODIN room individually.
 
- ![Room Optimization Settings](Documentation/ODIN-TechDemo-RoomOptimization.webp)
+ ![The ODIN room optimization and position update settings.](Documentation/ODIN-TechDemo-RoomOptimization.webp)
 
 ### Push-To-Talk
 
@@ -209,7 +209,7 @@ The ODIN SDK provides quite a few Room Audio Processing settings, like Voice Act
 
 The Tech Demo has a sample implementation on how to allow users to adjust these settings in the game. The `Settings` prefab (found in  `ODIN-Sample > Prefabs > UI`) uses Unity's `Toggle`, `Slider` and `Dropdown` UI components to adjust the Audio Settings. The `OdinAudioFilterSetingsController` script contains entries that map the UI component's input to ODIN's filter values and even stores the changes to file. For a fast integration into your game, you can use the Tech Demo implementation and adjust the UI graphics to your liking.
 
- ![Room Optimization Settings](Documentation/ODIN-TechDemo-AudioFilterSettings.webp)
+ ![The UI for adjusting the Audio Filter Settings.](Documentation/ODIN-TechDemo-AudioFilterSettings.webp)
 
 
 ### Choosing an Input Device
@@ -223,7 +223,7 @@ microphoneReader.CustomInputDevice = true;
 microphoneReader.InputDevice = selectedDevice;
 microphoneReader.StartListen();
 ```
-, where the `selectedDevice` is one of the string options listed in the `Microphone.devices` array. The Tech Demo uses the implementation in the `OdinMicrophoneController` script, which also handles saving and loading the users selection in previous game sessions.
+where the `selectedDevice` is one of the string options listed in the `Microphone.devices` array. The Tech Demo uses the implementation in the `OdinMicrophoneController` script, which also handles saving and loading the users selection in previous game sessions.
 
 
 ## Audio
@@ -263,7 +263,7 @@ on the y-Axis.
 
 The image below shows an Audio Effect Definition Scriptable Object for the Concrete material. When selecting the `Cutoff Frequency Curve`, Unity's Curve Editor window shows up to allow finetuning the settings. The x-axis displays the thickness of an occluding object in meters. The curve then maps to the cutoff frequency displayed on the y-axis.
 
-![Image of an Audio Effect Definition Scriptable Object](Documentation/ODIN-TechDemo-OcclusionEffectSettings.webp)
+![The Audio Effect Definition Scriptable Object.](Documentation/ODIN-TechDemo-OcclusionEffectSettings.webp)
 
 The `AudioEffectDefinition` is retrieved using one of two options:
 - By placing an `AudioObstacle` script on the collider's gameobject. This can be
@@ -297,7 +297,7 @@ The Tech Demo Level contains a few rooms, that highlight the Audio Occlusion eff
  
 While the Voice transmissions are affected by the reverb zones, the Radio transmissions are not, due to the `Bypass Reverb Zone` setting on the Playback Prefab - as described [here](#playback-settings---distance-and-radio-effects).
 
-![Image of the Brick Room with the highlighted Audio Reverb Zone](Documentation/ODIN-TechDemo-EnvironmentalEffects.webp)
+![The Brick Room with the highlighted Audio Reverb Zone.](Documentation/ODIN-TechDemo-EnvironmentalEffects.webp)
 
 ## Game Logic
 
@@ -309,7 +309,7 @@ The `OdinNameDisplay` and `OdinSyncedColor` scripts use the ODIN's custom User D
 
 Because ODIN works on mobile platforms, we've added mobile controls to the Tech Demo. The implementation is based on Unity's new Input System and allows players to move, rotate, use Push-To-Talk and switch from 3rd to 1st-person view with On-Screen controls. Take a look at the `UI > MobileControlsCanvas` in the DemoLevel scene's hierarchy for implementation details. The mobile controls can be simulated in Editor by selecting the `Enable in Editor` option on the `ActivateIfMobile` script. 
 
-![Activated mobile controls in the Tech Demo](Documentation/ODIN-TechDemo-MobileControls.webp)
+![Activated mobile controls in the Tech Demo.](Documentation/ODIN-TechDemo-MobileControls.webp)
 
 ### Toggling the in-game radio objects
 
