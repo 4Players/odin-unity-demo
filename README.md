@@ -2,7 +2,7 @@
 
 Please check out https://developers.4players.io/odin/ for more info on ODIN.
 
-More info on this demo project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
+Additional info on this demo project can be found here: https://developers.4players.io/odin/guides/unity/pun-sample/.
 
 ## Download the Binary
 
@@ -31,7 +31,7 @@ The ODIN-Demo project's scripts are split up into the categories:
 
 You can find demo settings in the `Assets > ODIN-Demo > Settings` directory, e.g. settings for the occlusion effects, ODIN room names, Push-To-Talk settings and Input definitions. Any prefabs used in the demo can be found in the `Assets > ODIN-Demo > Prefabs` directory, with the player prefab being located in the `Resources`.
 
-The demo scene's hierarchy contains three root game object's used for categorizing the functions of behaviours:
+The demo scene's hierarchy contains three root game objects used for categorizing behaviours:
 - **Environment:** Contains all visible objects or lights that contain the scene's visuals.
 - **Gamelogic:** Behaviours like the `PhotonPlayerSpawner` or the ODIN room join logic are placed here.
 - **UI:** The root object for in-game UI, like the settings menu or the radio room's active user display.
@@ -42,7 +42,7 @@ This is a short introduction into the most important ODIN terms - for more in-de
 
 ### Rooms, Peers and Media
 
-Every client connects an ODIN server, authenticates with an access token and joins a room. Once the client has joined a room, he is a peer inside the ODIN room. Every peer can add media to that room, linked to a physical device like a microphone. Clients can join multiple rooms at the same time and can add multiple media streams at the same time.
+Every client connects to an ODIN server, authenticates with an access token and joins a room. Once the client has joined a room, they are a peer inside the ODIN room. Every peer can add media to that room, linked to a physical device like a microphone. Clients can join multiple rooms at the same time and can add multiple media streams at the same time.
 
 To find more information on the basic ODIN topology, [please take a look at the Basic Concepts documentation](https://developers.4players.io/odin/introduction/structure/).
 
@@ -65,13 +65,13 @@ peer id and a room name.
 
 ### User Data
 
-Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data at all clients and sends this message. Read more about user data in the guide: [Understanding User Data](https://developers.4players.io/odin/guides/unity/user-data/).
+Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data on all clients. Read more about user data in the guide: [Understanding User Data](https://developers.4players.io/odin/guides/unity/user-data/).
 
 ## Multiplayer
 
 ### Lobby
 
-Because ODIN works framework independent, we won't go into detail on how to set up Photon - if you're interested in reading more on PUN2, [please take a look at Photon's starter guide](https://doc.photonengine.com/en-us/pun/current/getting-started/pun-intro). 
+Because ODIN works framework independent, we won't go too much into detail on how to set up Photon - for an in-depth explanation, [please take a look at Photon's starter guide](https://doc.photonengine.com/en-us/pun/current/getting-started/pun-intro). 
 
 **Note:** When first entering the Unity project, Photon will require you to add an App Id - simply follow the instructions to add or create your own App Id.
 
@@ -111,15 +111,15 @@ In the demo project, users automatically join the ODIN room named _Radio_, in
 which players can communicate as if using radio transmitters - when pressing down the `V` key, the microphone input
 can be heard by all players in the room independent of their position.
 
-For this scenario, the demo project provides the `OdinDefaultUser`script, which uses the 
+For this scenario, the demo project provides the `OdinDefaultUser` script, which uses the 
 `OdinHandler.Instance.OnMediaAdded` Event to spawn an instance of a prefab with a `PlaybackComponent` for
-each media stream in a given room. The event provides the room name, peer id and media id required
+each media stream in the ODIN room. The event provides the room name, peer id and media id required
 for the `PlaybackComponent` to work. 
 
 We added the `OdinDefaultUser` script as a local-player-only behaviour - so it will only spawn Playbacks as children of the Player.
 This doesn't matter for our radio transmissions, because they can be heard globally and shouldn't react to the distance between the
 local Player and remote Players. It also ensures, that each radio stream will only be spawned once for the player. But it also
-means, that the `OdinDefaultUser` script should only be used for ODIN rooms which do not use proximity voice chat. 
+entails that the `OdinDefaultUser` script should only be used for ODIN rooms which do not make use of proximity voice chat. 
 
 In the next paragraph we'll take a look at how the Tech Demo implements a Proximity Chat which reacts to the distance between local Player and remote Players. We'll also take a look at how to create the "Radio Crackling" Effect in paragraph [Playback Settings](#playback-settings---distance-and-radio-effects).
 
@@ -127,8 +127,8 @@ In the next paragraph we'll take a look at how the Tech Demo implements a Proxim
 ### Proximity Chat - connecting ODIN to the multiplayer framework
 
 In a multiplayer scenario, we encounter the issue of connecting a user's ODIN media stream to the user's avatar
-in the game, e.g. in our demo project we'd want a player's voice in the proximity chat to originate
-from the player's capsule.
+in the game, e.g. in our demo project we'd want a player's voice in the proximity chat to come
+from the player's capsule. But because ODIN and the multiplayer framework don't know of each other's existence, we first have to logically connect the two concepts.
 
 The abstract `AOdinMultiplayerAdapter` script gives access to the methods `string GetUniqueUserId()` and 
 `bool IsLocalUser()`. This adapter is used to connect the player's representation in the multiplayer 
@@ -145,33 +145,33 @@ In the demo project
 we use this information to correctly play black the proximity chat audio at a player's location -
 specifically using the `Odin3dAudioVoiceUser`, which automatically creates a `PlaybackComponent` for each remote user.
 
-The demo project uses Photon as a multiplayer framework, so we add the
-`PhotonToOdinAdapter` to our player. The script uses `PhotonView.ViewID` as a unique user id and
+The demo project utilizes Photon as a multiplayer framework, so we add the
+`PhotonToOdinAdapter` to our player. The adapter uses `PhotonView.ViewID` as a unique user id and
 `PhotonView.IsMine`
 to determine whether the adapter represents a local or a remote player. To switch out Photon for another
-multiplayer framework, simply provide your own implementation of `AOdinMultiplayerAdapter`.
+multiplayer framework, simply provide your own class extending `AOdinMultiplayerAdapter`.
 
 ### Playback Settings - Distance and Radio Effects
 
-ODIN relies Unity's `Audio Source` Components to play Media Streams. We can therefore just use the built in functionality of Audio Sources to adjust the distance at which players can hear each other. For any `AOdinUser` implementation we use (i.e. `OdinDefaultUser` for Radio transmissions and `Odin3dAudioVoiceUser` for Proximity Voice Chat) we can reference a Prefab that will be spawned for each
-Media Stream. These Prefabs not only have a `PlaybackComponent` on them, but also contain an `Audio Source`. So, to change the Playback Behaviour of Media Streams in-game, we have to change the `Audio Source` Settings on the Prefab. The Tech Demo uses the Prefabs `OdinRadioAudioSource` and `OdinVoiceAudioSource` in the `ODIN-Sample > Prefabs` folder. 
+ODIN relies on Unity's `AudioSource` Components to play Media Streams. We can therefore just use the built in functionality of Audio Sources to adjust the distance at which players can hear each other. For any `AOdinUser` implementation (i.e. `OdinDefaultUser` for Radio transmissions and `Odin3dAudioVoiceUser` for Proximity Voice Chat) we can reference a prefab that will be spawned for each
+Media Stream. These Prefabs not only have a `PlaybackComponent` on them, but also contain an `AudioSource`. So, to change the Playback Behaviour of Media Streams in-game, we have to change the `AudioSource` Settings on the prefab. The Tech Demo uses the prefabs `OdinRadioAudioSource` and `OdinVoiceAudioSource` in the `ODIN-Sample > Prefabs` folder. 
 
-The `OdinRadioAudioSource` prefab simply has a full 2D `Spatial Blend` setting and the `Bypass Reverb Zone` enabled. The latter lets us avoid Unity's Reverb Zones, e.g. Echo effects in large rooms. The most interesting setting can be found in the `Output` option - here we reference an Audio Mixer Group Controller. The Radio Group Controller defines the list of effects that the incoming Radio Room Media Streams go through, before being output to the User. Using these effects creates the Radio's crackling effect, giving Players a more immersive Experience.
+The `OdinRadioAudioSource` prefab simply has a full 2D `Spatial Blend` setting and the `Bypass Reverb Zone` enabled. The latter lets us avoid Unity's Reverb Zones, e.g. Echo effects in large rooms. The most interesting setting can be found in the `Output` option - here we reference an Audio Mixer Group Controller. The Radio Group Controller defines the list of effects that the incoming Radio room Media Streams go through, before being output to the User. The combination of these effects creates the Radio's crackling effect, giving Players a more immersive experience.
 
 ![The Radio Mixer Settings](Documentation/ODIN-TechDemo-RadioEffects.png)
 
-The `OdinVoiceAudioSource` prefab on the other hand has a full 3D `Spatial Blend` setting and does not bypass reverb zones, as we want the `Audio Source` here to simulate a human voice in the real world. The prefab uses the 3D Sound Settings of the `Audio Source` Component to further specify this effect - the `Min Distance` value defines the distance at which the voice will be heared at full volume and the `Max Distance` defines the distance at which we won't hear the voice anymore.
-Additionally we can see the `Volume Rolloff` set to `Logarithmic Rolloff` - this best approximates a real world setting, but can easily be customized by choosing a linear or custom rolloff.
+The `OdinVoiceAudioSource` prefab on the other hand has a full 3D `Spatial Blend` setting and does not bypass reverb zones - we want this `AudioSource` to simulate a human voice in the real world, which is naturally affected by the environment. The prefab uses the 3D Sound Settings of the `AudioSource` component to further specify this effect - the `Min Distance` value defines the distance at which the voice will be heared at full volume and the `Max Distance` defines the distance at which we won't hear the voice anymore.
+Additionally we can see the `Volume Rolloff` set to `Logarithmic Rolloff` - this best approximates a real world setting. If required, the rolloff can easily be customized by choosing a linear or custom setting.
 
 ![The Voice Audio 3D Sound Settings](Documentation/ODIN-TechDemo-ProximitySettings.png)
 
- These three settings basically define the fading-behaviour of a player's voice in the distance - at least when there aren't any objects between the audio source and listener. Occlusion effects are not part of Unity's Audio System - but we've included our own, custom solution for this in the Tech Demo, which is explained in depth in the [Audio Occlusion paragraph](#audio-occlusion).
+ These three options majorly define the fading behaviour of a player's voice in the distance - at least when there aren't any objects between the audio source and listener. Occlusion effects are not part of Unity's Audio System, but we've included our own, custom solution for this in the Tech Demo, which is explained in-depth in the [Audio Occlusion paragraph](#audio-occlusion).
 
 ### Proximity Chat - Room Optimization
 
-Another feature of ODIN is, that the ODIN servers can automatically disconnect the transmission of incoming Media Streams based on the distance between the local player and other players in the ODIN room. This allows us to optimize the bandwidth required for each player to stay in a room, avoiding unnecessary downstreams for Voice Chat that can't be heard by the player due to distance anyway! Of course, we only want to use this for proximity-based ODIN rooms, not for global rooms like the Radio Chat.
+Another feature of ODIN is, that the ODIN servers can automatically stop the transmission of Media Streams based on the spatial distance between the local player and other players in the ODIN room. This allows us to optimize the bandwidth required for each player, avoiding unnecessary downstreams for voice transmissions that can't be heard by the player due to distance anyway! Of course, we only want to use this for proximity-based ODIN rooms, not for global rooms like the Radio Chat.
 
-To enable this feature, we use the functions 
+To enable this feature, we use the methods 
 
 ```c#
 room.SetPositionScale(scale);
@@ -180,50 +180,56 @@ and
 ```c#
 room.UpdatePosition(position.x, position.y);
 ```
-As ODIN is not aware of the scale your game is operating at, it initially optimizes streams of Peers, whose position is outside of a Unit Circle around the local client. If we use the [previously mentioned `Max Distance`](#playback-settings---distance-and-radio-effects) to calculate `scale` as
+As ODIN is not aware of the scale your game is operating at, it initially uses a Unit Circle as the cutoff radius. If we use the [previously mentioned `Max Distance`](#playback-settings---distance-and-radio-effects) to calculate `scale` as
 ```c#
 float scale = 1.0f / MaxVoiceDistance;
 ```
-, we can automatically cut off streams that wouldn't be transmitted by the `Audio Source` due to distance anyway. 
+, we can automatically disable streams that wouldn't be transmitted by the `Audio Source` due to distance anyway. 
 
-__Note:__ The position scale should be set to the same value for all Peers in the ODIN room. The scale value also has to be set individually for each room that should use ODIN's optimization feature.
+__Note:__ The position scale should be set to the same value for all Peers in the ODIN room. The scale value also has to be set individually for each room that will utilize ODIN's optimization feature.
 
-For ODIN to be able to use the distance values for optimization, we of course have to transmit player positions at regular intervals. The function `room.UpdatePosition` let's us define the clients current position in the room. If we define the correct room scale, we can simply use the players `transform.position` x and z values. 
+For ODIN to be able to use the distance values for optimization, we have to transmit player positions at regular intervals. The function `room.UpdatePosition` lets us define the client's current position in the room. If we define the correct room scale, we can simply use the player's `transform.position` x and z values. 
 
- __Note:__ For now, we can only transmit 2D positions with this functions. But as most games have a wide horizon but aren't scaled vertically, this is not a real drawback.
+ __Note:__ For now, we can only transmit 2D positions with this method. But as most games have a wide horizon and aren't scaled vertically, this is not a real drawback.
 
- In the Tech Demo, the `OdinPositionUpdate` component regularly updates the player's position using values defined by the `OdinPositionUpdateSettings` scriptable object. Using entries to the Room Settings array, we can define the activation status and the cutoff radius for each ODIN room individually.
+ In the Tech Demo, the `OdinPositionUpdate` component regularly updates the player's position. Using entries to the Room Settings array on the `OdinPositionUpdateSettings` scriptable object, we can define the activation status and the cutoff radius for each ODIN room individually.
 
  ![Room Optimization Settings](Documentation/ODIN-TechDemo-RoomOptimization.png)
-
-
 
 ### Push-To-Talk
 
 Push-To-Talk is handled by the `OdinPushToTalk` script using settings defined in a `OdinPushToTalkSettings` scriptable object. If the push-to-talk button for a specific room is pressed, the script will access the user's mediastream and set a user's mute status using `targetRoom.MicrophoneMedia.SetMute()`.
 
-The `OdinPushToTalkSettings` scriptable object allows rooms to be either be voice-activated or require a button press to talk - if you'd like to make this available as a user-setting, you can use the `OdinPushToTalkSettingsController`, which automatically sets the room's activation method based on a Unity Toggle.
+The `OdinPushToTalkSettings` scriptable object allows rooms to be either be voice-activated or require a button press to talk - if you'd like to make this available as a user-setting, you can use the `OdinPushToTalkSettingsController`, which automatically sets the room's activation method based on a Unity Toggle. Take a look at the Tech Demo's `Settings` prefab (found in `ODIN-Sample > Prefabs > UI`) for more information.
 
 
 ### Audio Filter Settings
 
-The ODIN SDK provides quite a few Room Audio Processing settings, like Voice Activity Detection, Echo Cancellation, Noise Suppression levels that are applied to the user's microphone input. If you're content with using the same settings for all users, you can simply adjust the values on the `OdinManager` prefab ([as shown here](#odinhandler)). 
+The ODIN SDK provides quite a few Room Audio Processing settings, like Voice Activity Detection, Echo Cancellation, Noise Suppression levels and more. If you're content with using the same settings for all users, you can simply adjust the values on the `OdinManager` prefab ([as shown here](#odinhandler)). 
 
-The Tech Demo has a sample implementation on how to allow users to adjust these settings in the game. The `Settings` prefab (`ODIN-Sample > Prefabs > UI`) uses Unity's `Toggle`, `Slider` and `Dropdown` UI components to adjust the Audio Settings. The `OdinAudioFilterSetingsController` script contains entries that map the UI component's input to ODIN's filter values and even stores the changes to file. For a fast implementation into your game, you can use the Tech Demo implementation and adjust the UI graphics to your liking.
+The Tech Demo has a sample implementation on how to allow users to adjust these settings in the game. The `Settings` prefab (found in  `ODIN-Sample > Prefabs > UI`) uses Unity's `Toggle`, `Slider` and `Dropdown` UI components to adjust the Audio Settings. The `OdinAudioFilterSetingsController` script contains entries that map the UI component's input to ODIN's filter values and even stores the changes to file. For a fast integration into your game, you can use the Tech Demo implementation and adjust the UI graphics to your liking.
 
- ![Room Optimization Settings](Documentation/ODIN-TechDemo-AudioFilterSettings.png | width=100px)
+ ![Room Optimization Settings](Documentation/ODIN-TechDemo-AudioFilterSettings.png)
 
 
 ### Choosing an Input Device
 
-TODO
+The previously mentioned `Settings` prefab also allows players to choose their input device. The options that are available are based on Unity's `Microphone.devices` ouput and displayed in the dropdown component. Updating the input device used by ODIN is then as simple as calling
+
+```c#
+MicrophoneReader microphoneReader = OdinHandler.Instance.Microphone;
+microphoneReader.StopListen();
+microphoneReader.CustomInputDevice = true;
+microphoneReader.InputDevice = selectedDevice;
+microphoneReader.StartListen();
+```
+, where the `selectedDevice` is one of the string options listed in the `Microphone.devices` array. The Tech Demo uses the implementation in the `OdinMicrophoneController` script, which also handles saving and loading the users selection in previous game sessions.
 
 
 ## Audio
 
 To better showcase the capabilities of ODIN in apps and games, we've implemented some audio
-features that are often used in games, but not included in Unity's Audio System: Audio Occlusion and Directional Audio. Because we want to keep things simple
-and performant, we're going to approximate those effects, using Unity's ``AudioLowPassFilter`` component
+features that are often used in games, but not included in Unity's Audio System: Audio Occlusion and Directional Audio. Because we want to keep things simple and performant, we're going to approximate those effects, using Unity's ``AudioLowPassFilter`` component
 and by adjusting the volume of individual audio sources.
 
 ### Audio Occlusion
@@ -231,10 +237,8 @@ and by adjusting the volume of individual audio sources.
 Audio Occlusion should occur when an object is placed between the audio listener (our player) and audio sources in the scene - e.g.
 hearing the muffled sounds of an enemy approaching from behind a wall.
 Unity does not have any kind of built-in audio occlusion, so we need to implement our own system. 
-The 
-`OcclusionAudioListener` script contains most of the occlusion logic and is placed with the `AudioListener` script
-on our local player object. The `OcclusionAudioListener` registers objects with colliders, that enter the detection range and have at 
-least one `AudioSource` script attached in the transform hierarchy. By default the detection range 
+The `OcclusionAudioListener` script contains most of the occlusion logic and is placed, together with the `AudioListener` script,
+on our local player object. The `OcclusionAudioListener` registers objects with colliders, that enter the detection range and have at least one `AudioSource` script attached in the transform hierarchy. By default the detection range 
 is set to 100 meters - Audio Sources that are farther away than that are usually 
 not loud enough to be affected meaningfully by our occlusion system.
 We then apply the occlusion effects to each of the registered Audio Sources in every frame. 
@@ -243,26 +247,30 @@ Our occlusion effects have the parameters
 `Volume`, `Cutoff Frequency` and `Lowpass Resonance Q`:
 - **Volume:** Multiplier for the audio source's volume.
 - **Cutoff Frequency:** Removes all frequencies above this value from the output of the Audio Source. This value is probably
-the most important for our occlusion effect, as is makes audio sound muffled. The cutoff frequency can range
+the most important for our occlusion effect, as is makes the audio sound muffled. The cutoff frequency can range
 from 0 to 22.000 Hz.
 - **Lowpass Resonance Q:** This value determines how much the filter dampens self-resonance. This basically means, the 
 higher the value, the better sound is transmitted through the material the filter is representing. E.g. for imitating an iron
 door, the `Lowpass Resonance Q` value should be higher than for imitating a wooden door.
 
 The occlusion effect is based on the thickness of objects between our 
-`AudioListener` and the `AudioSource`. For each audio source we check for colliders placed between the listener and the source (using raycasts) and
+`AudioListener` and the `AudioSource`. For each audio source we check for colliders placed between the listener and the source using raycasts and
 determine the thickness of the collider. This thickness value is then used to look
 up the final effect values from an `AudioEffectDefinition` ScriptableObject. For each of 
 the three parameters `Volume`, `Cutoff Frequency` and `Lowpass Resonance Q` the ScriptableObject
-contains a curve mapping from the collider's thickness on the x-Axis to the parameter value
+contains a curve, which maps from the collider's thickness on the x-Axis to the parameter value
 on the y-Axis.
+
+The image below shows an Audio Effect Definition Scriptable Object for the Concrete material. When selecting the `Cutoff Frequency Curve`, Unity's Curve Editor window shows up to allow finetuning the settings. The x-axis displays the thickness of an occluding object in meters. The curve then maps to the cutoff frequency displayed on the y-axis.
+
+![Image of an Audio Effect Definition Scriptable Object](Documentation/ODIN-TechDemo-OcclusionEffectSettings.png)
 
 The `AudioEffectDefinition` is retrieved using one of two options:
 - By placing an `AudioObstacle` script on the collider's gameobject. This can be
 used to customize a collider's occlusion effect and give it a certain material's damping
 behaviour. The demo uses the `AudioObstacle` to define the occlusion effect of a brick wall,
 a wooden door, a glass pane or even a 100% soundproof barrier.
-- Using the default `AudioEffectDefinition` - this option is used, if no `AudioObstacle`
+- By falling back to the default `AudioEffectDefinition` - this option is used, if no `AudioObstacle`
 is attached to the collider. 
 
 You can create your own `AudioEffectDefinition` by using the `Create > Odin-Sample > AudioEffectDefinition` 
@@ -285,21 +293,31 @@ please take a look at the implementation of [Head Related Transfer Functions (HR
 
 ### Environmental Effects
 
-TODO
+The Tech Demo Level contains a few rooms, that highlight the Audio Occlusion effect for different materials. Additionally, we've used Unity's `AudioReverbZone` components to add environmental effects to these rooms, to further increase the players immersion. Unity provides a few presets which simulate different environments - e.g. the Demo Level's "Brick Room" uses the `Stone Corridor` preset - but also allows to be set to a custom arrangement. The effect will start to be heared at `MaxDistance` and is at full force inside of the `MinDistance` radius.
+ 
+While the Voice transmissions are affected by the reverb zones, the Radio transmissions are not, due to the `Bypass Reverb Zone` setting on the Playback Prefab - as described [here](#playback-settings---distance-and-radio-effects).
+
+![Image of the Brick Room with the highlighted Audio Reverb Zone](Documentation/ODIN-TechDemo-EnvironmentalEffects.png)
 
 ## Game Logic
 
 ### Player Name and Color Synchronization
 
-The `OdinNameDisplay` and `OdinSyncedColor` scripts use the ODIN's custom User Data to synchronize the Player's name and avatar color. With `OdinHandler.Instance.OnPeerUserDataChanged.AddListener()` we listen to any changes in a remote peers User Data - if the peer's `UniqueUserId` equals the Multiplayer Adapter's `GetUniqueUserId()`, we read the name and display it above the player's avatar using a world-space canvas and display the color on the avatar's mesh.
+The `OdinNameDisplay` and `OdinSyncedColor` scripts use the ODIN's custom User Data to synchronize the player's name and avatar color. With `OdinHandler.Instance.OnPeerUserDataChanged.AddListener()` we listen to any changes on a remote peers User Data - if the peer's `UniqueUserId` equals the Multiplayer Adapter's `GetUniqueUserId()`, we read the name and display it above the peer's avatar using a world-space canvas and display the color on the avatar's mesh.
+
+### Mobile Controls
+
+Because ODIN works on mobile platforms, we've added mobile controls to the Tech Demo. The implementation is based on Unity's new Input System and allows players to move, rotate, use Push-To-Talk and switch from 3rd to 1st-person view with On-Screen controls. Take a look at the `UI > MobileControlsCanvas` in the DemoLevel scene's hierarchy for implementation details. The mobile controls can be simulated in Editor by selecting the `Enable in Editor` option on the `ActivateIfMobile` script. 
+
+![Activated mobile controls in the Tech Demo](Documentation/ODIN-TechDemo-MobileControls.png)
 
 ### Toggling the in-game radio objects
 
-The `ToggleRadioBehaviour` script implements the basic behaviour for turning the in-game radio sources on and off - if an  avatar enters the detection radio, the controlling player will be able to toggle the radio status with a button press. The status then gets synchronized with the `PhotonRadioSynchronization` behaviour, which listens to the toggle behaviour's `onRadioToggled` UnityEvent.
+The `ToggleRadioBehaviour` script implements the basic behaviour for turning the in-game radio sources on and off - if an  avatar enters the detection radio, the controlling player will be able to toggle the radio status with a button press. The status then gets synchronized with the `PhotonRadioSynchronization` behaviour, which listens to the toggle's `onRadioToggled` UnityEvent.
 
 If you'd like to implement another multiplayer framework, simply replace the `PhotonRadioSynchronization` with your own synchronization behaviour. 
 
 ### Switching Player Views
 
-User's can switch from 3rd-person to 1st-person view on button press - this is implemented in the `ToggleViews` script by toggling game objects found in the `ODINPlayer > LocalPlayerBehaviours > ControllerState` hierarchy of the `ODINPlayer` prefab. The `FirstPersonBehavior` object contains the camera and behaviours for 1st-person controls, the `ThirdPersonBehavior` contains everything for 3rd-person controls.
+Users can switch from 3rd-person to 1st-person view on button press - this is implemented in the `ToggleViews` script by toggling game objects found in the `ODINPlayer > LocalPlayerBehaviours > ControllerState` hierarchy of the `ODINPlayer` prefab. The `FirstPersonBehavior` object contains the camera and behaviours for 1st-person controls, the `ThirdPersonBehavior` contains everything for 3rd-person controls.
 
