@@ -207,7 +207,7 @@ The `OdinPushToTalkSettings` scriptable object allows rooms to be either be voic
 
 The ODIN SDK provides quite a few Room Audio Processing settings, like Voice Activity Detection, Echo Cancellation, Noise Suppression levels and more. If you're content with using the same settings for all users, you can simply adjust the values on the `OdinManager` prefab ([as shown here](#odinhandler)). 
 
-The Tech Demo has a sample implementation on how to allow users to adjust these settings in the game. The `Settings` prefab (found in  `ODIN-Sample > Prefabs > UI`) uses Unity's `Toggle`, `Slider` and `Dropdown` UI components to adjust the Audio Settings. The `OdinAudioFilterSetingsController` script contains entries that map the UI component's input to ODIN's filter values and even stores the changes to file. For a fast integration into your game, you can use the Tech Demo implementation and adjust the UI graphics to your liking.
+The Tech Demo has a sample implementation on how to allow users to adjust these settings in the game. The `Settings` prefab (found in  `ODIN-Sample > Prefabs > UI`) uses Unity's `Toggle`, `Slider` and `Dropdown` UI components to adjust the Audio Settings. The `OdinAudioFilterSettingsController` script contains entries that map the UI component's input to ODIN's filter values and even stores the changes to file. For a fast integration into your game, you can use the Tech Demo implementation and adjust the UI graphics to your liking.
 
  ![The UI for adjusting the Audio Filter Settings.](Documentation/ODIN-TechDemo-AudioFilterSettings.webp)
 
