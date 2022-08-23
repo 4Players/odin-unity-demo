@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ODIN_Sample.Scripts.Runtime.Odin;
 using Photon.Pun;
 using Photon.Realtime;
@@ -26,14 +27,9 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             Assert.IsNotNull(sceneToLoad);
         }
 
-        public void LeaveRoom()
-        {
-            if(!_wasSceneLoadRequested)
-                LeavePhotonRoom();
-        }
-
         private void OnEnable()
         {
+            _wasSceneLoadRequested = false;
             PhotonNetwork.AddCallbackTarget(this);
         }
 
@@ -42,31 +38,77 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
             PhotonNetwork.RemoveCallbackTarget(this);
         }
 
+        private IEnumerator OnApplicationPause(bool pauseStatus)
+        {
+            if (!pauseStatus)
+            {
+                int numTests = 5;
+                while (numTests > 0)
+                {
+                    numTests--;
+                    yield return new WaitForSeconds(0.1f);
+                    bool bPhotonConnected = PhotonNetwork.IsConnected;
+                    bool bOdinConnected = !OdinHandler.Instance.Rooms.Any(r => r.ConnectionRetry > 0);
+                
+                    Debug.Log($"Photon Connected: {bPhotonConnected}, Odin Connected: {bOdinConnected}");
+                    if(!bPhotonConnected || !bOdinConnected)
+                        LeaveRoom();
+                }
+            }
+        }
+
         /// <summary>
         ///     Load lobby scene after successfully leaving the photon room.
         /// </summary>
         public void OnLeftRoom()
         {
+            Debug.Log("On Left room");
             if (_wasSceneLoadRequested)
+            {
+                Debug.Log("Scene Load was requested, leaving odin rooms");
                 StartCoroutine(LeaveOdinRooms());
+            }
+        }
+
+        public void LeaveRoom()
+        {
+            Debug.Log("Leave Room requested");
+            if (!_wasSceneLoadRequested)
+            {
+                Debug.Log("No leave request active, starting Leave Photon Room");
+                LeavePhotonRoom();
+            }
         }
 
         public void LeavePhotonRoom()
         {
-            // Leave the photon room
-            if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.LeaveRoom();
-
             _wasSceneLoadRequested = true;
+            // Leave the photon room
+            if (PhotonNetwork.IsConnected || PhotonNetwork.NetworkClientState == ClientState.Leaving)
+            {
+                Debug.Log("Photon is still connected, trying to leave photon room");
+                PhotonNetwork.LeaveRoom();
+            }
+            else
+            {
+                Debug.Log("Photon Network is not connected, directly starting Leave Odin Rooms");
+                StartCoroutine(LeaveOdinRooms());
+
+            }
         }
 
         private IEnumerator LeaveOdinRooms()
         {
+            Debug.Log("Entered Leave Odin Rooms");
+
             if (OdinHandler.Instance && OdinHandler.Instance.HasConnections)
+            {
                 foreach (var room in OdinHandler.Instance.Rooms)
                 {
                     OdinHandler.Instance.LeaveRoom(room.Config.Name);
                     yield return null;
                 }
+            }
 
             SceneManager.LoadScene(sceneToLoad.Value);
         }
