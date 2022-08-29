@@ -37,25 +37,7 @@ namespace ODIN_Sample.Scripts.Runtime.Photon
         {
             PhotonNetwork.RemoveCallbackTarget(this);
         }
-
-        private IEnumerator OnApplicationPause(bool pauseStatus)
-        {
-            if (!pauseStatus)
-            {
-                int numTests = 5;
-                while (numTests > 0)
-                {
-                    numTests--;
-                    yield return new WaitForSeconds(0.1f);
-                    bool bPhotonConnected = PhotonNetwork.IsConnected;
-                    bool bOdinConnected = !OdinHandler.Instance.Rooms.Any(r => r.ConnectionRetry > 0);
-                
-                    Debug.Log($"Photon Connected: {bPhotonConnected}, Odin Connected: {bOdinConnected}");
-                    if(!bPhotonConnected || !bOdinConnected)
-                        LeaveRoom();
-                }
-            }
-        }
+        
 
         /// <summary>
         ///     Load lobby scene after successfully leaving the photon room.
