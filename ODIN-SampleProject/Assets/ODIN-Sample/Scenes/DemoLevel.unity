@@ -1318,6 +1318,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReconnectDisplay
       objectReference: {fileID: 0}
+    - target: {fileID: 8569609934552950118, guid: 720c8d91e05003b499e99de7a1a3866c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8569609934552950141, guid: 720c8d91e05003b499e99de7a1a3866c, type: 3}
       propertyPath: m_Pivot.x
       value: 0
