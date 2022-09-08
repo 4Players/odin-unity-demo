@@ -23,11 +23,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         ///     The rotation speed.
         /// </summary>
         [SerializeField] private float rotationSpeed = 200.0f;
-
-        /// <summary>
-        ///     On mobile, a slower rotation speed is preferable.
-        /// </summary>
-        [SerializeField] private float mobileRotationSpeedMultiplier = 0.5f;
+        
         [SerializeField] private float mouseRotationSpeedMultiplier = 0.25f;
 
 

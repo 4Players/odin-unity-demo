@@ -24,7 +24,7 @@ namespace ODIN_Sample.Scripts.Runtime.Audio
         [SerializeField] protected bool includeInactiveAudioSourcesInSearch = true;
 
 
-        protected readonly Dictionary<int, AudioSourceData> DetectedAudioSources = new();
+        protected readonly Dictionary<int, AudioSourceData> DetectedAudioSources = new Dictionary<int, AudioSourceData>();
 
 
         protected virtual void Awake()

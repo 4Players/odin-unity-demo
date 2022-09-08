@@ -38,7 +38,7 @@
         ///     Returns a default object, containing effect values that are not perceivable.
         /// </summary>
         public static AudioEffectData Default =>
-            new()
+            new AudioEffectData()
             {
                 Volume = 1.0f,
                 CutoffFrequency = 22000.0f,

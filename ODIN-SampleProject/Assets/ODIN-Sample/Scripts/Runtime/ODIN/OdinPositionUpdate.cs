@@ -39,13 +39,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             while (!OdinHandler.Instance)
                 yield return null;
-
-
-            foreach (Room room in OdinHandler.Instance.Rooms) InitRoom(room);
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
 
-            yield return null;
-            UpdateAllRoomPositions();
+            // Give ODIN a chance to setup the room
+            foreach (Room room in OdinHandler.Instance.Rooms) InitRoom(room);
             StartCoroutine(UpdatePositionRoutine());
         }
 
@@ -60,8 +57,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// <param name="targetRoom">Room to initialize position scale in.</param>
         private void InitRoom(Room targetRoom)
         {
-            OdinRoomProximityStatus status = settings.GetRoomProximityStatus(targetRoom.Config.Name);
-            if (null != status && status.isActive) targetRoom.SetPositionScale(1.0f / status.proximityRadius);
+            if (targetRoom.IsJoined)
+            {
+                OdinRoomProximityStatus status = settings.GetRoomProximityStatus(targetRoom.Config.Name);
+                if (null != status && status.isActive) targetRoom.SetPositionScale(1.0f / status.proximityRadius);
+            }
         }
 
         private IEnumerator UpdatePositionRoutine()

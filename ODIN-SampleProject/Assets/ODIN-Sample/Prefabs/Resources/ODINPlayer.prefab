@@ -1496,7 +1496,6 @@ MonoBehaviour:
   gamepadAxis: {fileID: -8589268155453388520, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   mouseDelta: {fileID: 8009718129426777221, guid: 569da38d22d72724586e88d08c36b7a6, type: 3}
   rotationSpeed: 0.6
-  mobileRotationSpeedMultiplier: 0.75
   mouseRotationSpeedMultiplier: 0.25
   clampPitch: 80
   yawTarget: {fileID: 2753487309498945351}
