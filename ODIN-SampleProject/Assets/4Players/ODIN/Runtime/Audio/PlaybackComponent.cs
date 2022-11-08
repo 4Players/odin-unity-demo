@@ -2,6 +2,8 @@ using OdinNative.Core;
 using OdinNative.Odin;
 using OdinNative.Odin.Media;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -94,7 +96,7 @@ namespace OdinNative.Unity.Audio
         public bool AutoDestroyMediaStream = true;
         internal bool RedirectPlaybackAudio = true;
 
-        private float[] ReadBuffer;
+        private float[] AudioFrameData;
 
         /// <summary>
         /// Use set <see cref="SampleRate"/> on true, <see cref="OdinEditorConfig.RemoteSampleRate"/> on false
@@ -109,7 +111,35 @@ namespace OdinNative.Unity.Audio
         public MediaSampleRate SampleRate;
 
         private AudioClip SpatialClip;
-        private float SpatialClipSilenceScale = 1000f;
+        private int CurrentClipPos => PlaybackSource.timeSamples;
+        
+        private int ClipSamples;
+        
+        /// <summary>
+        /// Use the output settings given by unity. Most of the time this is 44100Hz
+        /// </summary>
+        private int OutSampleRate => AudioSettings.outputSampleRate;
+        
+        /// <summary>
+        /// The end position of the buffered stream audio frames inside the Spatial Audio Clip. We use this to append
+        /// a new Audio Frame from the Media Stream.
+        /// </summary>
+        private int FrameBufferEndPos;
+        
+        /// <summary>
+        /// Whether there are any audio frames stored in the Spatial Audio Clip.
+        /// </summary>
+        private bool IsFrameBufferEmpty = true;
+        
+        /// <summary>
+        /// The time sample Position in the Spatial Audio Clip of the last update.
+        /// </summary>
+        private int PreviousClipPos;
+
+        /// <summary>
+        /// The initial offset of the audio frame buffer from the Current Spatial Clip Sample Position.
+        /// </summary>
+        private const float InitialBufferOffset = 0.06f;
 
         public bool HasActivity
         {
@@ -129,13 +159,88 @@ namespace OdinNative.Unity.Audio
                     .Where(s => s.clip == null)
                     .FirstOrDefault() ?? gameObject.AddComponent<AudioSource>();
 
+            Debug.Log($"Audio output sample rate: {AudioSettings.outputSampleRate}");
+
+            ClipSamples = OutSampleRate * 3;
+            AudioFrameData = new float[960]; // 48khz * 20ms
+            
             // Should be removed if Unity Issue 819365,1246661 is resolved
-            SpatialClip = AudioClip.Create("spatialClip", 1, 1, AudioSettings.outputSampleRate, false);
-            SpatialClip.SetData(new float[] { 1f / SpatialClipSilenceScale }, 0);
+            SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
+            // float[] spatialInit = new float[BufferSamples];
+            // SpatialClip.SetData(spatialInit, 0);
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
         }
 
+        /// <summary>
+        /// We're looking at this in terms of Audio Frames - each time we call PlaybackMedia.AudioReadData, the resulting
+        /// data is one Audio Frame. We store audio frames in the Spatial Audio Clip, which is then used by Unity to play back
+        /// the Odin Media stream.
+        /// To avoid stuttering, we use an audio frame buffer. When first receiving an audio frame, we write the
+        /// received frame data into the clip with an offset (e.g. 60ms). When we receive the next audio frames from the ODIN servers,
+        /// we concatenate those frames into the position given by FrameBufferEndPos.
+        /// </summary>
+        private void FixedUpdate()
+        {
+            
+            // todo: make this more stable, with very low fps this will potentially not trigger
+            int currentToLast = CurrentClipPos - FrameBufferEndPos;
+            if (!IsFrameBufferEmpty && currentToLast > 0 && currentToLast < AudioFrameData.Length)
+            {
+                Debug.Log("Reset to first frame");
+                IsFrameBufferEmpty = true;
+                
+                SpatialClip.SetData(new float[ClipSamples], 0);
+            }
+            
+            bool dontRead = (_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
+                             PlaybackMedia.IsMuted ||
+                             RedirectPlaybackAudio == false);
+            if (dontRead)
+                return;
+            
+            // Check if stream data is available
+            uint audioDataLength = PlaybackMedia.AudioDataLength();
+            if (audioDataLength > 0)
+            {
+                // Debug.Log($"Frame: {Time.renderedFrameCount}, Audio Data Length: {audioDataLength}, Time: {Time.time}");
+                // read stream data
+                uint readResult = PlaybackMedia.AudioReadData(AudioFrameData);
+                // If we get an error, log and abort
+                if (Utility.IsError(readResult))
+                {
+                    Debug.LogWarning($"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
+                    return;
+                }
+                
+                // if this is the first audio frame we received since the stream last stopped sending, start buffering audio frames
+                if (IsFrameBufferEmpty)
+                {
+                    // Wait for InitialBufferOffset seconds before writing the first audio frame
+                    FrameBufferEndPos = CurrentClipPos + (int)(InitialBufferOffset * OutSampleRate);
+                    FrameBufferEndPos %= ClipSamples;
+                    
+                    IsFrameBufferEmpty = false;
+                }
+                
+                
+                // Debug.Log($"Writing data to position {FrameBufferEndPos}, new last pos will be {(FrameBufferEndPos + StreamData.Length) % ClipSamples}");
+                
+                // Write the audio frame data into the audio clip and update frame buffer end position.
+                SpatialClip.SetData(AudioFrameData, FrameBufferEndPos);
+                FrameBufferEndPos += AudioFrameData.Length;
+                FrameBufferEndPos %= ClipSamples;
+                
+                // int distance = CurrentClipPos - FrameBufferEndPos;
+                // if (distance < 0)
+                //     distance += ClipSamples;
+                // // Todo: 
+                // SpatialClip.SetData(new float[distance], FrameBufferEndPos);
+            }
+        }
+
+        
+        
         void OnEnable()
         {
             if (PlaybackMedia != null && PlaybackMedia.HasErrors)
@@ -161,6 +266,7 @@ namespace OdinNative.Unity.Audio
 
             if (PlaybackSource.isPlaying == false)
                 PlaybackSource.Play();
+            PreviousClipPos = PlaybackSource.timeSamples;
         }
 
         void Reset()
@@ -169,72 +275,15 @@ namespace OdinNative.Unity.Audio
             OverrideSampleRate = false;
             SampleRate = OdinHandler.Config.RemoteSampleRate;
             UnitySampleRate = AudioSettings.outputSampleRate;
-            ReadBuffer = null;
+            AudioFrameData = null;
             ResampleBuffer = null;
         }
-
-        void OnAudioFilterRead(float[] data, int channels)
-        {
-            if (_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors || PlaybackMedia.IsMuted || RedirectPlaybackAudio == false) return;
-
-            if (!UseResampler && ReadBuffer == null)
-                ReadBuffer = new float[data.Length / channels];
-
-            if (UseResampler && ResampleBuffer == null)
-            {
-                ResamplerCapacity = data.Length / channels;
-                ResampleBuffer = new float[(int)ResamplerCapacity];
-
-                double bufferSize = Math.Ceiling(ResamplerCapacity * ((double)OdinDefaults.RemoteSampleRate / UnitySampleRate));
-                ReadBuffer = new float[(int)bufferSize];
-            }
-
-            uint read = PlaybackMedia.AudioReadData(ReadBuffer, ReadBuffer.Length);
-            if (Utility.IsError(read))
-            {
-                Debug.LogWarning($"{nameof(PlaybackComponent)} AudioReadData failed with error code {read}");
-                return;
-            }
-
-            if (UseResampler)
-            {
-                uint readResampled = PlaybackMedia.AudioResample(ReadBuffer, (uint)UnitySampleRate, ResampleBuffer, ResampleBuffer.Length);
-                if (Utility.IsError(readResampled))
-                {
-                    Debug.LogWarning($"{nameof(PlaybackComponent)} AudioResample failed with error code {readResampled}");
-                    return;
-                }
-
-                SetData(ResampleBuffer, 0, (int)readResampled);
-            }
-            else
-                SetData(ReadBuffer, 0, (int)read);
-
-            void SetData(float[] buffer, int offset, int count)
-            {
-                int i = 0;
-                var samples = buffer.Skip(offset).Take(count);
-                if (channels > 1)
-                    foreach (float sample in samples)
-                    {
-                        float scaledSample = sample * SpatialClipSilenceScale;
-                        data[i] *= scaledSample;
-                        data[i + 1] *= scaledSample;
-                        i += channels;
-                    }
-                else if (channels > 0)
-                    foreach (float sample in samples)
-                        data[i++] *= sample * SpatialClipSilenceScale;
-                else
-                    Debug.LogException(new NotSupportedException($"SetData {channels}"));
-            }
-        }
-
+        
         void OnDisable()
         {
             PlaybackSource.Stop();
             RedirectPlaybackAudio = false;
-            ReadBuffer = null;
+            AudioFrameData = null;
             ResampleBuffer = null;
         }
 
