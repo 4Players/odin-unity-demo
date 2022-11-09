@@ -26,6 +26,10 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         
         [SerializeField] private float mouseRotationSpeedMultiplier = 0.25f;
 
+        /// <summary>
+        /// On mobile a slower rotation speed is preferable
+        /// </summary>
+        [SerializeField] private float mobileRotationSpeedMultiplier = 0.5f;
 
         /// <summary>
         ///     The max angle the player can look up or down.

@@ -220,17 +220,19 @@ namespace OdinNative.Unity.Audio
         /// </summary>
         private void Update()
         {
+            
+            // let's check if our frame buffer is empty. This is the case e.g. when the current clip sample position
+            // went beyond our Frame Buffer end position -->  Previous.... FrameBufferEndPos ... CurrentClipPos
+            // Checking this ensures that this happened during the last audio update
             if (!IsFrameBufferEmpty && IsBetween(FrameBufferEndPos, PreviousClipPos, CurrentClipPos))
             {
-                Debug.Log("Reset to first frame");
                 IsFrameBufferEmpty = true;
             }
-            
 
-            bool CanRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
+            bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
                              PlaybackMedia.IsMuted ||
                              RedirectPlaybackAudio == false);
-            if (CanRead)
+            if (canRead)
             {
                 ReadAudioFrames();
             }
@@ -239,18 +241,18 @@ namespace OdinNative.Unity.Audio
                 Debug.Log("Not reading audio stream data for some reason.");
             }
 
-            // todo: fix cleaning up...
-
+            // we're dynamically cleaning up behind ourselves. Use the last clip position and the current position
             int cleanUpLength = GetBufferDistance(PreviousClipPos, CurrentClipPos);
+            // but let's actually use two times the clean up length, to have some overlapping in the cleaning from one 
+            // frame to another - otherwise there could sometimes be residual samples left in the clip, leading to noises.
             int startPos = PreviousClipPos - cleanUpLength;
             while (startPos < 0)
                 startPos += ClipSamples;
             if(cleanUpLength > 0)
                 SpatialClip.SetData(new float[cleanUpLength * 2], startPos);
             
-            Debug.Log($"Clean up Length is: {cleanUpLength}");
+            // Debug.Log($"Clean up Length is: {cleanUpLength}");
             PreviousClipPos = CurrentClipPos;
-
         }
 
         private void ReadAudioFrames()
