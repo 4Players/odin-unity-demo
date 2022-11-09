@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using OdinNative.Core;
 using OdinNative.Odin;
@@ -16,8 +17,8 @@ namespace OdinNative.Unity.Audio
         /// <summary>
         ///     The initial offset of the audio frame buffer from the Current Spatial Clip Sample Position.
         /// </summary>
-        private const float InitialBufferOffset = 0.06f;
-
+        private const float InitialBufferOffset = 0.065f;
+        
         /// <summary>
         ///     The Unity AudioSource component for playback
         /// </summary>
@@ -194,8 +195,6 @@ namespace OdinNative.Unity.Audio
             // Should be removed if Unity Issue 819365,1246661 is resolved
             ClipSamples = OutSampleRate * 3;
             SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
-            // float[] spatialInit = new float[BufferSamples];
-            // SpatialClip.SetData(spatialInit, 0);
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
         }
@@ -226,11 +225,11 @@ namespace OdinNative.Unity.Audio
                 Debug.Log("Reset to first frame");
                 IsFrameBufferEmpty = true;
             }
-            PreviousClipPos = CurrentClipPos; 
             
+
             bool CanRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
-                           PlaybackMedia.IsMuted ||
-                           RedirectPlaybackAudio == false);
+                             PlaybackMedia.IsMuted ||
+                             RedirectPlaybackAudio == false);
             if (CanRead)
             {
                 ReadAudioFrames();
@@ -242,13 +241,16 @@ namespace OdinNative.Unity.Audio
 
             // todo: fix cleaning up...
 
+            int cleanUpLength = GetBufferDistance(PreviousClipPos, CurrentClipPos);
+            int startPos = PreviousClipPos - cleanUpLength;
+            while (startPos < 0)
+                startPos += ClipSamples;
+            if(cleanUpLength > 0)
+                SpatialClip.SetData(new float[cleanUpLength * 2], startPos);
+            
+            Debug.Log($"Clean up Length is: {cleanUpLength}");
+            PreviousClipPos = CurrentClipPos;
 
-            // int cleanUpLength = GetBufferDistance(FrameBufferEndPos, CurrentClipPos) - 1000;
-            // int cleanUpPosition = CurrentClipPos - (int) (cleanUpLength);
-            // if (cleanUpPosition < 0)
-            //     cleanUpPosition += ClipSamples;
-            // if(cleanUpLength > 0)
-            //     SpatialClip.SetData(new float[cleanUpLength], FrameBufferEndPos);
         }
 
         private void ReadAudioFrames()
@@ -258,6 +260,12 @@ namespace OdinNative.Unity.Audio
             uint audioDataLength = PlaybackMedia.AudioDataLength();
             while (audioDataLength > 0)
             {
+                if (AudioFrameData.Length != audioDataLength)
+                {
+                    Debug.LogWarning("Changed audio frame data size due to differences between buffer length and remote audio frame size.");
+                    AudioFrameData = new float[audioDataLength];
+                }
+                
                 // Debug.Log($"Frame: {Time.renderedFrameCount}, Audio Data Length: {audioDataLength}, Time: {Time.time}");
                 // read stream data
                 uint readResult = PlaybackMedia.AudioReadData(AudioFrameData);
@@ -266,29 +274,30 @@ namespace OdinNative.Unity.Audio
                 {
                     Debug.LogWarning(
                         $"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
-                    break;
                 }
-
-                // if this is the first audio frame we received since the stream last stopped sending, start buffering audio frames
-                if (IsFrameBufferEmpty)
+                else
                 {
-                    // int secureBufferOffset = (int) Mathf.Max(InitialBufferOffset, Time.fixedDeltaTime * 3.0f);
-                    // Wait for InitialBufferOffset seconds before writing the first audio frame
-                    FrameBufferEndPos = CurrentClipPos + (int)(InitialBufferOffset * OutSampleRate);
+                    // if this is the first audio frame we received since the stream last stopped sending, start buffering audio frames
+                    if (IsFrameBufferEmpty)
+                    {
+                        // int secureBufferOffset = (int) Mathf.Max(InitialBufferOffset, Time.fixedDeltaTime * 3.0f);
+                        // Wait for InitialBufferOffset seconds before writing the first audio frame
+                        FrameBufferEndPos = CurrentClipPos + (int)(InitialBufferOffset * OutSampleRate);
+                        FrameBufferEndPos %= ClipSamples;
+
+                        IsFrameBufferEmpty = false;
+                    }
+
+                    // Debug.Log($"Writing data to position {FrameBufferEndPos}, new last pos will be {(FrameBufferEndPos + StreamData.Length) % ClipSamples}");
+
+                    // Write the audio frame data into the audio clip and update frame buffer end position.
+                    SpatialClip.SetData(AudioFrameData, FrameBufferEndPos);
+                    FrameBufferEndPos += AudioFrameData.Length;
                     FrameBufferEndPos %= ClipSamples;
 
-                    IsFrameBufferEmpty = false;
+                    // Update the audioDataLength to check if we can request more audio frames.
+                    audioDataLength = PlaybackMedia.AudioDataLength();
                 }
-
-                // Debug.Log($"Writing data to position {FrameBufferEndPos}, new last pos will be {(FrameBufferEndPos + StreamData.Length) % ClipSamples}");
-
-                // Write the audio frame data into the audio clip and update frame buffer end position.
-                SpatialClip.SetData(AudioFrameData, FrameBufferEndPos);
-                FrameBufferEndPos += AudioFrameData.Length;
-                FrameBufferEndPos %= ClipSamples;
-
-                // Update the audioDataLength to check if we can request more audio frames.
-                audioDataLength = PlaybackMedia.AudioDataLength();
             }
         }
 
