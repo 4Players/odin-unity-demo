@@ -292,10 +292,9 @@ namespace OdinNative.Unity.Audio
                     SpatialClip.SetData(AudioFrameData, FrameBufferEndPos);
                     FrameBufferEndPos += AudioFrameData.Length;
                     FrameBufferEndPos %= ClipSamples;
-
-                    // Update the audioDataLength to check if we can request more audio frames.
-                    audioDataLength = PlaybackMedia.AudioDataLength();
                 }
+                // Update the audioDataLength to check if we can request more audio frames.
+                audioDataLength = PlaybackMedia.AudioDataLength();
             }
         }
 
