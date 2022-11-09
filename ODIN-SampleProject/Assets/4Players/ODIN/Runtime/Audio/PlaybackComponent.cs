@@ -192,11 +192,7 @@ namespace OdinNative.Unity.Audio
 
             AudioFrameData = new float[960]; // 48khz * 20ms
 
-            // Should be removed if Unity Issue 819365,1246661 is resolved
-            ClipSamples = OutSampleRate * 3;
-            SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
-            PlaybackSource.clip = SpatialClip;
-            PlaybackSource.loop = true;
+            
         }
 
         private void Reset()
@@ -262,7 +258,7 @@ namespace OdinNative.Unity.Audio
             uint audioDataLength = PlaybackMedia.AudioDataLength();
             while (audioDataLength > 0)
             {
-                if (AudioFrameData.Length != audioDataLength)
+                if (null == AudioFrameData || AudioFrameData.Length != audioDataLength)
                 {
                     Debug.LogWarning("Changed audio frame data size due to differences between buffer length and remote audio frame size.");
                     AudioFrameData = new float[audioDataLength];
@@ -329,14 +325,18 @@ namespace OdinNative.Unity.Audio
                 ResamplerCapacity = dspBufferSize * ((uint)OdinDefaults.RemoteSampleRate / UnitySampleRate) /
                                     (int)AudioSettings.speakerMode;
             }
-
+            
+            
+            ClipSamples = OutSampleRate * 3;
+            SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
+            ResetAudioClip();
+            PlaybackSource.clip = SpatialClip;
+            PlaybackSource.loop = true;
+            IsFrameBufferEmpty = true;
+            PreviousClipPos = PlaybackSource.timeSamples;
+            
             if (PlaybackSource.isPlaying == false)
                 PlaybackSource.Play();
-
-
-            IsFrameBufferEmpty = true;
-            ResetAudioClip();
-            PreviousClipPos = PlaybackSource.timeSamples;
         }
 
         private void OnDisable()
