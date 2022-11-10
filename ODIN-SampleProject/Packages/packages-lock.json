@@ -77,6 +77,12 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "io.fourplayers.odin": {
+      "version": "file:io.fourplayers.odin",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

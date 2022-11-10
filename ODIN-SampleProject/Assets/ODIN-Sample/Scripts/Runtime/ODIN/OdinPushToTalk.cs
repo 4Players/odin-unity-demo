@@ -109,7 +109,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                     if (null != pushToTalkRoom.MicrophoneMedia &&
                         pushToTalkRoom.MicrophoneMedia.Id == mediaAddedEventArgs.Media.Id)
                         // mute the microphone initially
-                        pushToTalkRoom.MicrophoneMedia.SetMute(true);
+                        pushToTalkRoom.MicrophoneMedia.SetPause(true);
                 }
         }
 
@@ -134,7 +134,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             {
                 Room roomToCheck = OdinHandler.Instance.Rooms[roomName];
                 if (null != roomToCheck.MicrophoneMedia)
-                    roomToCheck.MicrophoneMedia.SetMute(newIsMuted);
+                    roomToCheck.MicrophoneMedia.SetPause(newIsMuted);
             }
         }
     }
