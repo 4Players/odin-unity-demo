@@ -266,16 +266,11 @@ namespace OdinNative.Unity.Audio
                     }
                 }
             }
-            else
-            {
-                Debug.Log("Can't read.");
-            }
             
+            // Reset the 
             if(Time.time - lastFrameEntryTime > 0.1f)
                 FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
-            
-            
-            
+
             int distanceToClipStart = GetBufferDistance(CurrentClipPos, FrameBufferEndPos);
             float audioBufferTime = distanceToClipStart * 1000.0f / OutSampleRate;
             Debug.Log($"Audio Buffer: {audioBufferTime } ms");
