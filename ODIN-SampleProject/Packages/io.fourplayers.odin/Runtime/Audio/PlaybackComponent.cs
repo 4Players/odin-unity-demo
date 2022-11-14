@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OdinNative.Core;
 using OdinNative.Odin;
 using OdinNative.Odin.Media;
@@ -64,6 +60,7 @@ namespace OdinNative.Unity.Audio
         private ulong _PeerId;
 
         private string _RoomName;
+        private float[] AsyncClipBuffer;
 
         private float[] AudioFrameData;
 
@@ -89,8 +86,7 @@ namespace OdinNative.Unity.Audio
 
         internal bool RedirectPlaybackAudio = true;
         private float[] ResampleBuffer;
-        private float[] AsyncClipBuffer;
-        
+
         private double ResamplerCapacity;
 
         private AudioClip SpatialClip;
@@ -208,9 +204,107 @@ namespace OdinNative.Unity.Audio
             ResampleBuffer = null;
         }
 
+        
+        private void FixedUpdate()
+        {
+            bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
+                             RedirectPlaybackAudio == false);
 
+            if (canRead)
+            {
+                int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * OutSampleRate);
+                float[] readBuffer = new float[readBufferSize];
+
+                uint readResult = PlaybackMedia.AudioReadData(readBuffer, readBufferSize);
+
+                int numZeros = 0;
+                int firstZeroIndex = -1;
+                for (var i = 0; i < readBuffer.Length; i++)
+                {
+                    float entry = readBuffer[i];
+                    if (entry == 0)
+                    {
+                        numZeros++;
+                        if (firstZeroIndex < 0)
+                            firstZeroIndex = i;
+                    }
+                }
+
+                // if (numZeros > 0)
+                // {
+                //     if (numZeros != readBufferSize)
+                //     {
+                //         Debug.Log($"Buffer length: {readBuffer.Length}, found zeros: {numZeros}, first zero index: {firstZeroIndex}");
+                //     }
+                //     else
+                //     {
+                //         Debug.Log("Frame with zeroes");
+                //     }
+                //     // FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
+                // }
+
+                if (Utility.IsError(readResult))
+                {
+                    Debug.LogWarning(
+                        $"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
+                }
+                else
+                {
+                    // Debug.Log($"Readresult: {readResult}, readBuffer length: {readBuffer.Length}, FrameBuffer End Pos: {FrameBufferEndPos}, OutputSampleRade: {AudioSettings.outputSampleRate}");
+                    if (numZeros != readBufferSize)
+                    {
+                        for (int i = 0; i < readBufferSize; i++)
+                        {
+                            int writePosition = FrameBufferEndPos + i;
+                            writePosition %= ClipSamples;
+                            AsyncClipBuffer[writePosition] = readBuffer[i];
+                        }
+
+                        FrameBufferEndPos += readBufferSize;
+                        FrameBufferEndPos %= ClipSamples;
+                        lastFrameEntryTime = Time.time;
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("Can't read.");
+            }
+            
+            if(Time.time - lastFrameEntryTime > 0.1f)
+                FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
+            
+            
+            
+            int distanceToClipStart = GetBufferDistance(CurrentClipPos, FrameBufferEndPos);
+            float audioBufferTime = distanceToClipStart * 1000.0f / OutSampleRate;
+            Debug.Log($"Audio Buffer: {audioBufferTime } ms");
+
+            if (audioBufferTime < 25.0f)
+            {
+                Debug.Log("Entered fast catch up");
+                PlaybackSource.pitch = 0.8f;
+            }else if (audioBufferTime < 50.0f)
+            {
+                PlaybackSource.pitch = 0.9f;
+            }else if (audioBufferTime > 200.0f)
+                PlaybackSource.pitch = 1.1f;
+            else
+            {
+                PlaybackSource.pitch = 1.0f;
+            }
+            
+            
+            
+            SpatialClip.SetData(AsyncClipBuffer, 0);
+
+            PreviousClipPos = CurrentClipPos;
+        }
+
+        private float lastFrameEntryTime;
         private void OnEnable()
         {
+            lastFrameEntryTime = Time.time;
             if (PlaybackMedia != null && PlaybackMedia.HasErrors)
                 Debug.LogWarning(
                     $"{nameof(PlaybackComponent)} on {gameObject.name} had errors in {nameof(PlaybackStream)} and should be destroyed! {PlaybackMedia}");
@@ -236,7 +330,7 @@ namespace OdinNative.Unity.Audio
                                     (int)AudioSettings.speakerMode;
             }
 
-            ClipSamples = OutSampleRate * 3;
+            ClipSamples = OutSampleRate / 2;
             SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
             ResetAudioClip();
             PlaybackSource.clip = SpatialClip;
@@ -245,17 +339,17 @@ namespace OdinNative.Unity.Audio
 
             AudioFrameData = new float[960];
             AsyncClipBuffer = new float[ClipSamples];
-            
+
             IsFrameBufferEmpty = true;
-            FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
+            FrameBufferEndPos = (int)(CurrentClipPos + 0.02f * OutSampleRate);
             FrameBufferEndPos %= ClipSamples;
-            
+
             PreviousClipPos = PlaybackSource.timeSamples;
 
 
             // StartCoroutine(StreamReadRoutine());
         }
-        
+
 
         private void OnDisable()
         {
@@ -279,171 +373,6 @@ namespace OdinNative.Unity.Audio
                     .Medias.Free(MediaStreamId);
         }
 
-        private void FixedUpdate()
-        {
-            bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
-                             RedirectPlaybackAudio == false);
-
-            if (canRead)
-            {
-                int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * OutSampleRate);
-                float[] readBuffer = new float[readBufferSize];
-                uint readResult = PlaybackMedia.AudioReadData(readBuffer);
-                
-                
-                int numZeros = 0;
-                for (var i = 0; i < readBuffer.Length; i++)
-                {
-                    float entry = readBuffer[i];
-                    if (Mathf.Approximately(0,entry))
-                    {
-                        numZeros++;
-                    }
-                }
-                
-                
-                if (numZeros > 0 && numZeros != readBufferSize)
-                {
-                    if (numZeros != readBufferSize)
-                    {
-                        Debug.Log($"Buffer length: {readBuffer.Length}, found zeros: {numZeros}");
-                    }
-                    
-                    FrameBufferEndPos = (int)(CurrentClipPos + 0.02f * OutSampleRate);
-                }
-                
-                
-
-                if (Utility.IsError(readResult))
-                    Debug.LogWarning(
-                        $"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
-                else
-                {
-
-                    // Debug.Log($"Readresult: {readResult}, readBuffer length: {readBuffer.Length}, FrameBuffer End Pos: {FrameBufferEndPos}, OutputSampleRade: {AudioSettings.outputSampleRate}");
-  
-                    for (int i = 0; i < readBuffer.Length; i++)
-                    {
-                        int writePosition = FrameBufferEndPos + i;
-                        writePosition %= ClipSamples;
-                        AsyncClipBuffer[writePosition] = readBuffer[i];
-                    }
-
-                    FrameBufferEndPos += readBufferSize;
-                    FrameBufferEndPos %= ClipSamples;
-                }
-
-               
-            }
-
-            SpatialClip.SetData(AsyncClipBuffer, 0);
-
-            PreviousClipPos = CurrentClipPos;
-        }
-
-
-        // private void FixedUpdate()
-        // {
-        //    
-        //     // let's check if our frame buffer is empty. This is the case e.g. when the current clip sample position
-        //     // went beyond our Frame Buffer end position -->  Previous.... FrameBufferEndPos ... CurrentClipPos
-        //     // Checking this ensures that this happened during the last audio update
-        //     if (!IsFrameBufferEmpty && IsBetween(FrameBufferEndPos, PreviousClipPos, CurrentClipPos))
-        //     {
-        //         IsFrameBufferEmpty = true;
-        //         Debug.Log("Reset Frame Buffer");
-        //     }
-        //
-        //     // string log =
-        //     //     $"Has Errors: {PlaybackMedia.HasErrors} Active: {PlaybackMedia.IsActive} Invalid: {PlaybackMedia.IsInvalid} Muted: {PlaybackMedia.IsMuted} Paused: {PlaybackMedia.IsPaused}";
-        //     // Debug.Log(log);
-        //
-        //     bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
-        //                      PlaybackMedia.IsMuted ||
-        //                      RedirectPlaybackAudio == false);
-        //
-        //     if (canRead)
-        //         ReadAudioFrames();
-        //     else
-        //         Debug.Log("Not reading audio stream data for some reason.");
-        //
-        //     // we're dynamically cleaning up behind ourselves. Use the last clip position and the current position
-        //     int cleanUpLength = GetBufferDistance(PreviousClipPos, CurrentClipPos);
-        //     if (cleanUpLength > 0)
-        //     {
-        //         // but let's actually use two times the clean up length, to have some overlapping in the cleaning from one 
-        //         // frame to another - otherwise there could sometimes be residual samples left in the clip, leading to noises.
-        //         int startPos = PreviousClipPos - cleanUpLength;
-        //         while (startPos < 0)
-        //             startPos += ClipSamples;
-        //         
-        //         SpatialClip.SetData(new float[cleanUpLength * 2], startPos);
-        //     }
-        //
-        //     // Debug.Log($"Clean up Length is: {cleanUpLength}");
-        //     PreviousClipPos = CurrentClipPos;
-        //
-        // }
-        
-        
-        
-        
-        // /// <summary>
-        // ///     We're looking at this in terms of Audio Frames - each time we call PlaybackMedia.AudioReadData, the resulting
-        // ///     data is one Audio Frame. We store audio frames in the Spatial Audio Clip, which is then used by Unity to play back
-        // ///     the Odin Media stream.
-        // ///     To avoid stuttering, we use an audio frame buffer. When first receiving an audio frame, we write the
-        // ///     received frame data into the clip with an offset (e.g. 60ms). When we receive the next audio frames from the ODIN
-        // ///     servers,
-        // ///     we concatenate those frames into the position given by FrameBufferEndPos.
-        // /// </summary>
-        // private void ReadAudioFrames()
-        // {
-        //     // Debug.Log($"Frame: {Time.renderedFrameCount}, Audio Data Length: {audioDataLength}, Time: {Time.time}");
-        //     // read stream data
-        //     uint readResult = PlaybackMedia.AudioReadData(AudioFrameData);
-        //     // If we get an error, log and abort
-        //     if (Utility.IsError(readResult))
-        //         Debug.LogWarning(
-        //             $"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
-        //
-        //     bool containsData = false;
-        //     foreach (float value in AudioFrameData)
-        //         if (value != 0)
-        //             containsData = true;
-        //
-        //     while (containsData)
-        //     {
-        //         // if this is the first audio frame we received since the stream last stopped sending, start buffering audio frames
-        //         if (IsFrameBufferEmpty)
-        //         {
-        //             // int secureBufferOffset = (int) Mathf.Max(InitialBufferOffset, Time.fixedDeltaTime * 3.0f);
-        //             // Wait for InitialBufferOffset seconds before writing the first audio frame
-        //             FrameBufferEndPos = CurrentClipPos + (int)(InitialBufferOffset * OutSampleRate);
-        //             FrameBufferEndPos %= ClipSamples;
-        //
-        //             IsFrameBufferEmpty = false;
-        //         }
-        //
-        //         // Debug.Log($"Writing data to position {FrameBufferEndPos}, new last pos will be {(FrameBufferEndPos + StreamData.Length) % ClipSamples}");
-        //
-        //         // Write the audio frame data into the audio clip and update frame buffer end position.
-        //         SpatialClip.SetData(AudioFrameData, FrameBufferEndPos);
-        //         FrameBufferEndPos += AudioFrameData.Length;
-        //         FrameBufferEndPos %= ClipSamples;
-        //         
-        //         readResult = PlaybackMedia.AudioReadData(AudioFrameData);
-        //         // If we get an error, log and abort
-        //         if (Utility.IsError(readResult))
-        //             Debug.LogWarning(
-        //                 $"{nameof(PlaybackComponent)} AudioReadData failed with error code {readResult}");
-        //
-        //         containsData = false;
-        //         foreach (float value in AudioFrameData)
-        //             if (value != 0)
-        //                 containsData = true;
-        //     }
-        // }
 
         private bool IsBetween(int value, int a, int b)
         {
