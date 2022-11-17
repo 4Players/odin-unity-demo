@@ -58,7 +58,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
         private void OnMediaRemoved(object sender, MediaRemovedEventArgs mediaRemovedEventArgs)
         {
             if (sender is Room sendingRoom)
-                if (sendingRoom.Config.Name == odinRoomName)
+                if (sendingRoom.Config.Name == odinRoomName && null != mediaRemovedEventArgs.Peer)
                 {
                     ulong peerId = mediaRemovedEventArgs.Peer.Id;
                     if (!adapter.IsLocalUser() && !sendingRoom.RemotePeers.Contains(peerId))

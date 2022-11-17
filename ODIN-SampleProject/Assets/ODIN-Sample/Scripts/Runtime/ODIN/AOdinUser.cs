@@ -105,6 +105,46 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
             return false;
         }
+
+        protected bool DestroyPlaybacks(string roomName, ulong peerId)
+        {
+            List<OdinConnectionIdentifier> idsToRemove = new List<OdinConnectionIdentifier>();
+            foreach (var idToPlayback in _registeredRemoteMedia)
+            {
+                if (idToPlayback.Key.RoomName == roomName && idToPlayback.Key.PeerId == peerId)
+                {
+                    idsToRemove.Add(idToPlayback.Key);
+                    Destroy(idToPlayback.Value.gameObject);
+                }
+            }
+            
+            foreach (OdinConnectionIdentifier identifier in idsToRemove)
+            {
+                _registeredRemoteMedia.Remove(identifier);
+            }
+
+            return idsToRemove.Count > 0;
+        }
+        
+        protected bool DestroyPlaybacks(string roomName, long mediaId)
+        {
+            List<OdinConnectionIdentifier> idsToRemove = new List<OdinConnectionIdentifier>();
+            foreach (var idToPlayback in _registeredRemoteMedia)
+            {
+                if (idToPlayback.Key.RoomName == roomName && idToPlayback.Key.MediaId == mediaId)
+                {
+                    idsToRemove.Add(idToPlayback.Key);
+                    Destroy(idToPlayback.Value.gameObject);
+                }
+            }
+            
+            foreach (OdinConnectionIdentifier identifier in idsToRemove)
+            {
+                _registeredRemoteMedia.Remove(identifier);
+            }
+
+            return idsToRemove.Count > 0;
+        }
         
         /// <summary>
         /// Removes a the playback component identified by the given tuple from the registry, without destroying it.

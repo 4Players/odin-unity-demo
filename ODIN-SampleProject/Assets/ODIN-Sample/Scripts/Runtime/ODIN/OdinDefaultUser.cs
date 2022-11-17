@@ -109,15 +109,24 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             }
         }
 
-        private void OnMediaRemoved(object arg0, MediaRemovedEventArgs mediaRemovedArgs)
+        private void OnMediaRemoved(object roomObject, MediaRemovedEventArgs mediaRemovedArgs)
         {
-            if (null != mediaRemovedArgs && null != mediaRemovedArgs.Peer)
+            
+            
+            if (null != mediaRemovedArgs.Peer)
             {
                 string mediaRoomName = mediaRemovedArgs.Peer.RoomName;
                 ulong mediaPeerId = mediaRemovedArgs.Peer.Id;
                 long mediaId = mediaRemovedArgs.MediaStreamId;
 
                 DestroyPlayback(mediaRoomName, mediaPeerId, mediaId);
+            }
+            else
+            {
+                if (roomObject is Room room)
+                {
+                    DestroyPlaybacks(room.Config.Name, mediaRemovedArgs.MediaStreamId);
+                }
             }
         }
     }

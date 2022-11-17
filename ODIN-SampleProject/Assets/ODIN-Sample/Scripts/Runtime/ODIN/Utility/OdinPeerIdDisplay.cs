@@ -98,8 +98,16 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
 
                 if (showMedias)
                 {
-                    displayBuilder.Append("\t \tMedias: ");
-                    foreach (MediaStream mediaStream in peer.Medias) displayBuilder.Append($" ID {mediaStream.Id}");
+                    if (peer.Medias.Count > 0)
+                    {
+                        displayBuilder.Append("\t \tMedias: ");
+                        foreach (MediaStream mediaStream in peer.Medias) displayBuilder.Append($" ID {mediaStream.Id}");
+                    }
+                    else
+                    {
+                        displayBuilder.Append("\t \tNo Medias found.");
+                    }
+                    
 
                     displayBuilder.AppendLine();
                 }

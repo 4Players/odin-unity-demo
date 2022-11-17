@@ -11258,7 +11258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.22745098, g: 0.24705882, b: 0.2784314, a: 0.2}
+  m_Color: {r: 0.22745098, g: 0.24705882, b: 0.2784314, a: 0.5019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -21144,6 +21144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refRoomNames:
   - {fileID: 11400000, guid: 7ed4556c14fa5224a9db9d01fcedbc29, type: 2}
+  - {fileID: 11400000, guid: 52d2f6fe6fbd6ef40a903122690f8c90, type: 2}
   refPlayerName: {fileID: 11400000, guid: 3b0f5470e3024fb409c41d4969c7c596, type: 2}
 --- !u!4 &1424774879
 Transform:
@@ -23105,17 +23106,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!114 &1533999187 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1718405981232917055, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
-  m_PrefabInstance: {fileID: 3460826974037050618}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1560709981
 GameObject:
   m_ObjectHideFlags: 0
@@ -32992,7 +32982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1335947047773771289, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -211.05063
+      value: -178.55063
       objectReference: {fileID: 0}
     - target: {fileID: 1476833908320770145, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
       propertyPath: m_AnchorMax.y
@@ -33330,21 +33320,25 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3996271350946542052, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
-      propertyPath: m_Enabled
+    - target: {fileID: 4340827899542484226, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3996271350946542052, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
-      propertyPath: boolSettings.Array.size
-      value: 1
+    - target: {fileID: 4340827899542484226, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3996271350946542052, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
-      propertyPath: boolSettings.Array.data[0].toggle
-      value: 
-      objectReference: {fileID: 1533999187}
-    - target: {fileID: 3996271350946542052, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
-      propertyPath: boolSettings.Array.data[0].configProperty
-      value: VolumeGate
+    - target: {fileID: 4340827899542484226, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340827899542484226, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340827899542484226, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4342490068975195601, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
       propertyPath: m_AnchorMax.x
@@ -33481,6 +33475,14 @@ PrefabInstance:
     - target: {fileID: 6344064592740817735, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527202492189173532, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 292281143}
+    - target: {fileID: 7527202492189173532, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetActive
       objectReference: {fileID: 0}
     - target: {fileID: 7769337689213736258, guid: b50ad32c8e4210340a56014bea0cbe29, type: 3}
       propertyPath: m_AnchorMax.y

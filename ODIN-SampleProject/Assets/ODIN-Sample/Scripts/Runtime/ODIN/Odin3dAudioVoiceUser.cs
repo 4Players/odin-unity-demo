@@ -84,7 +84,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             {
                 UpdateRoomPlayback(room, mediaAddedEventArgs.Peer);
                 Debug.Log(
-                    $"On Media removed: {room.Config.Name}, {mediaAddedEventArgs.Peer.Id}, {mediaAddedEventArgs.Media.Id}");
+                    $"On Media Added: {room.Config.Name}, Peer: {mediaAddedEventArgs.Peer.Id}, Media: {mediaAddedEventArgs.Media.Id}");
             }
         }
 
@@ -99,7 +99,7 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
             {
                 DestroyPlayback(room.Config.Name, mediaRemovedArgs.Peer.Id, mediaRemovedArgs.MediaStreamId);
                 Debug.Log(
-                    $"On Media removed: {room.Config.Name}, {mediaRemovedArgs.Peer.Id}, {mediaRemovedArgs.MediaStreamId}");
+                    $"On Media removed: {room.Config.Name}, Peer: {mediaRemovedArgs.Peer.Id}, Media: {mediaRemovedArgs.MediaStreamId}");
             }
         }
 

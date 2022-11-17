@@ -568,6 +568,8 @@ public class OdinHandler : MonoBehaviour
         if (EventQueue == null) return;
         while (EventQueue.TryDequeue(out KeyValuePair<object, System.EventArgs> uEvent))
         {
+       
+            
             if (Config.VerboseDebug) Debug.Log($"## {nameof(HandleEventQueue)} TryDequeue <= {uEvent.Value.GetType()}\n\t# {uEvent.Key}");
 
             if (uEvent.Value is ConnectionStateChangedEventArgs)

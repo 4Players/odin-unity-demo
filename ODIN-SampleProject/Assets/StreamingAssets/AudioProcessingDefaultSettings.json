@@ -23,6 +23,10 @@
         {
             "configProperty": "TransientSuppressor",
             "value": true
+        },
+        {
+            "configProperty": "GainController",
+            "value": true
         }
     ],
     "floatSettings": [
