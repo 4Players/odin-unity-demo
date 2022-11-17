@@ -327,6 +327,14 @@ namespace OdinNative.Unity.Audio
             pitch += (targetPitch - pitch) * 0.1f;
             PlaybackSource.pitch = pitch;
 
+            // we also need to clean up any already played data from the clip buffer. Otherwise the playback will loop
+            // once no new data is inserted
+            int cleanUpCount = GetBufferDistance(FrameBufferEndPos, CurrentClipPos);
+            for (int i = 0; i < cleanUpCount; i++)
+            {
+                int cleanUpIndex = (FrameBufferEndPos + i) % ClipSamples;
+                _clipBuffer[cleanUpIndex] = 0.0f;
+            }
 
             // Debug.Log($"Audio Buffer: {audioBufferSize * 1000.0f} ms, Pitch: {pitch}, fixed delta time: {Time.fixedUnscaledDeltaTime}");
             // finally insert the read data into the spatial clip.
