@@ -62,7 +62,6 @@ namespace OdinNative.Unity.Audio
         private string _RoomName;
         private float[] AsyncClipBuffer;
 
-        private float[] AudioFrameData;
 
         private int ClipSamples;
 
@@ -200,7 +199,6 @@ namespace OdinNative.Unity.Audio
             OverrideSampleRate = false;
             SampleRate = OdinHandler.Config.RemoteSampleRate;
             UnitySampleRate = AudioSettings.outputSampleRate;
-            AudioFrameData = null;
             ResampleBuffer = null;
         }
 
@@ -210,14 +208,16 @@ namespace OdinNative.Unity.Audio
             bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
                              RedirectPlaybackAudio == false);
 
+            int numZeros = 0;
+
             if (canRead)
             {
                 int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * OutSampleRate);
+                // todo: avoid creating a float buffer every frame
                 float[] readBuffer = new float[readBufferSize];
 
                 uint readResult = PlaybackMedia.AudioReadData(readBuffer, readBufferSize);
 
-                int numZeros = 0;
                 int firstZeroIndex = -1;
                 for (var i = 0; i < readBuffer.Length; i++)
                 {
@@ -229,19 +229,6 @@ namespace OdinNative.Unity.Audio
                             firstZeroIndex = i;
                     }
                 }
-
-                // if (numZeros > 0)
-                // {
-                //     if (numZeros != readBufferSize)
-                //     {
-                //         Debug.Log($"Buffer length: {readBuffer.Length}, found zeros: {numZeros}, first zero index: {firstZeroIndex}");
-                //     }
-                //     else
-                //     {
-                //         Debug.Log("Frame with zeroes");
-                //     }
-                //     // FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
-                // }
 
                 if (Utility.IsError(readResult))
                 {
@@ -265,36 +252,47 @@ namespace OdinNative.Unity.Audio
                         lastFrameEntryTime = Time.time;
                     }
                 }
+
             }
             
-            // Reset the 
-            if(Time.time - lastFrameEntryTime > 0.1f)
-                FrameBufferEndPos = (int)(CurrentClipPos + 0.1f * OutSampleRate);
+            // Reset the frame buffering, if we haven't received an audio frame for a certain amount of time
+            if(Time.time - lastFrameEntryTime > maxFrameLossTime)
+                FrameBufferEndPos = GetTargetFrameBufferEndPosition();
 
             int distanceToClipStart = GetBufferDistance(CurrentClipPos, FrameBufferEndPos);
-            float audioBufferTime = distanceToClipStart * 1000.0f / OutSampleRate;
-            Debug.Log($"Audio Buffer: {audioBufferTime } ms");
+            float currentAudioBuffer = (float) distanceToClipStart / OutSampleRate;
+            
+            float bufferDifference = currentAudioBuffer - targetAudioBuffer;
+            // projects the current difference between target duration and actual buffer duration onto a range [-1,1]
+            float pitchLerp = Mathf.Sign(bufferDifference) * Mathf.Pow(bufferDifference, 2) /
+                              Mathf.Pow(targetAudioBuffer, 2);
+            float pitchAdjustment = maxPitchAdjustment * Mathf.Clamp( pitchLerp , -1.0f, 0.1f) ;
+            lerpedPitchAdjustment += (pitchAdjustment - lerpedPitchAdjustment) * 0.5f;
+            
+            PlaybackSource.pitch = 1.0f + lerpedPitchAdjustment;
 
-            if (audioBufferTime < 25.0f)
+            Debug.Log($"Zeros: {numZeros} Audio Buffer: {currentAudioBuffer * 1000.0f } ms => Pitch adjustment: {lerpedPitchAdjustment}");
+
+            if (numZeros > 0)
             {
-                Debug.Log("Entered fast catch up");
-                PlaybackSource.pitch = 0.8f;
-            }else if (audioBufferTime < 50.0f)
-            {
-                PlaybackSource.pitch = 0.9f;
-            }else if (audioBufferTime > 200.0f)
-                PlaybackSource.pitch = 1.1f;
-            else
-            {
-                PlaybackSource.pitch = 1.0f;
             }
-            
-            
-            
+
             SpatialClip.SetData(AsyncClipBuffer, 0);
 
             PreviousClipPos = CurrentClipPos;
         }
+
+        private float lerpedPitchAdjustment = 0.0f;
+
+        private static float maxPitchAdjustment => 0.25f;
+
+        private int GetTargetFrameBufferEndPosition()
+        {
+            return (int) (CurrentClipPos + targetAudioBuffer * OutSampleRate);
+        }
+
+        private const float targetAudioBuffer = 0.08f;
+        private const float maxFrameLossTime = 0.1f;
 
         private float lastFrameEntryTime;
         private void OnEnable()
@@ -325,24 +323,20 @@ namespace OdinNative.Unity.Audio
                                     (int)AudioSettings.speakerMode;
             }
 
-            ClipSamples = OutSampleRate / 2;
+            ClipSamples = (int)(OutSampleRate * 2.0f * targetAudioBuffer);
             SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
             ResetAudioClip();
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
             PlaybackSource.Play();
 
-            AudioFrameData = new float[960];
             AsyncClipBuffer = new float[ClipSamples];
 
             IsFrameBufferEmpty = true;
-            FrameBufferEndPos = (int)(CurrentClipPos + 0.02f * OutSampleRate);
+            FrameBufferEndPos = GetTargetFrameBufferEndPosition();
             FrameBufferEndPos %= ClipSamples;
 
             PreviousClipPos = PlaybackSource.timeSamples;
-
-
-            // StartCoroutine(StreamReadRoutine());
         }
 
 
@@ -350,7 +344,6 @@ namespace OdinNative.Unity.Audio
         {
             PlaybackSource.Stop();
             RedirectPlaybackAudio = false;
-            AudioFrameData = null;
             ResampleBuffer = null;
         }
 
