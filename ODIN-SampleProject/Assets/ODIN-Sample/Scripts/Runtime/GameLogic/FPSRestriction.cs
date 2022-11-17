@@ -13,7 +13,7 @@ namespace ODIN_Sample.Scripts.Runtime.GameLogic
         /// </summary>
         [SerializeField] private int targetFPS = 15;
 
-        private void OnEnable()
+        private void Update()
         {
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = targetFPS;

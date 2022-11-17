@@ -32,7 +32,7 @@ namespace OdinNative.Unity.Audio
 
         private const float targetBufferTolerance = 0.015f;
 
-        private const float targetSizePitchAdjustment = 0.05f;
+        private const float targetSizePitchAdjustment = 0.025f;
 
         /// <summary>
         ///     The maximum amount of zero frames in seconds we wait before resetting the current audio buffer. Uses
@@ -232,9 +232,17 @@ namespace OdinNative.Unity.Audio
 
         private void FixedUpdate()
         {
+            // if(Time.unscaledDeltaTime < Time.fixedUnscaledDeltaTime)
+            //     PlaybackSource.velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
+            // else
+            // {
+            //     PlaybackSource.velocityUpdateMode = AudioVelocityUpdateMode.Dynamic;
+            // }
+            
             bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
                              RedirectPlaybackAudio == false);
 
+            int numZeros = 0;
 
             if (canRead)
             {
@@ -244,7 +252,6 @@ namespace OdinNative.Unity.Audio
 
                 uint readResult = PlaybackMedia.AudioReadData(readBuffer, readBufferSize);
 
-                int numZeros = 0;
                 for (var i = 0; i < readBuffer.Length; i++)
                 {
                     float entry = readBuffer[i];
@@ -301,7 +308,7 @@ namespace OdinNative.Unity.Audio
             PlaybackSource.pitch = pitch;
 
 
-            Debug.Log($"Audio Buffer: {audioBufferSize * 1000.0f} ms, Pitch: {pitch}");
+            Debug.Log($"Audio Buffer: {audioBufferSize * 1000.0f} ms, Pitch: {pitch}, fixed delta time: {Time.fixedUnscaledDeltaTime}");
             SpatialClip.SetData(ClipBuffer, 0);
             PreviousClipPos = CurrentClipPos;
         }
@@ -339,6 +346,7 @@ namespace OdinNative.Unity.Audio
             ResetAudioClip();
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
+            // PlaybackSource.velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
             PlaybackSource.Play();
 
             ClipBuffer = new float[ClipSamples];
