@@ -14,9 +14,31 @@ namespace OdinNative.Unity.Audio
     public class PlaybackComponent : MonoBehaviour
     {
         /// <summary>
-        ///     The initial offset of the audio frame buffer from the Current Spatial Clip Sample Position.
+        ///     THe minimum audio buffer size. I do not recommend lowering this, because values below 20ms lead to an extreme
+        ///     amount of noise.
         /// </summary>
-        private const float InitialBufferOffset = 0.2f;
+        private const float minBufferSize = 0.02f;
+
+        /// <summary>
+        ///     The maximum audio buffer size - if we go above this, reset the audio buffer. Will lead to a bit of noise, but
+        ///     reset the audio lag.
+        /// </summary>
+        private const float maxBufferSize = 2f * targetBufferSize;
+
+        /// <summary>
+        ///     The target audio buffer size in seconds
+        /// </summary>
+        private const float targetBufferSize = 0.1f;
+
+        private const float targetBufferTolerance = 0.015f;
+
+        private const float targetSizePitchAdjustment = 0.05f;
+
+        /// <summary>
+        ///     The maximum amount of zero frames in seconds we wait before resetting the current audio buffer. Uses
+        ///     the <see cref="lastFrameReadTime" /> to determine if we have hit this value.
+        /// </summary>
+        private const float maxFrameLossTime = 0.2f;
 
         /// <summary>
         ///     The Unity AudioSource component for playback
@@ -60,10 +82,10 @@ namespace OdinNative.Unity.Audio
         private ulong _PeerId;
 
         private string _RoomName;
-        private float[] AsyncClipBuffer;
+        private float[] ClipBuffer;
 
 
-        private int ClipSamples;
+        private int ClipSamples => SpatialClip.samples;
 
         /// <summary>
         ///     The end position of the buffered stream audio frames inside the Spatial Audio Clip. We use this to append
@@ -75,6 +97,11 @@ namespace OdinNative.Unity.Audio
         ///     Whether there are any audio frames stored in the Spatial Audio Clip.
         /// </summary>
         private bool IsFrameBufferEmpty = true;
+
+        /// <summary>
+        ///     The last time we read an ODIN audio frame into the output buffer.
+        /// </summary>
+        private float lastFrameReadTime;
 
         private PlaybackStream PlaybackMedia;
 
@@ -202,13 +229,12 @@ namespace OdinNative.Unity.Audio
             ResampleBuffer = null;
         }
 
-        
+
         private void FixedUpdate()
         {
             bool canRead = !(_isDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
                              RedirectPlaybackAudio == false);
 
-            int numZeros = 0;
 
             if (canRead)
             {
@@ -218,15 +244,13 @@ namespace OdinNative.Unity.Audio
 
                 uint readResult = PlaybackMedia.AudioReadData(readBuffer, readBufferSize);
 
-                int firstZeroIndex = -1;
+                int numZeros = 0;
                 for (var i = 0; i < readBuffer.Length; i++)
                 {
                     float entry = readBuffer[i];
                     if (entry == 0)
                     {
                         numZeros++;
-                        if (firstZeroIndex < 0)
-                            firstZeroIndex = i;
                     }
                 }
 
@@ -244,60 +268,47 @@ namespace OdinNative.Unity.Audio
                         {
                             int writePosition = FrameBufferEndPos + i;
                             writePosition %= ClipSamples;
-                            AsyncClipBuffer[writePosition] = readBuffer[i];
+                            ClipBuffer[writePosition] = readBuffer[i];
                         }
 
                         FrameBufferEndPos += readBufferSize;
                         FrameBufferEndPos %= ClipSamples;
-                        lastFrameEntryTime = Time.time;
+                        lastFrameReadTime = Time.time;
                     }
                 }
-
             }
-            
-            // Reset the frame buffering, if we haven't received an audio frame for a certain amount of time
-            if(Time.time - lastFrameEntryTime > maxFrameLossTime)
-                FrameBufferEndPos = GetTargetFrameBufferEndPosition();
 
             int distanceToClipStart = GetBufferDistance(CurrentClipPos, FrameBufferEndPos);
-            float currentAudioBuffer = (float) distanceToClipStart / OutSampleRate;
-            
-            float bufferDifference = currentAudioBuffer - targetAudioBuffer;
-            // projects the current difference between target duration and actual buffer duration onto a range [-1,1]
-            float pitchLerp = Mathf.Sign(bufferDifference) * Mathf.Pow(bufferDifference, 2) /
-                              Mathf.Pow(targetAudioBuffer, 2);
-            float pitchAdjustment = maxPitchAdjustment * Mathf.Clamp( pitchLerp , -1.0f, 0.1f) ;
-            lerpedPitchAdjustment += (pitchAdjustment - lerpedPitchAdjustment) * 0.5f;
-            
-            PlaybackSource.pitch = 1.0f + lerpedPitchAdjustment;
+            float audioBufferSize = (float)distanceToClipStart / OutSampleRate;
 
-            Debug.Log($"Zeros: {numZeros} Audio Buffer: {currentAudioBuffer * 1000.0f } ms => Pitch adjustment: {lerpedPitchAdjustment}");
+            // Reset the frame buffering, if we haven't received an audio frame for a certain amount of time
+            bool shouldResetFrameBuffer = Time.time - lastFrameReadTime > maxFrameLossTime;
+            shouldResetFrameBuffer |=
+                audioBufferSize <
+                minBufferSize; // This is a fixed value - anything below this will lead to audio issues
+            shouldResetFrameBuffer |= audioBufferSize > maxBufferSize;
+            if (shouldResetFrameBuffer)
+                FrameBufferEndPos = GetTargetFrameBufferEndPosition();
 
-            if (numZeros > 0)
-            {
-            }
+            float targetPitch = 1.0f;
+            if (audioBufferSize < targetBufferSize - targetBufferTolerance)
+                targetPitch = 1.0f - targetSizePitchAdjustment;
+            else if (audioBufferSize > targetBufferSize + targetBufferTolerance)
+                targetPitch = 1.0f + targetSizePitchAdjustment;
 
-            SpatialClip.SetData(AsyncClipBuffer, 0);
+            float pitch = PlaybackSource.pitch;
+            pitch += (targetPitch - pitch) * 0.1f;
+            PlaybackSource.pitch = pitch;
 
+
+            Debug.Log($"Audio Buffer: {audioBufferSize * 1000.0f} ms, Pitch: {pitch}");
+            SpatialClip.SetData(ClipBuffer, 0);
             PreviousClipPos = CurrentClipPos;
         }
 
-        private float lerpedPitchAdjustment = 0.0f;
-
-        private static float maxPitchAdjustment => 0.25f;
-
-        private int GetTargetFrameBufferEndPosition()
-        {
-            return (int) (CurrentClipPos + targetAudioBuffer * OutSampleRate);
-        }
-
-        private const float targetAudioBuffer = 0.08f;
-        private const float maxFrameLossTime = 0.1f;
-
-        private float lastFrameEntryTime;
         private void OnEnable()
         {
-            lastFrameEntryTime = Time.time;
+            lastFrameReadTime = Time.time;
             if (PlaybackMedia != null && PlaybackMedia.HasErrors)
                 Debug.LogWarning(
                     $"{nameof(PlaybackComponent)} on {gameObject.name} had errors in {nameof(PlaybackStream)} and should be destroyed! {PlaybackMedia}");
@@ -323,14 +334,14 @@ namespace OdinNative.Unity.Audio
                                     (int)AudioSettings.speakerMode;
             }
 
-            ClipSamples = (int)(OutSampleRate * 2.0f * targetAudioBuffer);
-            SpatialClip = AudioClip.Create("spatialClip", ClipSamples, 1, AudioSettings.outputSampleRate, false);
+            int clipSamples = (int)(OutSampleRate * 3.0f * targetBufferSize);
+            SpatialClip = AudioClip.Create("spatialClip", clipSamples, 1, AudioSettings.outputSampleRate, false);
             ResetAudioClip();
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
             PlaybackSource.Play();
 
-            AsyncClipBuffer = new float[ClipSamples];
+            ClipBuffer = new float[ClipSamples];
 
             IsFrameBufferEmpty = true;
             FrameBufferEndPos = GetTargetFrameBufferEndPosition();
@@ -359,6 +370,12 @@ namespace OdinNative.Unity.Audio
                     .Rooms[RoomName]?
                     .RemotePeers[PeerId]?
                     .Medias.Free(MediaStreamId);
+        }
+
+
+        private int GetTargetFrameBufferEndPosition()
+        {
+            return (int)(CurrentClipPos + targetBufferSize * OutSampleRate);
         }
 
 
