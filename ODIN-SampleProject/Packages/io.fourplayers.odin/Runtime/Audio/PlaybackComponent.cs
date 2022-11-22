@@ -42,7 +42,7 @@ namespace OdinNative.Unity.Audio
 
         /// <summary>
         ///     The maximum amount of zero frames in seconds we wait before resetting the current audio buffer. Uses
-        ///     the <see cref="lastPlaybackUpdateTime" /> to determine if we have hit this value.
+        ///     the <see cref="LastPlaybackUpdateTime" /> to determine if we have hit this value.
         /// </summary>
         private const float MaxFrameLossTime = 0.2f;
 
@@ -114,17 +114,15 @@ namespace OdinNative.Unity.Audio
         /// <summary>
         ///     The last time we read an ODIN audio frame into the output buffer.
         /// </summary>
-        private float lastPlaybackUpdateTime;
+        private float LastPlaybackUpdateTime;
 
         private PlaybackStream PlaybackMedia;
 
         internal bool RedirectPlaybackAudio = true;
         private float[] ResampleBuffer;
-
         private double ResamplerCapacity;
 
         private AudioClip SpatialClip;
-        private float SpatialClipSilenceScale = 1000f;
         private int UnitySampleRate;
         private bool UseResampler;
 
@@ -234,8 +232,6 @@ namespace OdinNative.Unity.Audio
                     .Where(s => s.clip == null)
                     .FirstOrDefault() ?? gameObject.AddComponent<AudioSource>();
 
-            //
-            // AudioFrameData = new float[960]; // 48khz * 20ms
         }
 
         private void Reset()
@@ -292,7 +288,7 @@ namespace OdinNative.Unity.Audio
                         FrameBufferEndPos += readBufferSize;
                         FrameBufferEndPos %= ClipSamples;
                         // Update the last time we wrote into the playback clip buffer
-                        lastPlaybackUpdateTime = Time.time;
+                        LastPlaybackUpdateTime = Time.time;
                     }
                 }
             }
@@ -303,15 +299,12 @@ namespace OdinNative.Unity.Audio
             float audioBufferSize = (float)distanceToClipStart / OutSampleRate;
 
             // Reset the frame buffering, if we haven't received an audio frame for a certain amount of time
-            bool shouldResetFrameBuffer = Time.time - lastPlaybackUpdateTime > MaxFrameLossTime;
+            bool shouldResetFrameBuffer = Time.time - LastPlaybackUpdateTime > MaxFrameLossTime;
             shouldResetFrameBuffer |=
                 audioBufferSize <
                 MinBufferSize; // This is a fixed value - anything below this will lead to audio issues
             shouldResetFrameBuffer |= audioBufferSize > MaxBufferSize;
-            if (shouldResetFrameBuffer)
-            {
-                FrameBufferEndPos = GetTargetFrameBufferEndPosition();
-            }
+            if (shouldResetFrameBuffer) FrameBufferEndPos = GetTargetFrameBufferEndPosition();
 
             // We'll adjust the playback source pitch to try and keep the audio buffer size close to the target
             float targetPitch = 1.0f;
@@ -343,7 +336,7 @@ namespace OdinNative.Unity.Audio
 
         private void OnEnable()
         {
-            lastPlaybackUpdateTime = Time.time;
+            LastPlaybackUpdateTime = Time.time;
             if (PlaybackMedia != null && PlaybackMedia.HasErrors)
                 Debug.LogWarning(
                     $"{nameof(PlaybackComponent)} on {gameObject.name} had errors in {nameof(PlaybackStream)} and should be destroyed! {PlaybackMedia}");
@@ -407,8 +400,9 @@ namespace OdinNative.Unity.Audio
 
 
         /// <summary>
-        /// Returns the targeted frame buffer end position in time samples. The End position is located <see cref="TargetBufferSize"/> ms
-        /// in front of the current playback clip position.
+        ///     Returns the targeted frame buffer end position in time samples. The End position is located
+        ///     <see cref="TargetBufferSize" /> ms
+        ///     in front of the current playback clip position.
         /// </summary>
         /// <returns>The targeted frame buffer end position in time samples</returns>
         private int GetTargetFrameBufferEndPosition()
@@ -416,18 +410,8 @@ namespace OdinNative.Unity.Audio
             return (int)(CurrentClipPos + TargetBufferSize * OutSampleRate);
         }
 
-
-        private bool IsBetween(int value, int a, int b)
-        {
-            bool v1 = b > a && value >= a && value <= b;
-            bool v2 = a > b && value >= a && value >= b;
-            bool v3 = a > b && value <= a && value <= b;
-
-            return v1 || v2 || v3;
-        }
-
         /// <summary>
-        /// The distance (in time samples) between two time samples on the current playback clip.
+        ///     The distance (in time samples) between two time samples on the current playback clip.
         /// </summary>
         /// <param name="a">First time sample</param>
         /// <param name="b">Second time sample</param>
@@ -441,7 +425,7 @@ namespace OdinNative.Unity.Audio
         }
 
         /// <summary>
-        /// Resets the data in the <see cref="SpatialClip"/>.
+        ///     Resets the data in the <see cref="SpatialClip" />.
         /// </summary>
         private void ResetAudioClip()
         {

@@ -175,11 +175,15 @@ namespace OdinNative.Odin.Media
         public virtual Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken)
         {
             if (IsPaused) return Task.CompletedTask;
-
-            return Task.Factory.StartNew(() => {
-                if (IsMuted) Array.Clear(buffer, 0, buffer.Length);
-                OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
-            }, cancellationToken);
+            
+            return Task.Factory.StartNew((bufferCopyObject) =>
+            {
+                if (bufferCopyObject is float[] bufferCopy)
+                {
+                    if (IsMuted) Array.Clear(bufferCopy, 0, bufferCopy.Length);
+                    OdinLibrary.Api.AudioPushData(Handle, bufferCopy, bufferCopy.Length);
+                }
+            }, buffer.ToArray(), cancellationToken);
         }
 
         /// <summary>
