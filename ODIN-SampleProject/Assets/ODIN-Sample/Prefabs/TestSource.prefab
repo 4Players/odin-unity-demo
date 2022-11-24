@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7222832203153821865}
   - component: {fileID: 4474646598376783118}
   m_Layer: 0
-  m_Name: OdinRadioAudioSource
+  m_Name: TestSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ AudioSource:
   m_GameObject: {fileID: 8012548342026228683}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -4024419287571509751, guid: b7046d9e5d9f0824bab6670f346b26b8, type: 2}
+  OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1

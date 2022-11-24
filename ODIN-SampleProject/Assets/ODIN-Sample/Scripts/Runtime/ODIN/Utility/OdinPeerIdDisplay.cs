@@ -60,14 +60,8 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
                     if (null != room.MicrophoneMedia)
                     {
                         long micMediaId = room.MicrophoneMedia.Id;
-                        Peer microphoneMediaOwner = default;
-                        foreach (Peer peer in room.RemotePeers)
-                            if (peer.Medias.Contains(micMediaId))
-                                microphoneMediaOwner = peer;
-
-                        if (null != microphoneMediaOwner)
                             displayBuilder.AppendLine(
-                                $"Local Users Microphone Id: {room.MicrophoneMedia.Id}, Peer Id: {microphoneMediaOwner.Id}");
+                                $"Local Users Microphone Id: {micMediaId}");
                     }
 
                     AppendPeer(room.Self, "Local", false);
@@ -90,11 +84,21 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Utility
             {
                 displayBuilder.Append("\t");
                 OdinSampleUserData fromUserData = OdinSampleUserData.FromUserData(peer.UserData);
-                displayBuilder.AppendLine(
-                    $"<b>{fromUserData.name}</b> ({suffix})");
+                if (null != fromUserData)
+                {
+                    displayBuilder.AppendLine(
+                        $"<b>{fromUserData.name}</b> ({suffix})");
+                    displayBuilder.AppendLine($"\t \tUnique Id: {fromUserData.uniqueUserId}, Peer Id: {peer.Id}");
+
+                }
+                else
+                {
+                    displayBuilder.AppendLine(
+                        $"{suffix}\t \tPeer Id: {peer.Id}");
+                }
+                
 
 
-                displayBuilder.AppendLine($"\t \tUnique Id: {fromUserData.uniqueUserId}, Peer Id: {peer.Id}");
 
                 if (showMedias)
                 {
