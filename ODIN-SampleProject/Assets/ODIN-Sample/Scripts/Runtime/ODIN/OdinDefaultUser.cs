@@ -47,16 +47,12 @@ namespace ODIN_Sample.Scripts.Runtime.Odin
         {
             while (!OdinHandler.Instance)
                 yield return null;
-
             
             OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
             OdinHandler.Instance.OnMediaRemoved.AddListener(OnMediaRemoved);
             OdinHandler.Instance.OnRoomJoined.AddListener(OnRoomJoined);
             OdinHandler.Instance.OnRoomLeft.AddListener(OnRoomLeft);
-
-            while (null == OdinHandler.Instance.Rooms)
-                yield return null;
-            UpdateRoomPlayback();
+            
         }
 
         private void OnRoomLeft(RoomLeftEventArgs arg0)
