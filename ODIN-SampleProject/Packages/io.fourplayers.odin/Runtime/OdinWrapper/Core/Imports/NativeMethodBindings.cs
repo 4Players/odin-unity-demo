@@ -335,6 +335,25 @@ namespace OdinNative.Core.Imports
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinRoomConnectionStatsDelegate(IntPtr room, [Out] out OdinConnectionStats stats);
+        readonly OdinRoomConnectionStatsDelegate _OdinRoomConnectionStats;
+        /// <summary>
+        /// Retrieves statistics for the underlying connection of the specified room handle.
+        /// </summary>
+        /// <param name="room">*mut OdinRoom</param>
+        /// <param name="stats"><see cref="OdinNative.Core.Imports.NativeBindings.OdinConnectionStats"/>: Statistics for the underlying connection of a room.</param>
+        /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
+        public uint RoomConnectionStats(RoomHandle room, out OdinConnectionStats stats)
+        {
+            using (Lock)
+            {
+                uint error = _OdinRoomConnectionStats(room, out stats);
+                CheckAndThrow(error);
+                return error;
+            }
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinRoomJoinDelegate(IntPtr room, string url, string token);
         readonly OdinRoomJoinDelegate _OdinRoomJoin;
         /// <summary>
@@ -697,20 +716,6 @@ namespace OdinNative.Core.Imports
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate uint OdinAudioDataLenDelegate(IntPtr mediaStream);
-        readonly OdinAudioDataLenDelegate _OdinAudioDataLen;
-        /// <summary>
-        /// Get available audio data size.
-        /// </summary>
-        /// <param name="mediaStream">OdinMediaStream *</param>
-        /// <returns>floats available to read with <see cref="AudioReadData"/></returns>
-        public uint AudioDataLength(StreamHandle mediaStream)
-        {
-            using (Lock)
-                return _OdinAudioDataLen(mediaStream);
-        }
-
-        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinAudioReadDataDelegate(IntPtr mediaStream, [In, Out][MarshalAs(UnmanagedType.LPArray)] float[] buffer, [In] int bufferLength, [In, Out][MarshalAs(UnmanagedType.I4)] OdinChannelLayout channelLayout);
         readonly OdinAudioReadDataDelegate _OdinAudioReadData;
         /// <summary>
@@ -727,6 +732,26 @@ namespace OdinNative.Core.Imports
         {
             using (Lock)
                 return _OdinAudioReadData(mediaStream, buffer, bufferLength, channelLayout);
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinAudioStatsDelegate(IntPtr mediaStream, out OdinAudioStreamStats stats);
+        readonly OdinAudioStatsDelegate _OdinAudioStats;
+        /// <summary>
+        /// Retrieves statistics for the specified `OdinMediaStreamHandle`.
+        /// </summary>
+        /// <remarks>This will only work for remote/output streams.</remarks>
+        /// <param name="mediaStream">OdinMediaStream *</param>
+        /// <param name="stats"><see cref="OdinNative.Core.Imports.NativeBindings.OdinAudioStreamStats"/>: Audio stream statistics.</param>
+        /// <returns>count of written data</returns>
+        public uint AudioStats(StreamHandle mediaStream, out OdinAudioStreamStats stats)
+        {
+            using (Lock)
+            {
+                uint error = _OdinAudioStats(mediaStream, out stats);
+                CheckAndThrow(error);
+                return error;
+            }
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]

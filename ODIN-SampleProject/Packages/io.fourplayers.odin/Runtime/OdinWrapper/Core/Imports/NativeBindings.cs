@@ -16,7 +16,7 @@ namespace OdinNative.Core.Imports
         /// <summary>
         /// ODIN_VERSION
         /// </summary>
-        public const string OdinVersion = "1.1.1";
+        public const string OdinVersion = "1.3.0";
 
         /// <summary>
         /// Valid levels for aggressiveness of the noise suppression
@@ -151,6 +151,87 @@ namespace OdinNative.Core.Imports
             OdinEvent_MessageReceived,
         }
 
+        /// <summary>
+        /// Statistics for the underlying connection of a room.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit)]
+        public struct OdinConnectionStats
+        {
+            /// <summary>
+            /// The amount of outgoing UDP datagrams observed
+            /// </summary>
+            [FieldOffset(0)]
+            public ulong udp_tx_datagrams;
+            /// <summary>
+            /// The amount of outgoing acknowledgement frames observed
+            /// </summary>
+            [FieldOffset(8)]
+            public ulong udp_tx_acks;
+            /// <summary>
+            /// The total amount of bytes which have been transferred inside outgoing UDP datagrams
+            /// </summary>
+            [FieldOffset(16)]
+            public ulong udp_tx_bytes;
+            /// <summary>
+            /// The amount of incoming UDP datagrams observed
+            /// </summary>
+            [FieldOffset(24)]
+            public ulong udp_rx_datagrams;
+            /// <summary>
+            /// The amount of incoming acknowledgement frames observed
+            /// </summary>
+            [FieldOffset(32)]
+            public ulong udp_rx_acks;
+            /// <summary>
+            /// The total amount of bytes which have been transferred inside incoming UDP datagrams
+            /// </summary>
+            [FieldOffset(40)]
+            public ulong udp_rx_bytes;
+            /// <summary>
+            /// Current congestion window of the connection
+            /// </summary>
+            [FieldOffset(48)]
+            public ulong cwnd;
+            /// <summary>
+            /// Congestion events on the connection
+            /// </summary>
+            [FieldOffset(56)]
+            public ulong congestion_events;
+            /// <summary>
+            /// Current best estimate of the connection latency (round-trip-time) in milliseconds
+            /// </summary>
+            [FieldOffset(64)]
+            public float rtt;
+        }
+
+        /// <summary>
+        /// Audio stream statistics.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit)]
+        public struct OdinAudioStreamStats
+        {
+            /// <summary>
+            /// The number of packets processed by the medias jitter buffer.
+            /// </summary>
+            [FieldOffset(0)]
+            public uint jitter_packets_processed;
+            /// <summary>
+            /// The number of packets dropped because they seemed to arrive too early.
+            /// </summary>
+            [FieldOffset(4)]
+            public uint jitter_packets_dropped_too_early;
+            /// <summary>
+            /// The number of packets processed because they seemed to arrive too late.
+            /// </summary>
+            [FieldOffset(8)]
+            public uint jitter_packets_dropped_too_late;
+            /// <summary>
+            /// The number of packets marked as lost during transmission.
+            /// </summary>
+            [FieldOffset(12)]
+            public uint jitter_packets_lost;
+        }
+
         [StructLayout(LayoutKind.Explicit)]
         internal struct OdinEvent_JoinedData
         {
@@ -170,6 +251,10 @@ namespace OdinNative.Core.Imports
             [FieldOffset(48)]
             [MarshalAs(UnmanagedType.U8)]
             public ulong own_peer_id;
+            [FieldOffset(56)]
+            public IntPtr own_user_id;
+            [FieldOffset(64)]
+            public ulong own_user_id_len;
         }
 
         [StructLayout(LayoutKind.Explicit)]

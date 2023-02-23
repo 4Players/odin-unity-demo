@@ -26,6 +26,7 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_room_id", out _OdinRoomId);
             handle.GetLibraryMethod("odin_room_customer", out _OdinRoomCustomer);
             handle.GetLibraryMethod("odin_room_peer_id", out _OdinRoomPeerId);
+            handle.GetLibraryMethod("odin_room_connection_stats", out _OdinRoomConnectionStats);
             handle.GetLibraryMethod("odin_room_join", out _OdinRoomJoin);
             handle.GetLibraryMethod("odin_room_add_media", out _OdinRoomAddMedia);
             handle.GetLibraryMethod("odin_room_update_user_data", out _OdinRoomUpdateUserData);
@@ -40,8 +41,8 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_media_stream_media_id", out _OdinMediaStreamMediaId);
             handle.GetLibraryMethod("odin_media_stream_peer_id", out _OdinMediaStreamPeerId);
             handle.GetLibraryMethod("odin_audio_push_data", out _OdinAudioPushData);
-            handle.GetLibraryMethod("odin_audio_data_len", out _OdinAudioDataLen);
             handle.GetLibraryMethod("odin_audio_read_data", out _OdinAudioReadData);
+            handle.GetLibraryMethod("odin_audio_stats", out _OdinAudioStats);
             handle.GetLibraryMethod("odin_audio_mix_streams", out _OdinAudioMixStreams);
             handle.GetLibraryMethod("odin_audio_process_reverse", out _OdinAudioProcessReverse);
             handle.GetLibraryMethod("odin_resampler_create", out _OdinResamplerCreate);
