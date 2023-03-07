@@ -16,7 +16,7 @@ namespace OdinNative.Core.Imports
         /// <summary>
         /// ODIN_VERSION
         /// </summary>
-        public const string OdinVersion = "1.3.0";
+        public const string OdinVersion = "1.3.1";
 
         /// <summary>
         /// Valid levels for aggressiveness of the noise suppression

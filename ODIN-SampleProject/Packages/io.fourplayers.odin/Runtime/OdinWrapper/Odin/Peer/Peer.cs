@@ -88,6 +88,7 @@ namespace OdinNative.Odin.Peer
         /// </summary>
         /// <remarks>If true, on the stream no data will be read or pushed even if AudioPushData/AudioReadData is called</remarks>
         /// <param name="value">true is mute or false</param>
+        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
         public void SetMuteMedias(bool value)
         {
             Medias.SetMute(value);

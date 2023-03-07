@@ -31,11 +31,6 @@ ODIN is a cross-platform software development kit (SDK) that enables developers
 to integrate real-time chat technology into multiplayer games, apps and
 websites.
 
-**:warning: Important Notice:**
-
-> Please note that ODIN is currently in **Beta** and features are being added
-> over time.
-
 ## Getting Started
 
 The current release of ODIN C# Wrapper is a
