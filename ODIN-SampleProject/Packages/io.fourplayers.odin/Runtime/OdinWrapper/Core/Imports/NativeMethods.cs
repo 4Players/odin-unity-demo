@@ -18,6 +18,7 @@ namespace OdinNative.Core.Imports
             Handle = handle;
 
             handle.GetLibraryMethod("odin_startup", out _OdinStartup);
+            handle.GetLibraryMethod("odin_startup_ex", out _OdinStartupEx);
             handle.GetLibraryMethod("odin_shutdown", out _OdinShutdown);
             handle.GetLibraryMethod("odin_room_create", out _OdinRoomCreate);
             handle.GetLibraryMethod("odin_room_configure_apm", out _OdinRoomConfigureApm);

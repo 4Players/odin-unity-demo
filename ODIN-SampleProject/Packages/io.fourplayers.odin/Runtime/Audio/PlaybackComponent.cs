@@ -103,11 +103,6 @@ namespace OdinNative.Unity.Audio
         private int _FrameBufferEndPos;
 
         /// <summary>
-        ///     Whether there are any audio frames stored in the Spatial Audio Clip.
-        /// </summary>
-        private bool _IsFrameBufferEmpty = true;
-        
-        /// <summary>
         ///     The last time we read an ODIN audio frame into the output buffer.
         /// </summary>
         private float LastPlaybackUpdateTime;
@@ -353,7 +348,6 @@ namespace OdinNative.Unity.Audio
 
             _ClipBuffer = new float[ClipSamples];
 
-            _IsFrameBufferEmpty = true;
             _FrameBufferEndPos = GetTargetFrameBufferEndPosition();
             _FrameBufferEndPos %= ClipSamples;
         }

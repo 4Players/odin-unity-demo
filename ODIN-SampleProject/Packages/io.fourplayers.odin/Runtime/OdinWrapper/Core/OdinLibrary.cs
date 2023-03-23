@@ -148,8 +148,9 @@ namespace OdinNative.Core
         {
             string message = Api.GetErrorMessage(error);
             OdinException result = new OdinException(error, message);
-            if (extraMessage != null)
+            if (!string.IsNullOrEmpty(extraMessage))
                 result.Data.Add("extraMessage", extraMessage);
+
             return result;
         }
     }

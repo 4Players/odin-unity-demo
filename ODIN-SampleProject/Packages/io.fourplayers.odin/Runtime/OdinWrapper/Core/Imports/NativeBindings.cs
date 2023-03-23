@@ -16,7 +16,12 @@ namespace OdinNative.Core.Imports
         /// <summary>
         /// ODIN_VERSION
         /// </summary>
-        public const string OdinVersion = "1.3.1";
+        public const string OdinVersion = "1.4.0";
+
+        /// <summary>
+        /// Frame_SAMPLE_RATE
+        /// </summary>
+        public const UInt32 FrameSAMPLERATE = 48000;
 
         /// <summary>
         /// Valid levels for aggressiveness of the noise suppression

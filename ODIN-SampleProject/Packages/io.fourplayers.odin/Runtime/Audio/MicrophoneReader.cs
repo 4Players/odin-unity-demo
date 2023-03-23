@@ -208,9 +208,16 @@ namespace OdinNative.Unity.Audio
                 SetVolume(ref buffer, bufferScale);
             }
 
+            if (OdinHandler.Instance?.Client?.Rooms == null)
+            {
+                Debug.LogError("Odin hot-reload needs new MicrophoneStream for Microphone Reader component to push audio.");
+                this.enabled = false;
+                return; 
+            }
+
             foreach (Room room in OdinHandler.Instance.Client.Rooms)
             {
-                if (room.MicrophoneMedia != null)
+                if (room?.MicrophoneMedia != null)
                     room.MicrophoneMedia.AudioPushData(buffer);
                 else if (room.IsJoined && OdinHandler.Config.VerboseDebug)
                     Debug.LogWarning($"Room {room.Config.Name} is missing a microphone stream. See Room.CreateMicrophoneMedia");

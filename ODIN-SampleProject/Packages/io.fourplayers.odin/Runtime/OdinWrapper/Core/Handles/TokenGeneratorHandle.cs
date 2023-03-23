@@ -43,5 +43,10 @@ namespace OdinNative.Core.Handles
 
             return result;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(TokenGeneratorHandle)} {this.handle.ToString()} valid {!this.IsInvalid} closed {this.IsClosed}";
+        }
     }
 }
