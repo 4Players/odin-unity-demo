@@ -907,6 +907,7 @@ MonoBehaviour:
   m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &749158572
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,10 +1050,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4541258194720005006, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
-      propertyPath: AccessKey
-      value: ATG2bvE2Re0MF0aQGHqqoyEhjJfs0IgTpcsViPl/XGY7
-      objectReference: {fileID: 0}
     - target: {fileID: 5315226930280199745, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1895,23 +1892,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1964557632 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7270835465501535659, guid: 95cd18d9cb340444eb14b58598e3ef4f, type: 3}
-  m_PrefabInstance: {fileID: 1085074051}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1964557638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1964557632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 129e011d4cfb946e495855a6a7153985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1973801151
 GameObject:
   m_ObjectHideFlags: 0

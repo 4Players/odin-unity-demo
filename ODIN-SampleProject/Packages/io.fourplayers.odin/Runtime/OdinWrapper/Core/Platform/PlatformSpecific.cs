@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -277,6 +278,38 @@ namespace OdinNative.Core.Platform
                     };
                     break;
                 case SupportedPlatform.Android:
+#if UNITY_ANDROID
+                    if (UnityEngine.SystemInfo.unsupportedIdentifier == UnityEngine.SystemInfo.deviceUniqueIdentifier)
+                        goto case SupportedPlatform.Linux;
+
+                    if (CultureInfo.InvariantCulture.CompareInfo.IndexOf(UnityEngine.SystemInfo.processorType, "ARM", CompareOptions.IgnoreCase) >= 0)
+                        {
+                            names = is64Bit
+                                ? new string[] { LinuxLibName,
+                                    string.Format("{0}/{1}/{2}", PackagePath, "android/aarch64", LinuxLibName), // PkgManager (ADB)
+                                    string.Format("{0}/{1}/{2}", AssetPath, "android/aarch64", LinuxLibName), // Editor  (ADB)
+                                    string.Format("{0}/{1}/{2}", AssetStorePath, "android/aarch64", LinuxLibName), // Asset Store  (ADB)
+                                    string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/android/aarch64", LinuxLibName) // PackageCache  (ADB)
+                                    ,string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "Plugins", LinuxLibName)
+                                    ,string.Format("{0}/{1}/{2}/{3}", UnityEngine.Application.dataPath, "Plugins", "aarch64", LinuxLibName), string.Format("{0}/{1}/{2}", "Plugins", "aarch64", LinuxLibName) // Standalone
+                                    ,string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "lib", LinuxLibName)
+                                    ,string.Format("{0}/{1}", UnityEngine.Application.dataPath, LinuxLibName)
+                                }
+                                : new string[] { LinuxLibName,
+                                    string.Format("{0}/{1}/{2}", PackagePath, "android/armv7", LinuxLibName), // PkgManager  (ADB)
+                                    string.Format("{0}/{1}/{2}", AssetPath, "android/armv7", LinuxLibName), // Editor  (ADB)
+                                    string.Format("{0}/{1}/{2}", AssetStorePath, "android/armv7", LinuxLibName), // Asset Store  (ADB)
+                                    string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/android/armv7", LinuxLibName) // PackageCache  (ADB)
+                                    ,string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "Plugins", LinuxLibName)
+                                    ,string.Format("{0}/{1}/{2}/{3}", UnityEngine.Application.dataPath, "Plugins", "armv7", LinuxLibName), string.Format("{0}/{1}/{2}", "Plugins", "armv7", LinuxLibName)  // Standalone
+                                    ,string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "lib", LinuxLibName)
+                                    ,string.Format("{0}/{1}", UnityEngine.Application.dataPath, LinuxLibName)
+                                };
+                    }
+                        else
+                            goto case SupportedPlatform.Linux;
+                    break;
+#endif
                 case SupportedPlatform.Linux:
                     names = is64Bit
                         ? new string[] { LinuxLibName,

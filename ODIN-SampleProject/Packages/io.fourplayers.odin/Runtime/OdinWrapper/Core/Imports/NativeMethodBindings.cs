@@ -39,7 +39,7 @@ namespace OdinNative.Core.Imports
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate bool OdinStartupExDelegate(string version, UInt32 outputSamplerate, OdinChannelLayout outputChannelLayout);
+        internal delegate bool OdinStartupExDelegate(string version, NativeBindings.OdinAudioStreamConfig config);
         readonly OdinStartupExDelegate _OdinStartupEx;
         /// <summary>
         /// Starts the internal ODIN client runtime and allows passing the sample rate and channel layout
@@ -47,10 +47,10 @@ namespace OdinNative.Core.Imports
         /// application.
         /// </summary>
         /// <remarks>Make sure to use the same settings on consecutive calls of this function.</remarks>
-        private bool StartupEx(string version = OdinNative.Core.Imports.NativeBindings.OdinVersion, UInt32 outputSamplerate = OdinNative.Core.Imports.NativeBindings.FrameSAMPLERATE, OdinChannelLayout outputChannelLayout = OdinChannelLayout.OdinChannelLayout_Mono)
+        private bool StartupEx(NativeBindings.OdinAudioStreamConfig config, string version = OdinNative.Core.Imports.NativeBindings.OdinVersion)
         {
             using (Lock)
-                return _OdinStartupEx(version, outputSamplerate, outputChannelLayout);
+                return _OdinStartupEx(version, config);
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
@@ -535,7 +535,7 @@ namespace OdinNative.Core.Imports
             {
                 uint error = _OdinAudioProcessReverse(room, buffer, buffer.Length);
                 if (InternalIsError(error))
-                    CheckAndThrow(error, $"{room} buffer size {buffer.Length}");
+                    CheckAndThrow(error, $"{room} process reverse buffer size {buffer.Length}");
                 return error;
             }
         }

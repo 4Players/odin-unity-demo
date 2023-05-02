@@ -32,7 +32,12 @@ namespace OdinNative.Core.Handles
             
             NativeMethods.OdinStartupExDelegate startupClientLib;
             GetLibraryMethod("odin_startup_ex", out startupClientLib);
-            startupClientLib(OdinNative.Core.Imports.NativeBindings.OdinVersion, OdinNative.Core.Imports.NativeBindings.FrameSAMPLERATE, OdinNative.Core.Imports.NativeBindings.OdinChannelLayout.OdinChannelLayout_Mono);
+            NativeBindings.OdinAudioStreamConfig defaultConfig = new NativeBindings.OdinAudioStreamConfig() 
+            { 
+                sample_rate = OdinNative.Core.Imports.NativeBindings.BlockSamplerate, 
+                channel_count = (byte)OdinNative.Core.Imports.NativeBindings.OdinChannelLayout.OdinChannelLayout_Mono
+            };
+            startupClientLib(OdinNative.Core.Imports.NativeBindings.OdinVersion, defaultConfig);
         }
 
         public void GetLibraryMethod<T>(string name, out T t)

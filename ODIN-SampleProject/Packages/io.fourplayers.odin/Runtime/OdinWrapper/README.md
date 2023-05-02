@@ -9,7 +9,7 @@
 	<a href="https://developers.4players.io/odin">
 		<img src="https://img.shields.io/badge/documentation-%F0%9F%94%8D-blue?style=flat" />
 	</a>
-		<a href="https://discord.gg/9yzdJNUGZS">
+		<a href="https://4np.de/discord">
 		<img src="https://img.shields.io/discord/803630432150224957.svg?style=flat&logo=discord&label=discord" />
 	</a>
 	<a href="mailto:odin@4players.io">
@@ -83,7 +83,7 @@ and learn more about ODIN.
 Join our official Discord server to chat with us directly and become a part of
 the 4Players ODIN community.
 
-[![Join us on Discord](https://developers.4players.io/images/join_discord.png)](https://discord.gg/9yzdJNUGZS)
+[![Join us on Discord](https://developers.4players.io/images/join_discord.png)](https://4np.de/discord)
 
 ### Twitter
 

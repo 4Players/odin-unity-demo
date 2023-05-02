@@ -545,6 +545,12 @@ public class OdinHandler : MonoBehaviour
         HandleNewMediaQueue();
         HandleRemoveMediaQueue();
         HandleEventQueue();
+
+        foreach (Room room in Rooms)
+        {
+            if (room.IsJoined && room.Config.ApmConfig.EchoCanceller)
+                RouteAudioProcess(room);
+        }
     }
 
     void Update()
@@ -552,6 +558,16 @@ public class OdinHandler : MonoBehaviour
         if (Corrupted) return;
 
         HandleActionQueue();
+    }
+
+    private bool RouteAudioProcess(Room room)
+    {
+        int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * AudioSettings.outputSampleRate);
+        if (Config.VerboseDebug)
+            Debug.Log($"EC for {room.Config.Name} audio process size {readBufferSize}");
+        float[] buffer = new float[readBufferSize];
+        AudioListener.GetOutputData(buffer, (int)AudioSpeakerMode.Mono);
+        return room.AudioProcessReverse(buffer);
     }
 
     private IEnumerator HandleActionQueue()

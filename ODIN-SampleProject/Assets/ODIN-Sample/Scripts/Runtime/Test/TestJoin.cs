@@ -35,7 +35,7 @@ public class TestJoin : MonoBehaviour
                 Room currentRoom = OdinHandler.Instance.Rooms[room];
                 if (null != currentRoom && null != currentRoom.MicrophoneMedia)
                 {
-                    currentRoom.MicrophoneMedia.SetMute(!pushToTalk.action.IsPressed());
+                    currentRoom.MicrophoneMedia.SetPause(!pushToTalk.action.IsPressed());
                 }
             }
         }

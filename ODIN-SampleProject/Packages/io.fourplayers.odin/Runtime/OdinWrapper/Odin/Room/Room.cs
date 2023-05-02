@@ -419,6 +419,17 @@ namespace OdinNative.Odin.Room
             return OdinLibrary.Api.RoomUpdatePosition(_Handle, x, y) == Utility.OK;
         }
 
+        /// <summary>
+        /// Processes the reverse audio stream, also known as the loopback data to be used in the ODIN echo
+        /// canceller.This should only be done if you are _NOT_ using <see cref="OdinNative.Core.Imports.NativeMethods.AudioMixStreams"/>.
+        /// </summary>
+        /// <param name="buffer">the audio buffer to process</param>
+        /// <returns>false on error</returns>
+        public bool AudioProcessReverse(float[] buffer)
+        {
+            return OdinLibrary.Api.AudioProcessReverse(_Handle, buffer) == Utility.OK;
+        }
+
         #region Events
         private OdinEventCallback EventDelegate { get; set; }
 
