@@ -38,9 +38,14 @@ namespace OdinNative.Odin.Media
         /// <remarks>If true, no data will be read/pushed for the media handle</remarks>
         public bool IsPaused { get; set; }
         /// <summary>
-        /// Indicates wether or not the media stream is muted
+        /// Indicates wether or not the media stream is muted.
+        ///
+        /// Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.
         /// </summary>
-        /// <remarks>If true, no data will always be empty and thrown away</remarks>
+        /// <remarks>
+        /// 
+        /// If true, will still send data but the data is always empty for silence audio</remarks>
+        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
         public bool IsMuted { get; set; }
         /// <summary>
         /// Indicates wether or not the media stream is active and sending/receiving data
@@ -116,6 +121,7 @@ namespace OdinNative.Odin.Media
         /// Sets <see cref="IsMuted"/>.
         /// </summary>
         /// <param name="value">true for empty data or false</param>
+        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
         public void SetMute(bool value)
         {
             IsMuted = value;
@@ -124,6 +130,7 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Toggles <see cref="IsMuted"/>.
         /// </summary>
+        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
         public void ToggleMute()
         {
             IsMuted = !IsMuted;
@@ -149,7 +156,6 @@ namespace OdinNative.Odin.Media
         public virtual void AudioPushData(float[] buffer)
         {
             if (IsPaused) return;
-            if (IsMuted) Array.Clear(buffer, 0, buffer.Length);
             OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
         }
 
@@ -162,7 +168,6 @@ namespace OdinNative.Odin.Media
         public virtual void AudioPushData(float[] buffer, int length)
         {
             if (IsPaused) return;
-            if (IsMuted) Array.Clear(buffer, 0, buffer.Length);
             OdinLibrary.Api.AudioPushData(Handle, buffer, length);
         }
 
@@ -175,15 +180,11 @@ namespace OdinNative.Odin.Media
         public virtual Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken)
         {
             if (IsPaused) return Task.CompletedTask;
-            
-            return Task.Factory.StartNew((bufferCopyObject) =>
-            {
-                if (bufferCopyObject is float[] bufferCopy)
-                {
-                    if (IsMuted) Array.Clear(bufferCopy, 0, bufferCopy.Length);
-                    OdinLibrary.Api.AudioPushData(Handle, bufferCopy, bufferCopy.Length);
+
+            return Task.Factory.StartNew(() => {
+                    OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
                 }
-            }, buffer.ToArray(), cancellationToken);
+            , cancellationToken);
         }
 
         /// <summary>
@@ -209,6 +210,19 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
+        /// Retrieves statistics for the specified <see cref="MediaStream"/>.
+        /// </summary>
+        /// <remarks>This will only work for remote/output streams.</remarks>
+        /// <param name="stats">Audio stream statistics</param>
+        /// <returns>true on success or false</returns>
+        public virtual bool AudioStats(out Core.Imports.NativeBindings.OdinAudioStreamStats stats)
+        {
+            uint result = OdinLibrary.Api.AudioStats(Handle, out stats);
+            HasErrors = Utility.IsError(result);
+            return result == Utility.OK;
+        }
+
+        /// <summary>
         /// Reads data from the audio stream.
         /// </summary>
         /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
@@ -220,7 +234,6 @@ namespace OdinNative.Odin.Media
             if (IsPaused) return 0;
 
             uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, length);
-            if (IsMuted) Array.Clear(buffer, 0, buffer.Length);
             HasErrors = Utility.IsError(result);
             return result;
         }
@@ -238,7 +251,6 @@ namespace OdinNative.Odin.Media
 
             return Task.Factory.StartNew(() => {
                  uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
-                 if (IsMuted) Array.Clear(buffer, 0, buffer.Length);
                  HasErrors = Utility.IsError(result);
                 return result;
             }, cancellationToken);
@@ -252,17 +264,6 @@ namespace OdinNative.Odin.Media
         public virtual async Task<uint> AudioReadDataAsync(float[] buffer)
         {
             return await AudioReadDataTask(buffer, CancellationSource.Token);
-        }
-
-        /// <summary>
-        /// Get the number of samples available in the audio buffer.
-        /// </summary>
-        /// <returns>floats available to read with <see cref="AudioReadData(float[])"/></returns>
-        public virtual uint AudioDataLength()
-        {
-            uint result = OdinLibrary.Api.AudioDataLength(Handle);
-            HasErrors = Utility.IsError(result);
-            return result;
         }
 
         /// <summary>

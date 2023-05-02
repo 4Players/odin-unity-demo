@@ -162,6 +162,18 @@ namespace OdinNative.Odin.Room
         }
 
         /// <summary>
+        /// Retrieves statistics for the underlying connection of this room
+        /// </summary>
+        /// <remarks>The room has to be in a joined state</remarks>
+        /// <returns>Statistics for the underlying connection of this room</returns>
+        public OdinConnectionStats GetRoomConnectionStats()
+        {
+            if (IsJoined == false) return new OdinConnectionStats();
+            OdinLibrary.Api.RoomConnectionStats(_Handle, out OdinConnectionStats stats);
+            return stats;
+        }
+
+        /// <summary>
         /// Set rooms new Apm config
         /// </summary>
         /// <param name="config">new Apm configuration</param>
@@ -378,7 +390,7 @@ namespace OdinNative.Odin.Room
         public bool SetMicrophoneMute(bool mute)
         {
             if (IsJoined == false || MicrophoneMedia == null) return false;
-            MicrophoneMedia.IsMuted = mute;
+            MicrophoneMedia.IsPaused = mute;
             return true;
         }
 
@@ -730,7 +742,11 @@ namespace OdinNative.Odin.Room
             Utility.Assert(!string.IsNullOrEmpty(roomId), $"{nameof(@event.room_id)} is \"{roomId}\"");
             this.Config.Name = roomId;
 
-            Self = new Peer.Peer(@event.own_peer_id, roomId, PeerUserData);
+            string userId = string.Empty;
+            if (@event.own_user_id_len > 0)
+                userId = Core.Imports.Native.ReadByteString(@event.own_user_id, (int)@event.own_user_id_len);
+
+            Self = new Peer.Peer(@event.own_peer_id, roomId, PeerUserData) { UserId = userId };
         }
         #endregion Events
 

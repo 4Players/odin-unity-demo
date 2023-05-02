@@ -24,6 +24,18 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// AudioReadData and AudioReadDataAsync are not supported!
         /// </summary>
+        /// <remarks>This will only work for remote/output streams.</remarks>
+        /// <param name="stats">Audio stream statistics</param>
+        /// <exception cref="OdinWrapperException"></exception>
+        /// <returns>throws OdinWrapperException</returns>
+        public override bool AudioStats(out Core.Imports.NativeBindings.OdinAudioStreamStats stats)
+        {
+            throw new OdinWrapperException("Microphone streams are always local! This will only work for remote/output streams.",
+                new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
+        }
+        /// <summary>
+        /// AudioReadData is not supported!
+        /// </summary>
         /// <remarks>Microphone streams are always writeonly</remarks>
         /// <param name="buffer"></param>
         /// <exception cref="OdinWrapperException"></exception>
@@ -31,10 +43,10 @@ namespace OdinNative.Odin.Media
         public override uint AudioReadData(float[] buffer)
         {
             throw new OdinWrapperException("Microphone streams are always writeonly!",
-                new NotSupportedException("AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
+                new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
         }
         /// <summary>
-        /// AudioReadData and AudioReadDataAsync are not supported!
+        /// AudioReadDataTask is not supported!
         /// </summary>
         /// <remarks>Microphone streams are always writeonly</remarks>
         /// <param name="buffer"></param>
@@ -44,10 +56,10 @@ namespace OdinNative.Odin.Media
         public override Task<uint> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken)
         {
             throw new OdinWrapperException("Microphone streams are always writeonly!",
-                new NotSupportedException("AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
+                new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
         }
         /// <summary>
-        /// AudioReadData and AudioReadDataAsync are not supported!
+        /// AudioReadDataAsync is not supported!
         /// </summary>
         /// <remarks>Microphone streams are always writeonly</remarks>
         /// <param name="buffer"></param>
@@ -56,17 +68,7 @@ namespace OdinNative.Odin.Media
         public override Task<uint> AudioReadDataAsync(float[] buffer)
         {
             throw new OdinWrapperException("Microphone streams are always writeonly!",
-                new NotSupportedException("AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
-        }
-
-        /// <summary>
-        /// Get the number of samples available in the audio buffer.
-        /// </summary>
-        /// <remarks>Always returns 0</remarks>
-        /// <returns>0</returns>
-        public override uint AudioDataLength()
-        {
-            return 0;
+                new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
         }
     }
 }

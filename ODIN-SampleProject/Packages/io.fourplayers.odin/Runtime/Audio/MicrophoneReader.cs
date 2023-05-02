@@ -68,7 +68,14 @@ namespace OdinNative.Unity.Audio
         private bool IsInputDeviceConnected;
         private int InputMinFreq;
         private int InputMaxFreq;
+        /// <summary>
+        /// Enable/Disable the use of <see cref="OdinNative.Unity.Audio.MicrophoneReader.InputDevice"/> as a new/fixed device name
+        /// </summary>
         public bool CustomInputDevice;
+        /// <summary>
+        /// The device name to use as microphone in Unity. (i.e <see href="https://docs.unity3d.com/ScriptReference/Microphone.Start.html">Microphone.Start</see>)
+        /// </summary>
+        /// <remarks>If you pass a null or empty string for the device name then the default microphone will be used. You can get a list of available microphone devices from the devices property. (see <see href="https://docs.unity3d.com/ScriptReference/Microphone-devices.html">Microphone.devices</see>)</remarks>
         public string InputDevice;
         private AudioClip InputClip;
         private int InputPosition;
@@ -201,10 +208,17 @@ namespace OdinNative.Unity.Audio
                 SetVolume(ref buffer, bufferScale);
             }
 
+            if (OdinHandler.Instance?.Client?.Rooms == null)
+            {
+                Debug.LogError("Odin hot-reload needs new MicrophoneStream for Microphone Reader component to push audio.");
+                this.enabled = false;
+                return; 
+            }
+
             foreach (Room room in OdinHandler.Instance.Client.Rooms)
             {
-                if (room.MicrophoneMedia != null)
-                    room.MicrophoneMedia.AudioPushDataAsync(buffer);
+                if (room?.MicrophoneMedia != null)
+                    room.MicrophoneMedia.AudioPushData(buffer);
                 else if (room.IsJoined && OdinHandler.Config.VerboseDebug)
                     Debug.LogWarning($"Room {room.Config.Name} is missing a microphone stream. See Room.CreateMicrophoneMedia");
             }

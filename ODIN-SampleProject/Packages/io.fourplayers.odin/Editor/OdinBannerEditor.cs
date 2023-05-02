@@ -13,7 +13,7 @@ namespace OdinNative.Unity.UIEditor
         {
             if (OdinBannerTexture)
             {
-                GUILayout.Box(OdinBannerTexture, GUILayout.ExpandWidth(true), GUILayout.Height(100));
+                GUILayout.Box(OdinBannerTexture, GUILayout.ExpandWidth(true), GUILayout.Height(150));
             }
 
             GUILayout.BeginHorizontal();

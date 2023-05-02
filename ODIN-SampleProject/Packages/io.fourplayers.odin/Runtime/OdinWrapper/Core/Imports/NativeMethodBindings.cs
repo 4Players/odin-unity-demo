@@ -1,10 +1,8 @@
 ﻿using OdinNative.Core.Handles;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using static OdinNative.Core.Imports.NativeBindings;
 
 namespace OdinNative.Core.Imports
@@ -38,6 +36,21 @@ namespace OdinNative.Core.Imports
         {
             using (Lock)
                 return _OdinStartup(version);
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate bool OdinStartupExDelegate(string version, UInt32 outputSamplerate, OdinChannelLayout outputChannelLayout);
+        readonly OdinStartupExDelegate _OdinStartupEx;
+        /// <summary>
+        /// Starts the internal ODIN client runtime and allows passing the sample rate and channel layout
+        /// for audio output.This is ref-counted so you need matching calls of startup and shutdown in your
+        /// application.
+        /// </summary>
+        /// <remarks>Make sure to use the same settings on consecutive calls of this function.</remarks>
+        private bool StartupEx(string version = OdinNative.Core.Imports.NativeBindings.OdinVersion, UInt32 outputSamplerate = OdinNative.Core.Imports.NativeBindings.FrameSAMPLERATE, OdinChannelLayout outputChannelLayout = OdinChannelLayout.OdinChannelLayout_Mono)
+        {
+            using (Lock)
+                return _OdinStartupEx(version, outputSamplerate, outputChannelLayout);
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
@@ -160,7 +173,7 @@ namespace OdinNative.Core.Imports
                 uint error = _OdinTokenGeneratorCreateToken(tokenGenerator, roomId, userId, stringBuilder, capacity);
                 token = stringBuilder.ToString();
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{tokenGenerator} roomId {roomId} userId {userId}");
 
                 return error;
             }
@@ -187,7 +200,7 @@ namespace OdinNative.Core.Imports
                 uint error = _OdinTokenGeneratorCreateTokenEx(tokenGenerator, roomId, userId, options, stringBuilder, capacity);
                 token = stringBuilder.ToString();
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{tokenGenerator} roomId {roomId} userId {userId}");
 
                 return error;
             }
@@ -210,7 +223,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomConfigureApm(room, config.GetOdinApmConfig());
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} config {config}");
                 return error;
             }
         }
@@ -245,7 +258,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomClose(room);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room.ToString()}");
                 return error;
             }
         }
@@ -262,7 +275,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomDestroy(room);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room.ToString()}");
                 return error;
             }
         }
@@ -335,6 +348,25 @@ namespace OdinNative.Core.Imports
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinRoomConnectionStatsDelegate(IntPtr room, [Out] out OdinConnectionStats stats);
+        readonly OdinRoomConnectionStatsDelegate _OdinRoomConnectionStats;
+        /// <summary>
+        /// Retrieves statistics for the underlying connection of the specified room handle.
+        /// </summary>
+        /// <param name="room">*mut OdinRoom</param>
+        /// <param name="stats"><see cref="OdinNative.Core.Imports.NativeBindings.OdinConnectionStats"/>: Statistics for the underlying connection of a room.</param>
+        /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
+        public uint RoomConnectionStats(RoomHandle room, out OdinConnectionStats stats)
+        {
+            using (Lock)
+            {
+                uint error = _OdinRoomConnectionStats(room, out stats);
+                CheckAndThrow(error, $"{room.ToString()}");
+                return error;
+            }
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinRoomJoinDelegate(IntPtr room, string url, string token);
         readonly OdinRoomJoinDelegate _OdinRoomJoin;
         /// <summary>
@@ -350,7 +382,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomJoin(room, gatewayUrl, roomToken);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} url: {gatewayUrl} token: {roomToken}");
                 return error;
             }
         }
@@ -369,7 +401,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomAddMedia(room, stream);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} {stream.ToString()}");
                 return error;
             }
         }
@@ -391,7 +423,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomSetPositionScale(room, scale);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} position scale {scale}");
                 return error;
             }
         }
@@ -411,7 +443,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomSetEventCallback(room, callback, extra_data);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room.ToString()}");
                 return error;
             }
         }
@@ -435,7 +467,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomUpdateUserData(room, target, userData, userDataLength);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} data size {userDataLength}");
                 return error;
             }
         }
@@ -459,7 +491,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomUpdatePosition(room, x, y);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} x: {x}, y: {y}");
                 return error;
             }
         }
@@ -481,48 +513,44 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinRoomSendMessage(room, peerIdList, peerIdListSize, data, dataLength);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{room} peer list size {peerIdListSize}");
                 return error;
             }
         }
         #endregion Room
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate uint OdinAudioProcessReverseDelegate(IntPtr room, [In] float[] buffer, [In] int bufferLength, [In, Out][MarshalAs(UnmanagedType.I4)] OdinChannelLayout channelLayout);
+        internal delegate uint OdinAudioProcessReverseDelegate(IntPtr room, [In] float[] buffer, [In] int bufferLength);
         readonly OdinAudioProcessReverseDelegate _OdinAudioProcessReverse;
         /// <summary>
         /// Processes the reverse audio stream, also known as the loopback data to be used in the ODIN echo
         /// canceller.This should only be done if you are _NOT_ using <see cref="OdinNative.Core.Imports.NativeMethods.AudioMixStreams"/>.
         /// </summary>
-        /// <remarks>OdinChannelLayout is currently unused!</remarks>
         /// <param name="room">struct OdinRoom*</param>
         /// <param name="buffer">float*</param>
-        /// <param name="channelLayout">enum <see cref="OdinChannelLayout"/></param>
         /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
-        internal uint AudioProcessReverse(RoomHandle room, float[] buffer, OdinChannelLayout channelLayout = OdinChannelLayout.OdinChannelLayout_Mono)
+        internal uint AudioProcessReverse(RoomHandle room, float[] buffer)
         {
             using (Lock)
             {
-                uint error = _OdinAudioProcessReverse(room, buffer, buffer.Length, channelLayout);
+                uint error = _OdinAudioProcessReverse(room, buffer, buffer.Length);
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{room} buffer size {buffer.Length}");
                 return error;
             }
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate uint OdinAudioMixStreamsDelegate(IntPtr room, [In] IntPtr[] mediaStreams, [In] int streamsLength, [In, Out] float[] buffer, [In, Out] int bufferLength, [In, Out][MarshalAs(UnmanagedType.I4)] OdinChannelLayout channelLayout);
+        internal delegate uint OdinAudioMixStreamsDelegate(IntPtr room, [In] IntPtr[] mediaStreams, [In] int streamsLength, [In, Out] float[] buffer, [In, Out] int bufferLength);
         readonly OdinAudioMixStreamsDelegate _OdinAudioMixStreams;
         /// <summary>
         /// Send audio data with multiple MediaStreams to mix
         /// </summary>
-        /// <remarks>OdinChannelLayout is currently unused!</remarks>
         /// <param name="room">struct OdinRoom*</param>
         /// <param name="handles">struct OdinMediaStream *const *</param>
         /// <param name="buffer">float *</param>
-        /// <param name="channelLayout">enum <see cref="OdinChannelLayout"/></param>
         /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
-        internal uint AudioMixStreams(RoomHandle room, StreamHandle[] handles, float[] buffer, OdinChannelLayout channelLayout = OdinChannelLayout.OdinChannelLayout_Mono)
+        internal uint AudioMixStreams(RoomHandle room, StreamHandle[] handles, float[] buffer)
         {
             using (Lock)
             {
@@ -531,10 +559,10 @@ namespace OdinNative.Core.Imports
                     .Where(p => p != IntPtr.Zero)
                     .ToArray();
 
-                uint error = _OdinAudioMixStreams(room, streams, streams.Length, buffer, buffer.Length, channelLayout);
+                uint error = _OdinAudioMixStreams(room, streams, streams.Length, buffer, buffer.Length);
 
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{room} handle count {handles.Length} buffer size {buffer.Length}");
                 return error;
             }
         }
@@ -582,7 +610,7 @@ namespace OdinNative.Core.Imports
             {
                 uint error = _OdinResamplerProcess(resampler, input, inputLength, output, ref outputCapacity);
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{resampler} input size {input.Length} length {inputLength}");
                 return error;
             }
         }
@@ -691,23 +719,9 @@ namespace OdinNative.Core.Imports
             {
                 uint error = _OdinAudioPushData(mediaStream, buffer, bufferLength);
                 if (InternalIsError(error))
-                    CheckAndThrow(error);
+                    CheckAndThrow(error, $"{mediaStream} buffer size {buffer.Length} length {bufferLength}");
                 return error;
             }
-        }
-
-        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate uint OdinAudioDataLenDelegate(IntPtr mediaStream);
-        readonly OdinAudioDataLenDelegate _OdinAudioDataLen;
-        /// <summary>
-        /// Get available audio data size.
-        /// </summary>
-        /// <param name="mediaStream">OdinMediaStream *</param>
-        /// <returns>floats available to read with <see cref="AudioReadData"/></returns>
-        public uint AudioDataLength(StreamHandle mediaStream)
-        {
-            using (Lock)
-                return _OdinAudioDataLen(mediaStream);
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
@@ -730,6 +744,26 @@ namespace OdinNative.Core.Imports
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinAudioStatsDelegate(IntPtr mediaStream, out OdinAudioStreamStats stats);
+        readonly OdinAudioStatsDelegate _OdinAudioStats;
+        /// <summary>
+        /// Retrieves statistics for the specified `OdinMediaStreamHandle`.
+        /// </summary>
+        /// <remarks>This will only work for remote/output streams.</remarks>
+        /// <param name="mediaStream">OdinMediaStream *</param>
+        /// <param name="stats"><see cref="OdinNative.Core.Imports.NativeBindings.OdinAudioStreamStats"/>: Audio stream statistics.</param>
+        /// <returns>count of written data</returns>
+        public uint AudioStats(StreamHandle mediaStream, out OdinAudioStreamStats stats)
+        {
+            using (Lock)
+            {
+                uint error = _OdinAudioStats(mediaStream, out stats);
+                CheckAndThrow(error, $"{mediaStream.ToString()}");
+                return error;
+            }
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinMediaStreamMediaIdDelegate(IntPtr mediaStream, [Out] out ushort mediaId);
         readonly OdinMediaStreamMediaIdDelegate _OdinMediaStreamMediaId;
         /// <summary>
@@ -743,7 +777,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinMediaStreamMediaId(handle, out mediaId);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{handle.ToString()}");
                 return error;
             }
         }
@@ -762,7 +796,7 @@ namespace OdinNative.Core.Imports
             using (Lock)
             {
                 uint error = _OdinMediaStreamPeerId(handle, out peerId);
-                CheckAndThrow(error);
+                CheckAndThrow(error, $"{handle.ToString()}");
                 return error;
             }
         }
