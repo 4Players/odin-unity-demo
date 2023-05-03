@@ -46,13 +46,22 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 
         private IEnumerator WaitForConnection()
         {
-            while (null == OdinHandler.Instance)
+            while (!OdinHandler.Instance)
                 yield return null;
 
             yield return null;
             UpdateSelection();
             microphoneSettings.Load();
-            ActivateDevice(microphoneSettings.selectedMicrophone);
+            if (Microphone.devices.Contains(microphoneSettings.selectedMicrophone))
+                ActivateDevice(microphoneSettings.selectedMicrophone);
+            else
+            {
+                if (Microphone.devices.Length > 0)
+                {
+                    microphoneSettings.selectedMicrophone = Microphone.devices[0];
+                    microphoneSettings.Save();
+                }
+            }
         }
 
         /// <summary>
@@ -103,7 +112,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
             }
             else
             {
-                Debug.LogError($"Selected microphone {selectedDevice} ist not available in Devices list.");
+                Debug.LogError($"Selected microphone {selectedDevice} ist not available in Devices list, can't activate the device.");
             }
         }
     }
