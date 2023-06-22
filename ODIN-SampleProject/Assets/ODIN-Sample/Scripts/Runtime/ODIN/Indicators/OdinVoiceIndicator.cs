@@ -34,12 +34,9 @@ namespace ODIN_Sample.Scripts.Runtime.Odin.Indicators
 
         protected override void UpdateFeedback(bool isVoiceOn)
         {
-            if (null == indicationTarget)
+            if (!indicationTarget)
                 indicationTarget = GetComponent<Renderer>();
-            if (isVoiceOn)
-                indicationTarget.material.color = voiceOnColor;
-            else
-                indicationTarget.material.color = _originalColor;
+            indicationTarget.material.color = isVoiceOn ? voiceOnColor : _originalColor;
         }
     }
 }

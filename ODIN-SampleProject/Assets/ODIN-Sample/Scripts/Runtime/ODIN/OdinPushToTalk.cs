@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
@@ -40,11 +41,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             StartCoroutine(WaitForConnection());
             pushToTalkSettings.Load();
-            
-            foreach (var odinPushToTalkData in pushToTalkSettings.settings)
-            {
-                odinPushToTalkData.pushToTalkButton.action.Enable();
-            }
+            pushToTalkSettings.EnablePushToTalkActions();
         }
 
         private void OnDisable()
@@ -105,7 +102,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         /// </summary>
         /// <param name="roomName">The room name.</param>
         /// <returns>True, if push to talk is active and push to talk button is pressed or if push to talk is inactive. False otherwise.</returns>
-        protected virtual bool IsMicrophoneMuted(string roomName)
+        public virtual bool IsMicrophoneMuted(string roomName)
         {
             if (OdinHandler.Instance.Rooms.Contains(roomName))
             {

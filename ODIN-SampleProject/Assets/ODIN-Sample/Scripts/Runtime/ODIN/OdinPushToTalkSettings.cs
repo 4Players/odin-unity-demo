@@ -72,6 +72,14 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                     pushToTalkData.pushToTalkIsActive = newActive;
         }
 
+        public void EnablePushToTalkActions()
+        {
+            foreach (OdinPushToTalkData odinPushToTalkData in settings)
+            {
+                odinPushToTalkData?.pushToTalkButton.action.Enable();
+            }
+        }
+
         /// <summary>
         ///     Data container for storing push to talk settings.
         /// </summary>
