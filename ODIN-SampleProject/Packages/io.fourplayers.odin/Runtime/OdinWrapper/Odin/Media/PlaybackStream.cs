@@ -56,5 +56,22 @@ namespace OdinNative.Odin.Media
             throw new OdinWrapperException("Remote streams are always readonly!",
                 new NotSupportedException("AudioPushData, AudioPushDataTask and AudioPushDataAsync are not supported!"));
         }
+        
+        /// <summary>
+        /// This operation resets the internal Opus encoder/decoder, ensuring a clean state. Additionally, it clears internal buffers, providing a fresh start.
+        /// </summary>
+        /// <returns>True, if reset was successful</returns>
+        public override bool AudioReset()
+        {
+            bool result = false;
+            if(!Handle.IsInvalid && !Handle.IsClosed)
+            {
+                uint errorCode = OdinLibrary.Api.AudioReset(Handle);
+                HasErrors = Utility.IsError(errorCode);
+                result = errorCode == Utility.OK;
+            }
+
+            return result;
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace OdinNative.Unity.UIEditor
     public class MicrophoneReaderEditor : Editor
     {
         SerializedProperty CaptureAudio;
+        SerializedProperty SilenceAudio;
         SerializedProperty RecordingLoop;
         SerializedProperty CustomInputDevice;
         SerializedProperty InputDevice;
@@ -34,6 +35,7 @@ namespace OdinNative.Unity.UIEditor
         void OnEnable()
         {
             CaptureAudio = serializedObject.FindProperty("RedirectCapturedAudio");
+            SilenceAudio = serializedObject.FindProperty("SilenceCapturedAudio");
             RecordingLoop = serializedObject.FindProperty("ContinueRecording");
             CustomInputDevice = serializedObject.FindProperty("CustomInputDevice");
             InputDevice = serializedObject.FindProperty("InputDevice");
@@ -63,6 +65,7 @@ namespace OdinNative.Unity.UIEditor
             }
 
             EditorGUILayout.PropertyField(CaptureAudio, new GUIContent("Redirect Captured Audio", "Redirect the captured audio to all rooms."));
+            EditorGUILayout.PropertyField(SilenceAudio, new GUIContent("Silence Captured Audio", "Silence the captured audio in all rooms."));
             EditorGUILayout.PropertyField(RecordingLoop, new GUIContent("Continue Recording", "Indicates whether the recording should continue recording if AudioClipLength is reached, and wrap around and record from the beginning of the AudioClip."));
             EditorGUILayout.PropertyField(CustomMicVolumeScale, new GUIContent("Microphone Boost", "Indicates whether the recording should be boosted by a fixed scale."));
             if (CustomMicVolumeScale.boolValue && MicVolumeScale.propertyType == SerializedPropertyType.Float)

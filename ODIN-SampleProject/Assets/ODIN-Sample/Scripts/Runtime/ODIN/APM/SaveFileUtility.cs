@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
+namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 {
     /// <summary>
     /// Utility class for saving files to disk.

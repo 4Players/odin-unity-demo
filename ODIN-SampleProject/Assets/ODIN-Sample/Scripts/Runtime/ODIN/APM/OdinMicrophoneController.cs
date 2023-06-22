@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using ODIN_Sample.Scripts.Runtime.ODIN.Utility;
 using OdinNative.Unity.Audio;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
+namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 {
     /// <summary>
     ///     Controller script for selecting an input device for ODIN Voice chat.

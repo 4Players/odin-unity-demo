@@ -382,19 +382,6 @@ namespace OdinNative.Odin.Room
         }
 
         /// <summary>
-        /// Will set the room <see cref="MicrophoneMedia"/> to mute
-        /// </summary>
-        /// <remarks>Always false if there is no <see cref="MicrophoneMedia"/> or the room was not joined</remarks>
-        /// <param name="mute">true to mute and false to unmute</param>
-        /// <returns>true if set or false</returns>
-        public bool SetMicrophoneMute(bool mute)
-        {
-            if (IsJoined == false || MicrophoneMedia == null) return false;
-            MicrophoneMedia.IsPaused = mute;
-            return true;
-        }
-
-        /// <summary>
         /// Configures the allowed 'view' distance for proximity calculation of peers in the room
         /// </summary>
         /// <remarks>Make sure that all of your ODIN clients configure the same `distance` value.</remarks>

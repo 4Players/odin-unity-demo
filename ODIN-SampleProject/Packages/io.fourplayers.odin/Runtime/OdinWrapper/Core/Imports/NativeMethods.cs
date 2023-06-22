@@ -43,6 +43,7 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_media_stream_peer_id", out _OdinMediaStreamPeerId);
             handle.GetLibraryMethod("odin_audio_push_data", out _OdinAudioPushData);
             handle.GetLibraryMethod("odin_audio_read_data", out _OdinAudioReadData);
+            handle.GetLibraryMethod("odin_audio_reset", out _OdinAudioReset);
             handle.GetLibraryMethod("odin_audio_stats", out _OdinAudioStats);
             handle.GetLibraryMethod("odin_audio_mix_streams", out _OdinAudioMixStreams);
             handle.GetLibraryMethod("odin_audio_process_reverse", out _OdinAudioProcessReverse);

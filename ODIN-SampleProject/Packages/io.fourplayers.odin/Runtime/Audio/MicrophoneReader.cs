@@ -39,9 +39,19 @@ namespace OdinNative.Unity.Audio
 #endif
         private bool InitialPermission;
 
+        /// <summary>
+        /// Skips registered PushAudio for the OnMicrophoneData event
+        /// </summary>
+        /// <remarks>This will stop progress of time in the audio pipeline and can result in missing event updates like OnMediaActiveStateChanged. Should only be disabled if handled.</remarks>
         [Tooltip("Redirect the captured audio to all rooms.")]
         [SerializeField]
         public bool RedirectCapturedAudio = true;
+        /// <summary>
+        /// Zero out the event audio buffer for PushAudio.
+        /// </summary>
+        [Tooltip("Silence the captured audio to all rooms.")]
+        [SerializeField]
+        public bool SilenceCapturedAudio = false;
 
         [Tooltip("Indicates whether the recording should continue recording if AudioClipLength is reached, and wrap around and record from the beginning of the AudioClip.")]
         [SerializeField]
@@ -116,6 +126,7 @@ namespace OdinNative.Unity.Audio
         void Reset()
         {
             RedirectCapturedAudio = true;
+            SilenceCapturedAudio = false;
 
             ContinueRecording = true;
             AudioClipLength = 3;
@@ -215,6 +226,10 @@ namespace OdinNative.Unity.Audio
                 return; 
             }
 
+            if(SilenceCapturedAudio)
+                for(int i = 0; i < buffer.Length; i++)
+                    buffer[i] = 0f;
+
             foreach (Room room in OdinHandler.Instance.Client.Rooms)
             {
                 if (room?.MicrophoneMedia != null)
@@ -270,18 +285,6 @@ namespace OdinNative.Unity.Audio
             //TestLoopback();
         }
 
-        /// <summary>
-        /// Request <see cref="OdinNative.Odin.Room.Room.SetMicrophoneMute"/> to mute by room 
-        /// </summary>
-        /// <remarks>Always false if there is no microphone or the room was not joined</remarks>
-        /// <param name="room"></param>
-        /// <param name="mute">true to mute and false to unmute</param>
-        /// <returns>true if set or false</returns>
-        public bool MuteRoomMicrophone(Room room, bool mute)
-        {
-            return room.SetMicrophoneMute(mute);
-        }
-
         private void AudioSettings_OnAudioConfigurationChanged(bool deviceWasChanged)
         {
             if (deviceWasChanged && isActiveAndEnabled)
@@ -292,6 +295,12 @@ namespace OdinNative.Unity.Audio
         {
             if (IsStreaming && Microphone.IsRecording(deviceName))
                 Microphone.End(deviceName);
+
+            if (Microphone.devices.Contains(InputDevice) == false && CustomInputDevice)
+            {
+                Debug.LogWarning($"{nameof(MicrophoneReader)} reset \"{InputDevice}\" failed, using default device.");
+                InputDevice = string.Empty;
+            }
 
             SetupMicrophone(InputDevice);
             if (AutostartListen)

@@ -1,10 +1,9 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Slider = UnityEngine.UI.Slider;
 
-namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
+namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 {
     /// <summary>
     /// Updates a display text based on a slider value.

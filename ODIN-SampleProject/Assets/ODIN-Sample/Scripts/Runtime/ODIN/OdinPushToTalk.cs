@@ -1,5 +1,6 @@
 using System.Collections;
 using OdinNative.Odin.Room;
+using OdinNative.Unity.Audio;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -10,29 +11,29 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
     /// </summary>
     public class OdinPushToTalk : MonoBehaviour
     {
+        public static OdinPushToTalk Instance { get; private set; }
+        
         /// <summary>
         ///     The list of settings for different rooms. Allows definition of different push-to-talk buttons for different
         ///     ODIN rooms.
         /// </summary>
         [SerializeField] protected OdinPushToTalkSettings pushToTalkSettings;
 
+        private MicrophoneReader _microphoneReader;
+        
         protected virtual void Awake()
         {
+            if(Instance)
+                Destroy(this);
+            else
+                Instance = this;
+            
             Assert.IsNotNull(pushToTalkSettings);
             foreach (OdinPushToTalkSettings.OdinPushToTalkData data in pushToTalkSettings.settings)
             {
                 Assert.IsNotNull(data.connectedRoom, $"Missing push to talk setting on object {gameObject.name}");
                 Assert.IsNotNull(data.pushToTalkButton, $"Missing push to talk setting on object {gameObject.name}");
             }
-        }
-
-        protected virtual void Update()
-        {
-            if (!(OdinHandler.Instance && null != OdinHandler.Instance.Rooms))
-                return;
-
-            foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
-                HandleRoomMutedStatus(pushToTalkData.connectedRoom);
         }
 
         private void OnEnable()
@@ -48,16 +49,55 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
 
         private void OnDisable()
         {
-            if (OdinHandler.Instance)
-                OdinHandler.Instance.OnMediaAdded.RemoveListener(OnMediaAdded);
+            if (OdinHandler.Instance && _microphoneReader)
+                _microphoneReader.OnMicrophoneData -= OnMicrophoneData;
         }
 
         private IEnumerator WaitForConnection()
         {
-            while (!OdinHandler.Instance)
+            while (!OdinHandler.Instance || !OdinHandler.Instance.Microphone)
                 yield return null;
 
-            OdinHandler.Instance.OnMediaAdded.AddListener(OnMediaAdded);
+            _microphoneReader = OdinHandler.Instance.Microphone;
+            _microphoneReader.RedirectCapturedAudio = false;
+            _microphoneReader.OnMicrophoneData += OnMicrophoneData;
+        }
+
+        private void OnMicrophoneData(float[] buffer, int position)
+        {
+            SetCustomVolume(buffer);
+            
+            foreach (Room room in OdinHandler.Instance.Rooms)
+            {
+                if (IsMicrophoneMuted(room.Config.Name))
+                    continue;
+                
+                if (room.MicrophoneMedia != null)
+                    room.MicrophoneMedia.AudioPushData(buffer);
+                else if (room.IsJoined && OdinHandler.Config.VerboseDebug)
+                    Debug.LogWarning($"Room {room.Config.Name} is missing a microphone stream. See Room.CreateMicrophoneMedia");
+            }
+           
+        }
+
+        private void SetCustomVolume(float[] buffer)
+        {
+            if (_microphoneReader.CustomMicVolumeScale)
+            {
+                float bufferScale = GetVolumeScale(_microphoneReader.MicVolumeScale);
+                SetVolume(ref buffer, bufferScale);
+            }
+        }
+
+        private float GetVolumeScale(float value)
+        {
+            return Mathf.Pow(value, 3);
+        }
+        
+        private void SetVolume(ref float[] buffer, float scale)
+        {
+            for (int i = 0; i < buffer.Length; i++)
+                buffer[i] *= scale;
         }
 
         /// <summary>
@@ -90,52 +130,6 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             bool isPushToTalkPressed = pushToTalkData.pushToTalkButton.action.IsPressed();
             return isPushToTalkPressed;
         }
-
-
-        /// <summary>
-        ///     Mute the local microphone when first being added. This avoids e.g. the odin local voice indicator to
-        ///     show or for some data to be sent on accident.
-        /// </summary>
-        /// <param name="arg0"></param>
-        /// <param name="mediaAddedEventArgs">Event arguments.</param>
-        private void OnMediaAdded(object arg0, MediaAddedEventArgs mediaAddedEventArgs)
-        {
-            // check if the added media is one of the rooms for which the user has provided push to talk data
-            foreach (OdinPushToTalkSettings.OdinPushToTalkData pushToTalkData in pushToTalkSettings.settings)
-                if (pushToTalkData.connectedRoom == mediaAddedEventArgs.Peer.RoomName)
-                {
-                    Room pushToTalkRoom = OdinHandler.Instance.Rooms[pushToTalkData.connectedRoom];
-                    // if the local microphone is the one, for which OnMediaAdded was called
-                    if (null != pushToTalkRoom.MicrophoneMedia &&
-                        pushToTalkRoom.MicrophoneMedia.Id == mediaAddedEventArgs.Media.Id)
-                        // mute the microphone initially
-                        pushToTalkRoom.MicrophoneMedia.SetPause(true);
-                }
-        }
-
-        /// <summary>
-        ///     Mutes / unmutes local microphone in the room based on whether the button
-        ///     given is pressed.
-        /// </summary>
-        /// <param name="roomName"></param>
-        protected void HandleRoomMutedStatus(string roomName)
-        {
-            SetRoomMicrophoneMutedState(roomName, IsMicrophoneMuted(roomName));
-        }
-
-        /// <summary>
-        /// Sets the new mute status for the microphone media of the local user in the given room.
-        /// </summary>
-        /// <param name="roomName">The room name.</param>
-        /// <param name="newIsMuted">The new is muted status.</param>
-        protected void SetRoomMicrophoneMutedState(string roomName, bool newIsMuted)
-        {
-            if (OdinHandler.Instance.Rooms.Contains(roomName))
-            {
-                Room roomToCheck = OdinHandler.Instance.Rooms[roomName];
-                if (null != roomToCheck.MicrophoneMedia)
-                    roomToCheck.MicrophoneMedia.SetPause(newIsMuted);
-            }
-        }
+        
     }
 }

@@ -15,6 +15,7 @@ namespace OdinNative.Odin.Media
         Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken);
         void AudioPushDataAsync(float[] buffer);
         bool AudioStats(out Core.Imports.NativeBindings.OdinAudioStreamStats stats);
+        bool AudioReset();
         uint AudioReadData(float[] buffer);
         Task<uint> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken);
         Task<uint> AudioReadDataAsync(float[] buffer);

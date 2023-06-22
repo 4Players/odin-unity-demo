@@ -33,6 +33,18 @@ namespace OdinNative.Odin.Media
             throw new OdinWrapperException("Microphone streams are always local! This will only work for remote/output streams.",
                 new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask and AudioReadDataAsync are not supported!"));
         }
+
+        /// <summary>
+        /// AudioReset is not supported!
+        /// </summary>
+        /// <returns>throws OdinWrapperException</returns>
+        /// <exception cref="OdinWrapperException"></exception>
+        public override bool AudioReset()
+        {
+            throw new OdinWrapperException("Microphone streams can not be reset!",
+                new NotSupportedException("AudioStats, AudioReadData, AudioReadDataTask, AudioReset and AudioReadDataAsync are not supported!"));
+        }
+
         /// <summary>
         /// AudioReadData is not supported!
         /// </summary>

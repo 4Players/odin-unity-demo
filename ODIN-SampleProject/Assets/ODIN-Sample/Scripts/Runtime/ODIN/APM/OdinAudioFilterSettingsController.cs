@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using ODIN_Sample.Scripts.Runtime.ODIN.Utility;
 using OdinNative.Core;
 using OdinNative.Core.Imports;
 using OdinNative.Odin.Room;
@@ -9,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
+namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 {
     [Serializable]
     public class FloatSettingSideEffect

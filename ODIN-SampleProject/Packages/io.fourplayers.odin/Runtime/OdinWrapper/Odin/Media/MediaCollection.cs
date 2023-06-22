@@ -163,17 +163,6 @@ namespace OdinNative.Odin.Media
             return Remove(item.Id);
         }
 
-        /// <summary>
-        /// Set IsMuted on each <see cref="OdinNative.Odin.Media.MediaStream"/>
-        /// </summary>
-        /// <param name="value">If true, no data will be read/pushed for the media handle</param>
-        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
-        public void SetMute(bool value)
-        {
-            foreach (MediaStream media in _Medias.Values)
-                media?.SetMute(value);
-        }
-
         internal bool Free(long id)
         {
             bool result = _Medias.TryRemove(id, out MediaStream media);

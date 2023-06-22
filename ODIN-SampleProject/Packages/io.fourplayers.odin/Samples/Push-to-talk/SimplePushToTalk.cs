@@ -35,7 +35,7 @@ namespace OdinNative.Unity.Samples
         void Update()
         {
             if (AudioSender)
-                AudioSender.RedirectCapturedAudio = UsePushToTalk ? Input.GetKey(PushToTalkHotkey) : true;
+                AudioSender.SilenceCapturedAudio = !(UsePushToTalk ? Input.GetKey(PushToTalkHotkey) : true);
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
+using ODIN_Sample.Scripts.Runtime.ODIN.Utility;
 using UnityEngine;
 
-namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
+namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 {
     /// <summary>
     /// Scriptable object for storing and saving the selected microphone to file.
@@ -12,7 +13,8 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
         /// <summary>
         /// The  file name the settings will be saved to. Will use the 
         /// </summary>
-        private static readonly string SAVE_FILE_NAME = "OdinMicrophoneSettings.json";
+        private const string SaveFileName = "OdinMicrophoneSettings.json";
+
         public string selectedMicrophone;
 
         private void OnEnable()
@@ -22,7 +24,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 
         private string GetSavePath()
         {
-            return SaveFileUtility.GetSavePath(SAVE_FILE_NAME);
+            return SaveFileUtility.GetSavePath(SaveFileName);
         }
 
         public void Save()
@@ -32,7 +34,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.Utility
 
         public void Load()
         {
-            string settingsPath = SaveFileUtility.GetSavePath(SAVE_FILE_NAME);
+            string settingsPath = SaveFileUtility.GetSavePath(SaveFileName);
             var saveData = SaveFileUtility.LoadData<OdinMicrophoneSettingsSchema>(settingsPath);
             if (null != saveData) selectedMicrophone = saveData.selectedMicrophone;
         }

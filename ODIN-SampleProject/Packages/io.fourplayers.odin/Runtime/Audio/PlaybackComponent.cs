@@ -106,8 +106,17 @@ namespace OdinNative.Unity.Audio
         ///     The last time we read an ODIN audio frame into the output buffer.
         /// </summary>
         private float LastPlaybackUpdateTime;
-        
-        private PlaybackStream PlaybackMedia;
+
+        private PlaybackStream _playbackMedia;
+        private PlaybackStream PlaybackMedia
+        {
+            get => _playbackMedia;
+            set
+            {
+                _playbackMedia = value;
+                _playbackMedia?.AudioReset();
+            }
+        }
 
         internal bool RedirectPlaybackAudio = true;
 
@@ -125,23 +134,6 @@ namespace OdinNative.Unity.Audio
                 if (PlaybackSource == null) return;
                 PlaybackSource.mute = value;
             }
-        }
-
-        /// <summary>
-        ///     The Odin PlaybackStream underlying media stream calls
-        /// </summary>
-        /// <remarks>on true ignores stream calls</remarks>
-        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
-        public bool MuteStream
-        {
-            get => OdinMedia?.IsMuted ?? true;
-            set => OdinMedia?.SetMute(value);
-        }
-        
-        public bool PauseStream
-        {
-            get => OdinMedia?.IsPaused ?? true;
-            set => OdinMedia?.SetPause(value);
         }
 
         internal PlaybackStream OdinMedia => OdinHandler.Instance.Client
@@ -190,6 +182,7 @@ namespace OdinNative.Unity.Audio
                 PlaybackMedia = OdinMedia;
             }
         }
+        
 
         /// <summary>
         ///     Number of Samples in the <see cref="SpatialClip" /> used for playback.

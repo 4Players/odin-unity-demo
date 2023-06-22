@@ -742,6 +742,28 @@ namespace OdinNative.Core.Imports
             using (Lock)
                 return _OdinAudioReadData(mediaStream, buffer, bufferLength, channelLayout);
         }
+        
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinAudioResetDelegate(IntPtr mediaStream);
+        readonly OdinAudioResetDelegate _OdinAudioReset;
+        
+        /// <summary>
+        /// Resets the specified `OdinMediaStreamHandle` to its initial state, restoring it to its default
+        /// configuration. This operation resets the internal Opus encoder/decoder, ensuring a clean state.
+        /// Additionally, it clears internal buffers, providing a fresh start.
+        /// </summary>
+        /// <param name="mediaStream">OdinMediaStream *</param>
+        /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
+        public uint AudioReset(StreamHandle mediaStream)
+        {
+            using (Lock)
+            {
+                uint error = _OdinAudioReset(mediaStream);
+                CheckAndThrow(error, $"{mediaStream.ToString()}");
+                return error;
+            }
+        }
+        
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinAudioStatsDelegate(IntPtr mediaStream, out OdinAudioStreamStats stats);

@@ -33,33 +33,18 @@ namespace OdinNative.Odin.Media
         /// </summary>
         public CancellationTokenSource CancellationSource { get; internal set; }
         /// <summary>
-        /// Indicates wether or not the media stream is paused
-        /// </summary>
-        /// <remarks>If true, no data will be read/pushed for the media handle</remarks>
-        public bool IsPaused { get; set; }
-        /// <summary>
-        /// Indicates wether or not the media stream is muted.
-        ///
-        /// Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// If true, will still send data but the data is always empty for silence audio</remarks>
-        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
-        public bool IsMuted { get; set; }
-        /// <summary>
         /// Indicates wether or not the media stream is active and sending/receiving data
         /// </summary>
         public bool IsActive { get; internal set; }
         /// <summary>
         /// Indicates wether or not the last media stream api call result is an error code
         /// </summary>
-        public bool HasErrors { get; private set; }
+        public bool HasErrors { get; internal set; }
         /// <summary>
         /// Indicates wether or not the media stream handle is invalid or closed
         /// </summary>
         public bool IsInvalid { get { return Handle == null || Handle.IsInvalid || Handle.IsClosed; } }
-        private StreamHandle Handle;
+        internal StreamHandle Handle { get; private set; }
         private ResamplerHandle ResamplerHandle;
 
         /// <summary>
@@ -101,42 +86,6 @@ namespace OdinNative.Odin.Media
         }
 
         /// <summary>
-        /// Sets <see cref="IsPaused"/>.
-        /// </summary>
-        /// <param name="value">true for NOP or false to call ffi on read/write</param>
-        public void SetPause(bool value)
-        {
-            IsPaused = value;
-        }
-
-        /// <summary>
-        /// Toggles <see cref="IsPaused"/>.
-        /// </summary>
-        public void TogglePause()
-        {
-            IsPaused = !IsPaused;
-        }
-
-        /// <summary>
-        /// Sets <see cref="IsMuted"/>.
-        /// </summary>
-        /// <param name="value">true for empty data or false</param>
-        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
-        public void SetMute(bool value)
-        {
-            IsMuted = value;
-        }
-
-        /// <summary>
-        /// Toggles <see cref="IsMuted"/>.
-        /// </summary>
-        [Obsolete("Mute functionality will be deprecated in future releases. Please use the SetPause functionality instead.")]
-        public void ToggleMute()
-        {
-            IsMuted = !IsMuted;
-        }
-
-        /// <summary>
         /// Adds this media stream to a room.
         /// </summary>
         /// <param name="roomHandle"><see cref="Room.Room"/> handle</param>
@@ -155,7 +104,6 @@ namespace OdinNative.Odin.Media
         /// <param name="buffer">audio data</param>
         public virtual void AudioPushData(float[] buffer)
         {
-            if (IsPaused) return;
             OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
         }
 
@@ -167,7 +115,6 @@ namespace OdinNative.Odin.Media
         /// <param name="length">bytes to write</param>
         public virtual void AudioPushData(float[] buffer, int length)
         {
-            if (IsPaused) return;
             OdinLibrary.Api.AudioPushData(Handle, buffer, length);
         }
 
@@ -179,8 +126,6 @@ namespace OdinNative.Odin.Media
         /// <param name="cancellationToken"></param>
         public virtual Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken)
         {
-            if (IsPaused) return Task.CompletedTask;
-
             return Task.Factory.StartNew(() => {
                     OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
                 }
@@ -197,6 +142,8 @@ namespace OdinNative.Odin.Media
         {
             await AudioPushDataTask(buffer, CancellationSource.Token);
         }
+
+        public abstract bool AudioReset();
 
         /// <summary>
         /// Reads data from the audio stream.
@@ -231,8 +178,6 @@ namespace OdinNative.Odin.Media
         /// <returns>count of written bytes into buffer</returns>
         public virtual uint AudioReadData(float[] buffer, int length)
         {
-            if (IsPaused) return 0;
-
             uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, length);
             HasErrors = Utility.IsError(result);
             return result;
@@ -247,8 +192,6 @@ namespace OdinNative.Odin.Media
         /// <returns>count of written bytes into buffer</returns>
         public virtual Task<uint> AudioReadDataTask(float[] buffer, CancellationToken cancellationToken)
         {
-            if (IsPaused) return Task.FromResult<uint>(0);
-
             return Task.Factory.StartNew(() => {
                  uint result = OdinLibrary.Api.AudioReadData(Handle, buffer, buffer.Length);
                  HasErrors = Utility.IsError(result);
@@ -265,6 +208,8 @@ namespace OdinNative.Odin.Media
         {
             return await AudioReadDataTask(buffer, CancellationSource.Token);
         }
+        
+        
 
         /// <summary>
         /// Set a resampler and resamples a chunk of audio.
@@ -340,7 +285,7 @@ namespace OdinNative.Odin.Media
         /// <returns>info</returns>
         public override string ToString()
         {
-            return $"{nameof(MediaStream)}: {nameof(Id)} {Id}, {nameof(MediaId)} {MediaId}, {nameof(PeerId)} {PeerId}, {nameof(IsPaused)} {IsPaused} {nameof(HasErrors)} {HasErrors} {nameof(IsInvalid)} {IsInvalid}\n\t- {nameof(MediaConfig)} {MediaConfig?.ToString()}";
+            return $"{nameof(MediaStream)}: {nameof(Id)} {Id}, {nameof(MediaId)} {MediaId}, {nameof(PeerId)} {PeerId}, {nameof(HasErrors)} {HasErrors} {nameof(IsInvalid)} {IsInvalid}\n\t- {nameof(MediaConfig)} {MediaConfig?.ToString()}";
         }
 
         private bool disposedValue;
