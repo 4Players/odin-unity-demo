@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using OdinNative.Odin.Room;
 using OdinNative.Unity.Audio;
 using UnityEngine;
@@ -12,23 +12,24 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
     /// </summary>
     public class OdinPushToTalk : MonoBehaviour
     {
-        public static OdinPushToTalk Instance { get; private set; }
-        
         /// <summary>
         ///     The list of settings for different rooms. Allows definition of different push-to-talk buttons for different
         ///     ODIN rooms.
         /// </summary>
         [SerializeField] protected OdinPushToTalkSettings pushToTalkSettings;
 
+        private readonly Dictionary<int, float[]> _emptyBuffers = new Dictionary<int, float[]>();
+
         private MicrophoneReader _microphoneReader;
-        
+        public static OdinPushToTalk Instance { get; private set; }
+
         protected virtual void Awake()
         {
-            if(Instance)
+            if (Instance)
                 Destroy(this);
             else
                 Instance = this;
-            
+
             Assert.IsNotNull(pushToTalkSettings);
             foreach (OdinPushToTalkSettings.OdinPushToTalkData data in pushToTalkSettings.settings)
             {
@@ -63,18 +64,24 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         private void OnMicrophoneData(float[] buffer, int position)
         {
             SetCustomVolume(buffer);
-            
+
             foreach (Room room in OdinHandler.Instance.Rooms)
             {
+                float[] pushedBuffer = buffer;
                 if (IsMicrophoneMuted(room.Config.Name))
-                    continue;
-                
+                    if (!_emptyBuffers.TryGetValue(buffer.Length, out pushedBuffer))
+                    {
+                        Debug.Log("Created new empty buffer of length: " + buffer.Length);
+                        pushedBuffer = new float[buffer.Length];
+                        _emptyBuffers.Add(buffer.Length, pushedBuffer);
+                    }
+
                 if (room.MicrophoneMedia != null)
-                    room.MicrophoneMedia.AudioPushData(buffer);
+                    room.MicrophoneMedia.AudioPushData(pushedBuffer);
                 else if (room.IsJoined && OdinHandler.Config.VerboseDebug)
-                    Debug.LogWarning($"Room {room.Config.Name} is missing a microphone stream. See Room.CreateMicrophoneMedia");
+                    Debug.LogWarning(
+                        $"Room {room.Config.Name} is missing a microphone stream. See Room.CreateMicrophoneMedia");
             }
-           
         }
 
         private void SetCustomVolume(float[] buffer)
@@ -90,7 +97,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         {
             return Mathf.Pow(value, 3);
         }
-        
+
         private void SetVolume(ref float[] buffer, float scale)
         {
             for (int i = 0; i < buffer.Length; i++)
@@ -98,10 +105,13 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
         }
 
         /// <summary>
-        /// Checks whether the microphone is muted for the given room.
+        ///     Checks whether the microphone is muted for the given room.
         /// </summary>
         /// <param name="roomName">The room name.</param>
-        /// <returns>True, if push to talk is active and push to talk button is pressed or if push to talk is inactive. False otherwise.</returns>
+        /// <returns>
+        ///     True, if push to talk is active and push to talk button is pressed or if push to talk is inactive. False
+        ///     otherwise.
+        /// </returns>
         public virtual bool IsMicrophoneMuted(string roomName)
         {
             if (OdinHandler.Instance.Rooms.Contains(roomName))
@@ -114,11 +124,12 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
                         return !IsPushToTalkButtonPressed(pushToTalkData);
                     }
             }
+
             return false;
         }
 
         /// <summary>
-        /// Checks if the push to talk button is pressed.
+        ///     Checks if the push to talk button is pressed.
         /// </summary>
         /// <param name="pushToTalkData"></param>
         /// <returns></returns>
@@ -127,6 +138,5 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN
             bool isPushToTalkPressed = pushToTalkData.pushToTalkButton.action.IsPressed();
             return isPushToTalkPressed;
         }
-        
     }
 }

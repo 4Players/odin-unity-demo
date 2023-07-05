@@ -16,7 +16,7 @@ namespace OdinNative.Core.Imports
         /// <summary>
         /// ODIN_VERSION
         /// </summary>
-        public const string OdinVersion = "1.5.5";
+        public const string OdinVersion = "1.5.6";
 
         /// <summary>
         /// Block_SAMPLE_RATE
