@@ -13,13 +13,41 @@ namespace OdinNative.Odin.Media
     /// </summary>
     public class MicrophoneStream : MediaStream
     {
-        internal MicrophoneStream()
+        public bool IsMuted { get; private set; }
+        private bool MutedState = false;
+
+        public MicrophoneStream()
             : base(new OdinMediaConfig(OdinDefaults.RemoteSampleRate, OdinDefaults.RemoteChannels))  // Defaults match server config
         { }
 
-        internal MicrophoneStream(OdinMediaConfig config)
+        public MicrophoneStream(OdinMediaConfig config)
             : base(config)
         { }
+
+        public void MuteStream(bool mute)
+        {
+            if (IsMuted && mute)
+                return;
+
+            IsMuted = mute;
+            MutedState = false;
+        }
+
+        public override void AudioPushData(float[] buffer, int length)
+        {
+            if (IsMuted)
+            {
+                if (!MutedState)
+                {
+                    MutedState = true;
+                    Array.Clear(buffer, 0, length);
+                    base.AudioPushData(buffer, length);
+                }
+                return;
+            }
+
+            base.AudioPushData(buffer, length);
+        }
 
         /// <summary>
         /// AudioReadData and AudioReadDataAsync are not supported!

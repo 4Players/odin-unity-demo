@@ -35,7 +35,11 @@ namespace OdinNative.Unity.UIEditor
             headlineLabel.AddToClassList("headline");
             root.Add(headlineLabel);
 
+            #if UNITY_6000_0_OR_NEWER
+            config = FindFirstObjectByType<OdinEditorConfig>();
+            #else
             config = FindObjectsOfType<OdinEditorConfig>().FirstOrDefault();
+            #endif
             if (config == null)
             {
                 // Displays no config found error

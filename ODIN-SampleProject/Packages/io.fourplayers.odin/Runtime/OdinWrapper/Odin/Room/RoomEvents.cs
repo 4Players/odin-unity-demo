@@ -204,7 +204,8 @@ namespace OdinNative.Odin.Room
         public UserData Data;
     }
     /// <summary>
-    /// EventHandler in the current room
+    /// EventHandler in the current room. Changing a Room's UserData is only possible via request to Odin server API,
+    /// but not supported inside the client SDK.
     /// </summary>
     /// <param name="sender">sender of type <see cref="Room"/></param>
     /// <param name="e">Arguments events in the current room</param>

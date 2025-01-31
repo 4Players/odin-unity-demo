@@ -1,7 +1,10 @@
 ﻿using OdinNative.Core.Handles;
+using OdinNative.Odin.Media;
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using static OdinNative.Core.Imports.NativeBindings;
 
@@ -208,6 +211,30 @@ namespace OdinNative.Core.Imports
         #endregion
 
         #region Room
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinAudioSetStreamDelayDelegate(IntPtr room, UInt64 ms);
+        readonly OdinAudioSetStreamDelayDelegate _OdinAudioSetStreamDelay;
+        /// <summary>
+        /// Sets the delay estimate for the reverse stream used in the ODIN echo cancellation. This function
+        /// is important in scenarios where the audio output and the audio input are not synchronized. An
+        /// accurate delay value ensures that the echo canceller can correctly align the two audio streams,
+        /// resulting in effective echo cancellation.
+        /// </summary>
+        /// <remarks>Improper delay values may lead to poor echo cancellation and thus degrade the quality of the audio communication.</remarks>
+        /// <param name="room">*mut OdinRoom</param>
+        /// <param name="delay_ms">delay in milliseconds</param>
+        /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
+        public uint AudioSetStreamDelay(RoomHandle room, ulong delay_ms)
+        {
+            using (Lock)
+            {
+                uint error = _OdinAudioSetStreamDelay(room, delay_ms);
+                CheckAndThrow(error, $"{room} ms {delay_ms}");
+                return error;
+            }
+        }
+
+
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
         internal delegate uint OdinRoomConfigureApmDelegate(IntPtr room, NativeBindings.OdinApmConfig apmConfig);
         readonly OdinRoomConfigureApmDelegate _OdinRoomConfigureApm;
@@ -450,7 +477,7 @@ namespace OdinNative.Core.Imports
         public delegate void OdinEventCallback(IntPtr room, IntPtr odinEvent, MarshalByRefObject userData);
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
-        internal delegate uint OdinRoomUpdateUserDataDelegate(IntPtr room, OdinUserDataTarget target, byte[] userData, ulong userDataLength);
+        internal delegate uint OdinRoomUpdateUserDataDelegate(IntPtr room, byte[] userData, ulong userDataLength);
         readonly OdinRoomUpdateUserDataDelegate _OdinRoomUpdateUserData;
         /// <summary>
         /// Updates the user data for our own peer in the specified `OdinRoom`. 
@@ -458,15 +485,14 @@ namespace OdinNative.Core.Imports
         /// </summary>
         /// <remarks>This function can be called before joining a room to set initial user data upon connect.</remarks>
         /// <param name="room">*mut OdinRoom</param>
-        /// <param name="target">enum <see cref="OdinNative.Core.Imports.NativeBindings.OdinUserDataTarget"/></param>
         /// <param name="userData">*const u8</param>
         /// <param name="userDataLength">usize</param>
         /// <returns>0 or error code that is readable with <see cref="ErrorFormat"/></returns>
-        public uint RoomUpdateUserData(RoomHandle room, byte[] userData, ulong userDataLength, OdinUserDataTarget target = OdinUserDataTarget.OdinUserDataTarget_Peer)
+        public uint RoomUpdateUserData(RoomHandle room, byte[] userData, ulong userDataLength)
         {
             using (Lock)
             {
-                uint error = _OdinRoomUpdateUserData(room, target, userData, userDataLength);
+                uint error = _OdinRoomUpdateUserData(room, userData, userDataLength);
                 CheckAndThrow(error, $"{room} data size {userDataLength}");
                 return error;
             }
@@ -647,6 +673,36 @@ namespace OdinNative.Core.Imports
         {
             using (Lock)
                 return _OdinVideoStreamCreate();
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinMediaStreamResumeDelegate(IntPtr mediaStream);
+        readonly OdinMediaStreamResumeDelegate _OdinMediaStreamResume;
+        /// <summary>
+        /// Instructs the server to resume the specified output `OdinMediaStreamHandle`, re-initiating the
+        /// reception of data.This operation essentially communicates a server-side unmute request from the
+        /// client, indicating a desire to restart packet reception for this media stream.
+        /// </summary>
+        /// <returns><see cref="StreamHandle"/> * as <see cref="IntPtr"/> so <see cref="StreamHandle"/> can own the handle</returns>
+        public uint MediaStreamResume(StreamHandle handle)
+        {
+            using (Lock)
+                return _OdinMediaStreamResume(handle);
+        }
+
+        [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
+        internal delegate uint OdinMediaStreamPauseDelegate(IntPtr mediaStream);
+        readonly OdinMediaStreamPauseDelegate _OdinMediaStreamPause;
+        /// <summary>
+        /// Instructs the server to pause the specified `OdinMediaStreamHandle`, ceasing the reception of
+        /// data.This operation essentially communicates a server-side mute request from the client, thus
+        /// indicating a desire to halt packet reception for this media stream.
+        /// </summary>
+        /// <returns><see cref="StreamHandle"/> * as <see cref="IntPtr"/> so <see cref="StreamHandle"/> can own the handle</returns>
+        public uint MediaStreamPause(StreamHandle handle)
+        {
+            using (Lock)
+                return _OdinMediaStreamPause(handle);
         }
 
         [UnmanagedFunctionPointer(Native.OdinCallingConvention)]
