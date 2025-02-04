@@ -14,6 +14,12 @@ using UnityEngine;
 using UnityEngine.Audio;
 using static OdinNative.Core.Imports.NativeBindings;
 
+/// <summary>
+/// The OdinHandler class is the global ODIN manager within Unity. It’s built as a singleton. Create an empty game object in your scene and add this script to it. OdinHandler uses DontDestroyOnLoad to keep the singleton alive even if the scene changes.
+/// </summary>
+/// <remarks>
+/// You can access the global singleton instance with the Instance  property.
+/// </remarks>
 [AddComponentMenu("")]
 [RequireComponent(typeof(OdinEditorConfig))]
 [DisallowMultipleComponent, DefaultExecutionOrder(-100)]
@@ -75,7 +81,8 @@ public class OdinHandler : MonoBehaviour
     /// </summary>
     public MediaActiveStateChangedProxy OnMediaActiveStateChanged;
     /// <summary>
-    /// Called on the Room that updates his UserData
+    /// Called on the Room that updates his UserData. Changing a Room's UserData is only possible via request to Odin
+    /// server API, but not supported inside the client SDK.
     /// </summary>
     public RoomUserDataChangedProxy OnRoomUserDataChanged;
     /// <summary>
@@ -128,7 +135,11 @@ public class OdinHandler : MonoBehaviour
                 if (_config != null)
                     return _config;
 
+                #if UNITY_6000_0_OR_NEWER
+                var config = FindFirstObjectByType<OdinEditorConfig>();
+                #else
                 var config = FindObjectsOfType<OdinEditorConfig>().FirstOrDefault();
+                #endif
                 if (config == null)
                     config = Instance.gameObject.AddComponent<OdinEditorConfig>();
 
@@ -209,9 +220,11 @@ public class OdinHandler : MonoBehaviour
         {
             if (string.IsNullOrEmpty(Config.AccessKey))
             {
+#if !UASOdin
                 Debug.LogError("Access-Key was not set!");
-                Config.AccessKey = OdinClient.CreateAccessKey();
                 Debug.LogWarning("Using a generated test key!");
+#endif
+                Config.AccessKey = OdinClient.CreateAccessKey();
             }
             Client = new OdinClient(new System.Uri(Config.Server), Config.AccessKey, userData);
             if (!OdinNative.Core.OdinLibrary.IsInitialized)
@@ -227,7 +240,15 @@ public class OdinHandler : MonoBehaviour
         }
 
         if (Microphone == null && Corrupted == false)
-            Microphone = gameObject.AddComponent<MicrophoneReader>();
+        {
+            #if UNITY_6000_0_OR_NEWER
+            Microphone = FindFirstObjectByType<MicrophoneReader>();
+            #else
+            Microphone = FindObjectOfType<MicrophoneReader>();
+            #endif
+        }
+        if(!Microphone)
+            Debug.LogWarning("MicrophoneReader not found, ODIN will not automatically create MicrophoneMediaStreams.");
     }
 
     private void SetupEventProxy(bool customProxy = false)
@@ -293,7 +314,7 @@ public class OdinHandler : MonoBehaviour
             userData = new UserData(Config.UserDataText);
 
         setup = CheckSetup(setup);
-        Client.UpdateUserData(userData);
+
         Room room = await Client.JoinRoom(roomName, Config.ClientId, userData, setup);
 
         if (room == null || room.IsJoined == false)
@@ -303,7 +324,7 @@ public class OdinHandler : MonoBehaviour
         }
         Debug.Log($"Odin {Config.ClientId}: Room {room.Config.Name} joined.");
 
-        if (room.CreateMicrophoneMedia(new OdinNative.Core.OdinMediaConfig(Microphone.SampleRate, Config.DeviceChannels)))
+        if (Microphone && room.CreateMicrophoneMedia(new OdinNative.Core.OdinMediaConfig(Microphone.SampleRate, Config.DeviceChannels)))
             Debug.Log($"MicrophoneStream added to room {roomName}.");
 
         await System.Threading.Tasks.Task.Yield();
@@ -339,7 +360,7 @@ public class OdinHandler : MonoBehaviour
             userData = new UserData(Config.UserDataText);
 
         setup = CheckSetup(setup);
-        Client.UpdateUserData(userData);
+
         Room room = await Client.JoinNamedRoom(roomAlias, token, userData, setup);
 
         if (room == null || room.IsJoined == false)
@@ -349,7 +370,7 @@ public class OdinHandler : MonoBehaviour
         }
         Debug.Log($"Odin {Config.ClientId}: Room {room.Config.Name} joined.");
 
-        if (room.CreateMicrophoneMedia(new OdinNative.Core.OdinMediaConfig(Microphone.SampleRate, Config.DeviceChannels)))
+        if (Microphone && room.CreateMicrophoneMedia(new OdinNative.Core.OdinMediaConfig(Microphone.SampleRate, Config.DeviceChannels)))
             Debug.Log($"MicrophoneStream added to room {roomAlias}.");
 
         await System.Threading.Tasks.Task.Yield();
@@ -404,8 +425,13 @@ public class OdinHandler : MonoBehaviour
 
         if (CreatePlayback && Use3DAudio == false)
         {
+            #if UNITY_6000_0_OR_NEWER
+            var playbacks = FindObjectsByType<PlaybackComponent>(FindObjectsSortMode.None)
+                .Where(p => p.RoomName == roomName);
+            #else
             var playbacks = FindObjectsOfType<PlaybackComponent>()
                 .Where(p => p.RoomName == roomName);
+            #endif
 
             foreach (PlaybackComponent playback in playbacks)
                 DestroyImmediate(playback);
@@ -496,6 +522,12 @@ public class OdinHandler : MonoBehaviour
         EventQueue.Enqueue(new KeyValuePair<object, System.EventArgs>(sender, e));
     }
 
+    /// <summary>
+    /// The rooms user data was updated.
+    /// Changing a Room's UserData is only possible via request to Odin server API, but not supported inside the client SDK.
+    /// </summary>
+    /// <param name="sender">The sending object</param>
+    /// <param name="e">Event data containing room name and new user data.</param>
     protected virtual void Room_OnRoomUserDataChanged(object sender, RoomUserDataChangedEventArgs e)
     {
         if (Config.Verbose) Debug.Log($"Odin Room \"{(sender as Room).Config.Name}\": changed {e.RoomName} data: {e.Data}");
@@ -562,12 +594,22 @@ public class OdinHandler : MonoBehaviour
 
     private bool RouteAudioProcess(Room room)
     {
-        int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * AudioSettings.outputSampleRate);
+        #if !ODIN_UNITY_AUDIO_ENGINE_DISABLED
+       uint sampleRate = (uint) AudioSettings.outputSampleRate;
+        if (0 == sampleRate)
+        {
+            sampleRate = OdinNative.Core.Imports.NativeBindings.BlockSamplerate;
+            Debug.LogWarning("ODIN: Sample Rate returned by Unity Audio Settings is invalid. This usually happens when the Unity Audio Engine is disabled. If this is the case, please set the ODIN_UNITY_AUDIO_ENGINE_DISABLED flag in the Player Settings Scripting Define Symbols section.");
+        }
+        int readBufferSize = Mathf.FloorToInt(Time.fixedUnscaledDeltaTime * sampleRate);
         if (Config.VerboseDebug)
             Debug.Log($"EC for {room.Config.Name} audio process size {readBufferSize}");
         float[] buffer = new float[readBufferSize];
-        AudioListener.GetOutputData(buffer, (int)AudioSpeakerMode.Mono);
+        AudioListener.GetOutputData(buffer, 0); // only mono block
         return room.AudioProcessReverse(buffer);
+        #else
+        return false;
+        #endif
     }
 
     private IEnumerator HandleActionQueue()
@@ -641,7 +683,7 @@ public class OdinHandler : MonoBehaviour
                 }
             }
             else if (Config.Verbose)
-                Debug.LogWarning($"No available consumers for playback found.");
+                Debug.Log($"No available consumers for playback found.");
 
             OnCreatedMediaObject?.Invoke(addedEvent.Key.Config.Name, addedEvent.Value.Peer.Id, addedEvent.Value.Media.Id);
         }
@@ -736,9 +778,8 @@ public class OdinHandler : MonoBehaviour
 
         var playback = peerContainer.AddComponent<PlaybackComponent>();
         playback.AutoDestroyAudioSource = autoDestroySource; // We create and destroy the audiosource
-        playback.RoomName = roomName;
-        playback.PeerId = peerId;
-        playback.MediaStreamId = mediaStreamId;
+        playback.SetMediaInfo(roomName, peerId, mediaStreamId);
+
         if (PlaybackAudioMixerGroup != null)
             playback.PlaybackSource.outputAudioMixerGroup = PlaybackAudioMixerGroup;
         Debug.Log($"Playback created on {peerContainer.name} for Room {playback.RoomName} Peer {playback.PeerId} Media {playback.MediaStreamId}");
@@ -871,8 +912,11 @@ public class OdinHandler : MonoBehaviour
         if (room == null) return default;
 
         if (includeSelf)
-            return room.RemotePeers
-                .AsEnumerable();
+        {
+            var peersAsEnumerable = room.RemotePeers.ToList();
+            peersAsEnumerable.Add(room.Self);
+            return peersAsEnumerable;
+        }
 
         return room.RemotePeers
             .Where(p => p.Id != room.OwnId);
@@ -896,7 +940,11 @@ public class OdinHandler : MonoBehaviour
     /// <returns>The array of objects found matching the type PlaybackComponent.</returns>
     public PlaybackComponent[] GetPlaybackComponents()
     {
+        #if UNITY_6000_0_OR_NEWER
+        return FindObjectsByType<PlaybackComponent>(FindObjectsSortMode.None);
+        #else
         return FindObjectsOfType<PlaybackComponent>();
+        #endif
     }
 
     /// <summary>
@@ -1022,7 +1070,8 @@ public class OdinHandler : MonoBehaviour
     {
         if (!HasConnections) return;
 
-        Destroy(Microphone);
+        if(Microphone)
+            Destroy(Microphone);
         DestroyPlaybackComponents();
         Rooms.Clear();
         Debug.LogException(new NotSupportedException("ODIN SDK ReloadEvent is not supported!"));

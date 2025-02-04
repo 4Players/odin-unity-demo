@@ -100,17 +100,6 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Sends data to the audio stream. The data has to be interleaved [-1, 1] float data.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
-        /// <param name="buffer">audio data</param>
-        public virtual void AudioPushData(float[] buffer)
-        {
-            OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
-        }
-
-        /// <summary>
-        /// Sends data to the audio stream. The data has to be interleaved [-1, 1] float data.
-        /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
         /// <param name="buffer">audio data</param>
         /// <param name="length">bytes to write</param>
         public virtual void AudioPushData(float[] buffer, int length)
@@ -121,13 +110,21 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Sends data to the audio stream. The data has to be interleaved [-1, 1] float data.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
+        /// <param name="buffer">audio data</param>
+        public virtual void AudioPushData(float[] buffer)
+        {
+            AudioPushData(buffer, buffer.Length);
+        }
+
+        /// <summary>
+        /// Sends data to the audio stream. The data has to be interleaved [-1, 1] float data.
+        /// </summary>
         /// <param name="buffer">interleaved audio data</param>
         /// <param name="cancellationToken"></param>
         public virtual Task AudioPushDataTask(float[] buffer, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(() => {
-                    OdinLibrary.Api.AudioPushData(Handle, buffer, buffer.Length);
+                    AudioPushData(buffer, buffer.Length);
                 }
             , cancellationToken);
         }
@@ -136,7 +133,6 @@ namespace OdinNative.Odin.Media
         /// Sends audio data using a custom <see cref="CancellationSource"/>.
         /// The data has to be interleaved [-1, 1] float data.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
         /// <param name="buffer">interleaved audio data</param>
         public virtual async void AudioPushDataAsync(float[] buffer)
         {
@@ -148,7 +144,6 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Reads data from the audio stream.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
         /// <returns>count of written bytes into buffer</returns>
         public virtual uint AudioReadData(float[] buffer)
@@ -172,7 +167,6 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Reads data from the audio stream.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
         /// <param name="length">bytes to read</param>
         /// <returns>count of written bytes into buffer</returns>
@@ -186,7 +180,6 @@ namespace OdinNative.Odin.Media
         /// <summary>
         /// Reads data from the audio stream.
         /// </summary>
-        /// <remarks>if <see cref="IsPaused"/> NOP</remarks>
         /// <param name="buffer">buffer to write into</param>
         /// <param name="cancellationToken"></param>
         /// <returns>count of written bytes into buffer</returns>

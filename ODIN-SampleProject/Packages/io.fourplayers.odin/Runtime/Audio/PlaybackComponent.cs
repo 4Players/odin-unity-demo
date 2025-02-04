@@ -77,7 +77,7 @@ namespace OdinNative.Unity.Audio
         ///     <see href="https://docs.unity3d.com/ScriptReference/AudioClip.html">(AudioClip)</see>
         ///     creation if <see cref="OverrideSampleRate" /> is false
         /// </remarks>
-        public MediaSampleRate SampleRate;
+        public MediaSampleRate SampleRate = OdinDefaults.RemoteSampleRate;
 
         /// <summary>
         ///     Represents the audio clip buffer used for Unity Playback. The Spatial Clip Data is set to this data every frame.
@@ -182,6 +182,14 @@ namespace OdinNative.Unity.Audio
                 PlaybackMedia = OdinMedia;
             }
         }
+
+        public void SetMediaInfo(string roomName, ulong peerId, long mediaId)
+        {
+            _RoomName = roomName;
+            _PeerId = peerId;
+            _MediaStreamId = mediaId;
+            PlaybackMedia = OdinMedia;
+        }
         
 
         /// <summary>
@@ -198,7 +206,20 @@ namespace OdinNative.Unity.Audio
         /// <summary>
         ///     Use the output settings given by unity. Most of the time this is 44100Hz
         /// </summary>
-        private int OutSampleRate => AudioSettings.outputSampleRate;
+        private int OutSampleRate
+        {
+            get
+            {
+                
+                #if !ODIN_UNITY_AUDIO_ENGINE_DISABLED
+                return AudioSettings.outputSampleRate;
+                #else
+                Debug.Log("ODIN: PlaybackComponent will only work with the Unity Audio Engine. If you'd like to support other Audio Engines like Wwise or FMOD, please check out our guides at https://www.4players.io/odin/guides/unity/. Returning default value.");
+                return (int) OdinDefaults.RemoteSampleRate;
+                #endif
+                
+            }
+        }
 
         public bool HasActivity
         {
@@ -228,7 +249,7 @@ namespace OdinNative.Unity.Audio
         private void FixedUpdate()
         {
             bool canRead = !(_IsDestroying || PlaybackMedia == null || PlaybackMedia.HasErrors ||
-                             RedirectPlaybackAudio == false);
+                             RedirectPlaybackAudio == false) && OutSampleRate > 0;
             if (canRead)
             {
                 // readBufferSize is based on the fixed unscaled delta time - we want to read "one frame" from the media stream
@@ -274,7 +295,6 @@ namespace OdinNative.Unity.Audio
                 }
             }
 
-
             int distanceToClipStart = GetBufferDistance(CurrentClipPos, _FrameBufferEndPos);
             // The size / duration of the current audio buffer.
             float audioBufferSize = (float)distanceToClipStart / OutSampleRate;
@@ -310,7 +330,13 @@ namespace OdinNative.Unity.Audio
                 _ClipBuffer[cleanUpIndex] = 0.0f;
             }
 
-            // Debug.Log($"Audio Buffer: {audioBufferSize * 1000.0f} ms, Pitch: {pitch}, fixed delta time: {Time.fixedUnscaledDeltaTime}");
+            // clip check for not recognizing SetData problem with less data from 0 to clip samples after output is reinitialized (only observed on andriod so far)
+            if (SpatialClip == null || SpatialClip.samples != _ClipBuffer.Length)
+            {
+                PlaybackSource.Stop();
+                SetupPlaybackSource();
+            }
+
             // finally insert the read data into the spatial clip.
             SpatialClip.SetData(_ClipBuffer, 0);
         }
@@ -329,11 +355,15 @@ namespace OdinNative.Unity.Audio
             RedirectPlaybackAudio = true;
             if (OdinHandler.Config.VerboseDebug)
                 Debug.Log(
-                    $"## {nameof(PlaybackComponent)}.OnEnable AudioSettings: outputSampleRate {AudioSettings.outputSampleRate}, driverCapabilities {Enum.GetName(typeof(AudioSpeakerMode), AudioSettings.driverCapabilities)}, speakerMode {Enum.GetName(typeof(AudioSpeakerMode), AudioSettings.speakerMode)}");
+                    $"## {nameof(PlaybackComponent)}.OnEnable AudioSettings: outputSampleRate {OutSampleRate}, driverCapabilities {Enum.GetName(typeof(AudioSpeakerMode), AudioSettings.driverCapabilities)}, speakerMode {Enum.GetName(typeof(AudioSpeakerMode), AudioSettings.speakerMode)}");
 
+            SetupPlaybackSource();
+        }
 
+        private void SetupPlaybackSource()
+        {
             int clipSamples = (int)(OutSampleRate * 3.0f * TargetBufferSize);
-            SpatialClip = AudioClip.Create("spatialClip", clipSamples, 1, AudioSettings.outputSampleRate, false);
+            SpatialClip = AudioClip.Create("spatialClip", clipSamples, 1, OutSampleRate, false);
             ResetAudioClip();
             PlaybackSource.clip = SpatialClip;
             PlaybackSource.loop = true;
@@ -343,7 +373,7 @@ namespace OdinNative.Unity.Audio
 
             _FrameBufferEndPos = GetTargetFrameBufferEndPosition();
             _FrameBufferEndPos %= ClipSamples;
-        }
+        }    
 
         private void OnDisable()
         {

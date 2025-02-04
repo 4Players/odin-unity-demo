@@ -279,7 +279,6 @@ namespace OdinNative.Odin
                 var sender = OdinClient._Rooms[roomPtr];
                 if (sender != null)
                 {
-                    //TODO get event userDataPtr and sanitize e.g 3D-Audio
                     sender.OnEventReceived(sender, @event, extraData);
                 }
             }

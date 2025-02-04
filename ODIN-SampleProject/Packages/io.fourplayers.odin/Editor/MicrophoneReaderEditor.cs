@@ -28,7 +28,6 @@ namespace OdinNative.Unity.UIEditor
         SerializedProperty LoopbackTestRunner;
 
         private bool toggleMicSettings;
-        private bool toggleShowTest;
 
         private GUIStyle FoldoutLabelStyle;
 
@@ -76,11 +75,10 @@ namespace OdinNative.Unity.UIEditor
 
             GUILayout.Space(10);
             CreateMicSettingsLayout();
-            if (toggleShowTest)
-            {
-                GUILayout.Space(10);
-                EditorGUILayout.PropertyField(RecordingLoop, new GUIContent("Loopback Test", "Start/Stop Audio- Loopback"));
-            }
+            
+            GUILayout.Space(10);
+            EditorGUILayout.PropertyField(LoopbackTestRunner, new GUIContent("Loopback Test", "Start/Stop Audio- Loopback"));
+            
             serializedObject.ApplyModifiedProperties();
 
         }

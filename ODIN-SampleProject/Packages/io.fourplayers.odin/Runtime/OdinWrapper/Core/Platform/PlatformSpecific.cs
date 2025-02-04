@@ -35,10 +35,12 @@ namespace OdinNative.Core.Platform
         private const string AssetPath = "Assets/" + PackageName + "/Plugins";
         private const string AssetStorePath = "Assets/" + PackageVendor + "/" + PackageShortName + "/Plugins";
         private const string PackagePath = "Packages/" + PackageName + "/Plugins";
-        
+
         private const string WindowsLibName = "odin.dll";
         private const string LinuxLibName = "libodin.so";
         private const string AppleLibName = "libodin.dylib";
+        private const string IOSLibName = "Odin.framework/Odin";
+
 
         private static class NativeWindowsMethods
         {
@@ -236,12 +238,19 @@ namespace OdinNative.Core.Platform
                 case PlatformID.MacOSX: platform = SupportedPlatform.MacOSX; break;
                 case PlatformID.Unix: platform = GetUnixPlatform(); break;
                 case PlatformID.Win32NT:
+#if ENABLE_VR
+                    platform = SupportedPlatform.Windows; // no version check with VR
+                    break;
+#endif
+
+#pragma warning disable CS0162 // Unreachable code detected
                     if (operatingSystem.Version >= new Version(5, 1)) // if at least windows xp or newer
                     {
                         platform = SupportedPlatform.Windows;
                         break;
                     }
                     else goto default;
+#pragma warning restore CS0162 // Unreachable code detected
                 default: platform = 0; names = null; return false;
             }
 
@@ -252,18 +261,18 @@ namespace OdinNative.Core.Platform
                     .GetDirectories(LibraryCache)
                     .Where(dir => dir.Contains(PackageName))
                     .FirstOrDefault();
-            } catch (System.IO.DirectoryNotFoundException) { /* nop */ }
+            }
+            catch (System.IO.DirectoryNotFoundException) { /* nop */ }
 
             switch (platform)
             {
                 case SupportedPlatform.iOS:
-                    names = new string[] { AppleLibName,
-#if UNITY_64
-                        string.Format("{0}/{1}", UnityEngine.Application.dataPath, AppleLibName), // Data
-                        string.Format("{0}/../{1}/{2}", UnityEngine.Application.dataPath, "Frameworks", AppleLibName), // Frameworks
-                        string.Format("{0}/../{1}/{2}", UnityEngine.Application.dataPath, "PlugIns", AppleLibName), // PlugIns
-                        string.Format("{0}/../{1}/{2}", UnityEngine.Application.dataPath, "SharedSupport", AppleLibName) // SharedSupport
-#endif
+                    names = new string[] {
+                        string.Format("{0}/../{1}/{2}", UnityEngine.Application.dataPath, "Frameworks", IOSLibName),
+                        string.Format("{0}/{1}/{2}", PackagePath, "macos/universal", AppleLibName), // PkgManager
+                        string.Format("{0}/{1}/{2}", AssetPath, "macos/universal", AppleLibName), // Editor
+                        string.Format("{0}/{1}/{2}", AssetStorePath, "macos/universal", AppleLibName), // Asset Store
+                        string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/macos/universal", AppleLibName) // PackageCache
                     };
                     break;
                 case SupportedPlatform.MacOSX:
@@ -339,10 +348,17 @@ namespace OdinNative.Core.Platform
                             string.Format("{0}/{1}/{2}", PackagePath, "windows/x86_64", WindowsLibName), // PkgManager
                             string.Format("{0}/{1}/{2}", AssetPath, "windows/x86_64", WindowsLibName), // Editor
                             string.Format("{0}/{1}/{2}", AssetStorePath, "windows/x86_64", WindowsLibName), // Asset Store
-                            string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/windows/x86_64", WindowsLibName) // PackageCache
+                            string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/windows/x86_64", WindowsLibName), // PackageCache
 #if UNITY_64
-                            ,string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "Plugins", WindowsLibName)
-                            ,string.Format("{0}/{1}/{2}/{3}", UnityEngine.Application.dataPath, "Plugins", "x86_64", WindowsLibName), string.Format("{0}/{1}/{2}", "Plugins", "x86_64", WindowsLibName)  // Standalone
+                            string.Format("{0}/{1}/{2}", UnityEngine.Application.dataPath, "Plugins", WindowsLibName),
+                            string.Format("{0}/{1}/{2}/{3}", UnityEngine.Application.dataPath, "Plugins", "x86_64", WindowsLibName),
+                            string.Format("{0}/{1}/{2}", "Plugins", "x86_64", WindowsLibName),  // Standalone
+#endif
+#if ENABLE_VR
+                            string.Format("{0}/{1}/{2}", PackagePath, "windows/aarch64", WindowsLibName), // PkgManager
+                            string.Format("{0}/{1}/{2}", AssetPath, "windows/aarch64", WindowsLibName), // Editor
+                            string.Format("{0}/{1}/{2}", AssetStorePath, "windows/aarch64", WindowsLibName), // Asset Store
+                            string.Format("{0}/{1}/{2}", LibraryCache, "Plugins/windows/aarch64", WindowsLibName), // PackageCache
 #endif
                         }
                         : new string[] { WindowsLibName,

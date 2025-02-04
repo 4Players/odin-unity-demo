@@ -80,8 +80,12 @@ public class OdinAssetContext : Editor
             return null;
         }
 
+        #if UNITY_6000_0_OR_NEWER
+        OdinEditorConfig config = FindFirstObjectByType<OdinEditorConfig>();
+        #else
         OdinEditorConfig[] configs = FindObjectsOfType<OdinEditorConfig>();
         OdinEditorConfig config = configs.Length <= 0 ? obj.AddComponent<OdinEditorConfig>() : configs[0];
+        #endif
         if (config != null) config.DeviceSampleRate = OdinNative.Core.MediaSampleRate.Hz48000;
 
         OdinHandler handler = obj.GetComponent<OdinHandler>();
@@ -101,7 +105,12 @@ public class OdinAssetContext : Editor
         GameObject obj = CreateComponents();
 
         OdinHandler handler = obj.GetComponent<OdinHandler>();
+        
+        #if UNITY_6000_0_OR_NEWER
+        MicrophoneReader[] micReaders = FindObjectsByType<MicrophoneReader>(FindObjectsSortMode.None);
+        #else
         MicrophoneReader[] micReaders = FindObjectsOfType<MicrophoneReader>();
+        #endif
         if (handler != null) handler.Microphone = micReaders.Length <= 0 ? obj.AddComponent<MicrophoneReader>() : micReaders[0];
 
         return obj;
@@ -111,6 +120,22 @@ public class OdinAssetContext : Editor
     public static void LinkAudioMixerGroup()
     {
         Object obj = Selection.activeObject;
+        #if UNITY_6000_0_OR_NEWER
+        foreach (OdinHandler handler in FindObjectsByType<OdinHandler>(FindObjectsSortMode.None))
+        {
+            if (obj is AudioMixerGroup)
+            {
+                AudioMixerGroup group = obj as AudioMixerGroup;
+                handler.PlaybackAudioMixer = group.audioMixer;
+                handler.PlaybackAudioMixerGroup = group;
+            }
+            else
+            {
+                Debug.LogWarning("Selection has to be an AudioMixerGroup!");
+                break;
+            }
+        }
+        #else
         foreach (OdinHandler handler in FindObjectsOfType<OdinHandler>())
         {
             if (obj is AudioMixerGroup)
@@ -125,6 +150,7 @@ public class OdinAssetContext : Editor
                 break;
             }
         }
+        #endif
     }
 }
 #endif

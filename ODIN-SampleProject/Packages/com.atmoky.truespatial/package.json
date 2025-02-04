@@ -1,0 +1,47 @@
+{
+  "name": "com.atmoky.truespatial",
+  "version": "1.4.1",
+  "displayName": "atmoky trueSpatial",
+  "description": "Audio plug-ins and tools for True Spatial binaural audio rendering in Unity. This package contains native rendering plug-ins for spatialization of audio sources and rendering of Ambisonic sound beds - bringing True Spatial Audio to all platforms.",
+  "unity": "2021.3",
+  "unityRelease": "22f1",
+  "samples": [
+    {
+      "displayName": "Source Directivity",
+      "description": "A demo scene showcasing how to apply source directivity",
+      "path": "Samples~/ExampleScenes/SourceDirectivity"
+    },
+    {
+      "displayName": "Nearfield Effects",
+      "description": "A demo scene showcasing how to apply nearfield effects to audio sources",
+      "path": "Samples~/ExampleScenes/NearfieldEffects"
+    },
+    {
+      "displayName": "Many Sources",
+      "description": "A demo scene containing many audio sources to showcase the performance of the trueSpatial plugin",
+      "path": "Samples~/ExampleScenes/ManySources"
+    },
+    {
+      "displayName": "Ambisonic Sound Bed",
+      "description": "A demo scene containing an Ambisonic sound bed to showcase the rendering of Ambisonic audio",
+      "path": "Samples~/ExampleScenes/AmbisonicSource"
+    },
+    {
+      "displayName": "Occlusion Effects",
+      "description": "A demo scene showcasing automatic computation and application of occlusion effects",
+      "path": "Samples~/ExampleScenes/OcclusionEffects"
+    }
+  ],
+  "dependencies": {},
+  "documentationUrl": "https://developer.atmoky.com/true-spatial",
+  "keywords": [
+    "spatial audio",
+    "HRTFs",
+    "binaural"
+  ],
+  "author": {
+    "name": "atmoky GmbH",
+    "email": "hello@atmoky.com",
+    "url": "https://www.atmoky.com"
+  }
+}

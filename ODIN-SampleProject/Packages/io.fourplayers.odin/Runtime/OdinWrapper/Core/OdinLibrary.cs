@@ -24,7 +24,7 @@ namespace OdinNative.Core
         {
             get
             {
-                InitializedLock.AcquireReaderLock(Timeout.Infinite);
+                InitializedLock.AcquireReaderLock(1000);
                 try
                 {
                     if (IsInitialized == false)
