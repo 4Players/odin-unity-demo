@@ -1,18 +1,27 @@
-# ODIN Unity Demo Project
+# ODIN and Atmoky Unity Demo Project
 
 Please check out https://www.4players.io/odin/ for more info on ODIN.
 
 Additional info on this demo project can be found here: https://www.4players.io/odin/guides/unity/pun-sample/.
 
-## Download the Binary
-
-You can download the binaries here: https://github.com/4Players/odin-unity-demo/releases/latest
+This version extends the given Tech Demo by the [True Spatial Audio Solution by atmoky](https://atmoky.com/products/true-spatial/). This is a high quality solution for 3D Spatial Audio and thus integrates perfectly with the use cases of Odin.
 
 ## ⚠ Downloading the ZIP ⚠
 
 **Please note**: This repository uses LFS. You need to clone this repo with LFS enabled. **Downloading the ZIP file via Githubs Download ZIP functionality does not work!**
 
 To enable git lfs, enter `git lfs install` in your git bash in your local repository.
+
+## Opening and Starting the Project
+
+To open the project you will need to **download the current version of Atmoky for Unity first**.
+
+- Go to atmoky's [download page](https://developer.atmoky.com/true-spatial-unity/downloads) for their Unity integration
+- Fill out their form
+- You will receive an email containing a download link of their Unity Package
+- Unzip the Package and add it to the `ODIN-SampleProject/Package`
+
+Now you can add the project to Unity Hub and open it like usual.
 
 # ODIN Demo: Extended Audio System and Multiplayer with Photon PUN 2
 In this guide we’ll walk you through the basic concepts of integrating ODIN into a multiplayer game. This demo will use
@@ -24,7 +33,6 @@ If you are unsure why you should use ODIN for that, learn more about our feature
 ## Project Structure
 
 The ODIN-Demo project's scripts are split up into the categories:
-- **Audio**: Scripts in here handle the custom Audio System behaviour like directional audio and occlusion effects. 
 - **ODIN:** Handles anything related to core ODIN-features, without external dependencies. If you'd like to use a multiplayer framework other than Photon, you can safely reuse the files contained in this assembly.
 - **Photon:** Anything Photon specific is contained in here, like joining Photon Rooms or synchronizing Player Position.
 - **GameLogic:** Anything else required for the demo, like the player's movement or view state (1st-person or 3rd-person).
@@ -153,8 +161,8 @@ multiplayer framework, simply provide your own class extending `AOdinMultiplayer
 
 ### Playback Settings - Distance and Radio Effects
 
-ODIN relies on Unity's `AudioSource` Components to play Media Streams. We can therefore just use the built in functionality of Audio Sources to adjust the distance at which players can hear each other. For any `AOdinUser` implementation (i.e. `OdinDefaultUser` for Radio transmissions and `Odin3dAudioVoiceUser` for Proximity Voice Chat) we can reference a prefab that will be spawned for each
-Media Stream. These Prefabs not only have a `PlaybackComponent` on them, but also contain an `AudioSource`. So, to change the Playback Behaviour of Media Streams in-game, we have to change the `AudioSource` Settings on the prefab. The Tech Demo uses the prefabs `OdinRadioAudioSource` and `OdinVoiceAudioSource` in the `ODIN-Sample > Prefabs` folder. 
+ODIN relies on Unity's `AudioSource` and atmoky's `AtmokySource` Components to play Media Streams. We can therefore just use the built in functionality of Audio Sources to adjust the distance at which players can hear each other. For any `AOdinUser` implementation (i.e. `OdinDefaultUser` for Radio transmissions and `Odin3dAudioVoiceUser` for Proximity Voice Chat) we can reference a prefab that will be spawned for each
+Media Stream. These Prefabs not only have a `PlaybackComponent` on them, but also contain an `AudioSource`. So, to change the Playback Behaviour of Media Streams in-game, we have to change the `AudioSource` Settings on the prefab. Additionally there is an `AtmokySource` component that offers settings specific to the atmoky True Spatial audio renderer - e.g. directivity settings. The Tech Demo uses the prefabs `OdinRadioAudioSource` and `OdinVoiceAudioSource` in the `ODIN-Sample > Prefabs` folder. 
 
 The `OdinRadioAudioSource` prefab simply has a full 2D `Spatial Blend` setting and the `Bypass Reverb Zone` enabled. The latter lets us avoid Unity's Reverb Zones, e.g. Echo effects in large rooms. The most interesting setting can be found in the `Output` option - here we reference an Audio Mixer Group Controller. The Radio Group Controller defines the list of effects that the incoming Radio room Media Streams go through, before being output to the User. The combination of these effects creates the Radio's crackling effect, giving Players a more immersive experience.
 
