@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 1106984047728189001}
   - component: {fileID: -5669443469478044909}
   - component: {fileID: 8929664778465301116}
+  - component: {fileID: 177704920228641874}
+  - component: {fileID: 6650188097345447292}
   m_Layer: 0
   m_Name: OdinVoiceAudioSource
   m_TagString: Untagged
@@ -27,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106984047728188998}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1106984047728189000
 AudioSource:
@@ -51,12 +53,12 @@ AudioSource:
   m_Pitch: 1
   Loop: 0
   Mute: 0
-  Spatialize: 0
+  Spatialize: 1
   SpatializePostEffects: 0
   Priority: 0
   DopplerLevel: 1
   MinDistance: 2
-  MaxDistance: 70
+  MaxDistance: 40
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -121,7 +123,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -146,7 +148,6 @@ MonoBehaviour:
   PlaybackSource: {fileID: 1106984047728189000}
   AutoDestroyAudioSource: 0
   AutoDestroyMediaStream: 0
-  OverrideSampleRate: 0
   SampleRate: 48000
 --- !u!135 &-5669443469478044909
 SphereCollider:
@@ -156,9 +157,17 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106984047728188998}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8929664778465301116
@@ -168,9 +177,73 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106984047728188998}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49da86a68ef34f208720a2fca9fbe004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   removeParentCollidersForOcclusion: 1
+--- !u!114 &177704920228641874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106984047728188998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 240d865a19b2743cf8b01f4fe70c34fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rendererIndex: 0
+  receiverIndex: 1
+  occlusion: 0
+  sendLevelSrc: 0
+  sendLevel: -80
+  innerAngle: 130
+  outerAngle: 300
+  outerGain: 0.7
+  outerLowpass: 0.4
+  nfeDistance: 2.09
+  nfeGain: 2.32
+  nfeBassBoost: 0
+  isSerialized: 1
+--- !u!114 &6650188097345447292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106984047728188998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ad5886bb7fb181e686bc8baafaabfc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  overrideSource: {fileID: 0}
+  referenceType: 0
+  customReferenceObject: {fileID: 0}
+  useEditorCameraInEditor: 1
+  useRaycastNonAlloc: 0
+  maxNumberOfHits: 100
+  occlusionLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  probes:
+  - position: {x: 1, y: 1, z: 1}
+    occlusion: 0
+  - position: {x: -1, y: 1, z: 1}
+    occlusion: 0
+  - position: {x: 1, y: -1, z: 1}
+    occlusion: 0
+  - position: {x: -1, y: -1, z: 1}
+    occlusion: 0
+  - position: {x: 1, y: 1, z: -1}
+    occlusion: 0
+  - position: {x: -1, y: 1, z: -1}
+    occlusion: 0
+  - position: {x: 1, y: -1, z: -1}
+    occlusion: 0
+  - position: {x: -1, y: -1, z: -1}
+    occlusion: 0
+  occlusionSensitivity: 50

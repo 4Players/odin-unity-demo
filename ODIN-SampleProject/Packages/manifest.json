@@ -1,13 +1,14 @@
 {
   "dependencies": {
+    "com.atmoky.truespatial": "file:/Users/clemensamon/Downloads/atmokyTrueSpatial_Unity_v1.5.0/com.atmoky.truespatial-1.5.0.tgz",
     "com.unity.ai.navigation": "1.1.5",
-    "com.unity.ide.rider": "3.0.28",
+    "com.unity.ide.rider": "3.0.35",
     "com.unity.ide.visualstudio": "2.0.22",
     "com.unity.ide.vscode": "1.2.5",
-    "com.unity.inputsystem": "1.7.0",
-    "com.unity.mobile.android-logcat": "1.4.1",
+    "com.unity.inputsystem": "1.14.0",
+    "com.unity.mobile.android-logcat": "1.4.4",
     "com.unity.test-framework": "1.1.33",
-    "com.unity.textmeshpro": "3.0.6",
+    "com.unity.textmeshpro": "3.0.7",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",

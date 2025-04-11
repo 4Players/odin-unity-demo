@@ -82,7 +82,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
     /// </summary>
     public class OdinAudioFilterSettingsController : MonoBehaviour
     {
-
+        
         /// <summary>
         ///     All bool settings
         /// </summary>
@@ -125,7 +125,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 
             foreach (OdinFloatSetting setting in floatSettings)
                 setting.slider.onValueChanged.RemoveAllListeners();
-
+            
             foreach (OdinEnumSetting setting in enumSettings)
                 setting.dropdown.onValueChanged.RemoveAllListeners();
 
@@ -172,7 +172,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
                 {
                     UpdateFloatSetting(setting.configProperty, newValue);
                 });
-
+            
             foreach (OdinEnumSetting setting in enumSettings)
                 setting.dropdown.onValueChanged.AddListener(newValue =>
                 {
@@ -295,7 +295,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
             }
 
             // Set Enum dropdowns to current value.
-
+            
         }
 
         /// <summary>
