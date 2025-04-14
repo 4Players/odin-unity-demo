@@ -237,75 +237,16 @@ where the `selectedDevice` is one of the string options listed in the `Microphon
 ## Audio
 
 To better showcase the capabilities of ODIN in apps and games, we've implemented some audio
-features that are often used in games, but not included in Unity's Audio System: Audio Occlusion and Directional Audio. Because we want to keep things simple and performant, we're going to approximate those effects, using Unity's ``AudioLowPassFilter`` component
-and by adjusting the volume of individual audio sources.
+features that are often used in games but not supported by Unity's default Audio Engine. 
+We have introduced them with the implementation of [atmoky's True Spatial Audio plugin](https://atmoky.com/products/true-spatial/).
 
-### Audio Occlusion
+Have a look at the [Developer Documentation](https://developer.atmoky.com/true-spatial-unity/docs) to learn how to implement atmoky with the most recent version in your Unity project. In this tech demo you can find multiple show cased features.
 
-Audio Occlusion should occur when an object is placed between the audio listener (our player) and audio sources in the scene - e.g.
-hearing the muffled sounds of an enemy approaching from behind a wall.
-Unity does not have any kind of built-in audio occlusion, so we need to implement our own system. 
-The `OcclusionAudioListener` script contains most of the occlusion logic and is placed, together with the `AudioListener` script,
-on our local player object. The `OcclusionAudioListener` registers objects with colliders, that enter the detection range and have at least one `AudioSource` script attached in the transform hierarchy. By default the detection range 
-is set to 100 meters - Audio Sources that are farther away than that are usually 
-not loud enough to be affected meaningfully by our occlusion system.
-We then apply the occlusion effects to each of the registered Audio Sources in every frame. 
-
-Our occlusion effects have the parameters 
-`Volume`, `Cutoff Frequency` and `Lowpass Resonance Q`:
-- **Volume:** Multiplier for the audio source's volume.
-- **Cutoff Frequency:** Removes all frequencies above this value from the output of the Audio Source. This value is probably
-the most important for our occlusion effect, as is makes the audio sound muffled. The cutoff frequency can range
-from 0 to 22.000 Hz.
-- **Lowpass Resonance Q:** This value determines how much the filter dampens self-resonance. This basically means, the 
-higher the value, the better sound is transmitted through the material the filter is representing. E.g. for imitating an iron
-door, the `Lowpass Resonance Q` value should be higher than for imitating a wooden door.
-
-The occlusion effect is based on the thickness of objects between our 
-`AudioListener` and the `AudioSource`. For each audio source we check for colliders placed between the listener and the source using raycasts and
-determine the thickness of the collider. This thickness value is then used to look
-up the final effect values from an `AudioEffectDefinition` ScriptableObject. For each of 
-the three parameters `Volume`, `Cutoff Frequency` and `Lowpass Resonance Q` the ScriptableObject
-contains a curve, which maps from the collider's thickness on the x-Axis to the parameter value
-on the y-Axis.
-
-The image below shows an Audio Effect Definition Scriptable Object for the Concrete material. When selecting the `Cutoff Frequency Curve`, Unity's Curve Editor window shows up to allow finetuning the settings. The x-axis displays the thickness of an occluding object in meters. The curve then maps to the cutoff frequency displayed on the y-axis.
-
-![The Audio Effect Definition Scriptable Object.](Documentation/ODIN-TechDemo-OcclusionEffectSettings.webp)
-
-The `AudioEffectDefinition` is retrieved using one of two options:
-- By placing an `AudioObstacle` script on the collider's gameobject. This can be
-used to customize a collider's occlusion effect and give it a certain material's damping
-behaviour. The demo uses the `AudioObstacle` to define the occlusion effect of a brick wall,
-a wooden door, a glass pane or even a 100% soundproof barrier.
-- By falling back to the default `AudioEffectDefinition` - this option is used, if no `AudioObstacle`
-is attached to the collider. 
-
-You can create your own `AudioEffectDefinition` by using the `Create > Odin-Sample > AudioEffectDefinition` 
-menu in your project hierarchy. 
-
-### Directional Audio
-
-Unity's built in audio system allows us to hear differences between sounds coming from left 
-or right, but not whether the object is in front or behind us. The `DirectionalAudioListener` script will take care
-of this using basically the same effects as the audio occlusion system. 
-
-Similar to the `OcclusionAudioListener`, we apply an effect to each Audio Source in 
-the detection range - but instead of using the thickness of objects between source and listener,
-we interpolate the effect based on the angle between the listener's forward vector and a vector
-pointing from the listener to the audio source. 
-
-Note: The implementation currently won't let us differentiate between sound coming from above or below. To implement this behaviour, 
-please take a look at the implementation of [Head Related Transfer Functions (HRTF)](https://en.wikipedia.org/wiki/Head-related_transfer_function).
-
-
-### Environmental Effects
-
-The Tech Demo Level contains a few rooms, that highlight the Audio Occlusion effect for different materials. Additionally, we've used Unity's `AudioReverbZone` components to add environmental effects to these rooms, to further increase the players immersion. Unity provides a few presets which simulate different environments - e.g. the Demo Level's "Brick Room" uses the `Stone Corridor` preset - but also allows to be set to a custom arrangement. The effect will start to be heared at `MaxDistance` and is at full force inside of the `MinDistance` radius.
- 
-While the Voice transmissions are affected by the reverb zones, the Radio transmissions are not, due to the `Bypass Reverb Zone` setting on the Playback Prefab - as described [here](#playback-settings---distance-and-radio-effects).
-
-![The Brick Room with the highlighted Audio Reverb Zone.](Documentation/ODIN-TechDemo-EnvironmentalEffects.webp)
+- **Binaural Rendering**: While Unity does have a spatializer that supports attenuation as well as basic directivity, atmoky introduces a very sophisticated [binaural rendering](https://developer.atmoky.com/true-spatial-unity/docs/spatializer). Each spatial voice chat source and each sample source in the level is marked as a spatialized audio source - simply by adding the `AtmokySource` component to them and adjusting their settings.
+- **Directed Sounds**: In addition to the spatialization sounds can have a [directivity](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/directivity), especially useful for creating a realistic impression of the voices of other players - if they are talking towards you they appear louder than if they are talking to a different direction.
+- **Occlusion**: Atmoky introduces [audio occluders](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/occlusion) which filter sounds based on their settings if they are located between an audio source and the player character.. For the 3rd Person perspective of the demo it uses an Audio Listener placed inside the local player character so that sounds are perceived more immersively from the character's location.
+- **Audio Effects**: The different rooms of the level introduce different versions of reverb - ranging from very exaggerated to more subtle, naturally feeling versions. To make these sound even more plausible we use atmoky's [Near-Field Effect](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/nfe) to control the amount of sound coming from the reverb pass and the dry sound, according to the distance between sound source and listener.
+- **Bulk Rendering**: To the very right of the level you can find a flock of birds which show case [atmoky's bulk rendering](https://developer.atmoky.com/true-spatial-unity/docs/renderer/bulk-rendering) - a technique to implement high amounts of audio sources that still sound very natural to a user, even when the audio listener is placed inside the flock.
 
 ## Game Logic
 
