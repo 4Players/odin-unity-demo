@@ -44,6 +44,20 @@ The demo scene's hierarchy contains three root game objects used for categorizin
 - **Gamelogic:** Behaviours like the `PhotonPlayerSpawner` or the ODIN room join logic are placed here.
 - **UI:** The root object for in-game UI, like the settings menu or the radio room's active user display.
 
+## Atmoky's Audio Features
+
+To better showcase the capabilities of ODIN in apps and games, we've implemented some audio
+features that are often used in games but not supported by Unity's default Audio Engine. 
+We have introduced them with the implementation of [atmoky's True Spatial Audio plugin](https://atmoky.com/products/true-spatial/).
+
+Have a look at the [Developer Documentation](https://developer.atmoky.com/true-spatial-unity/docs) to learn how to implement atmoky with the most recent version in your Unity project. In this tech demo you can find several show cased features:
+
+- **Binaural Rendering**: While Unity does have a spatializer that supports attenuation as well as basic directivity, atmoky introduces a very sophisticated [binaural rendering](https://developer.atmoky.com/true-spatial-unity/docs/spatializer). Each spatial voice chat source and each sample source in the level is marked as a spatialized audio source - simply by adding the `AtmokySource` component to them and adjusting their settings.
+- **Directed Sounds**: In addition to the spatialization sounds can have a [directivity](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/directivity), especially useful for creating a realistic impression of the voices of other players - if they are talking towards you they appear louder than if they are talking to a different direction.
+- **Occlusion**: Atmoky introduces [audio occluders](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/occlusion) which filter sounds based on their settings if they are located between an audio source and the player character.. For the 3rd Person perspective of the demo it uses an Audio Listener placed inside the local player character so that sounds are perceived more immersively from the character's location.
+- **Audio Effects**: The different rooms of the level introduce different versions of reverb - ranging from very exaggerated to more subtle, naturally feeling versions. To make these sound even more plausible we use atmoky's [Near-Field Effect](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/nfe) to control the amount of sound coming from the reverb pass and the dry sound, according to the distance between sound source and listener.
+- **Bulk Rendering**: To the very right of the level you can find a flock of birds which show case [atmoky's bulk rendering](https://developer.atmoky.com/true-spatial-unity/docs/renderer/bulk-rendering) - a technique to implement high amounts of audio sources that still sound very natural to a user, even when the audio listener is placed inside the flock.
+
 ## ODIN terms and behaviours
 
 This is a short introduction into the most important ODIN terms - for more in-depth information [please take a look at the ODIN documentation](https://www.4players.io/odin/introduction/).
@@ -232,21 +246,6 @@ microphoneReader.InputDevice = selectedDevice;
 microphoneReader.StartListen();
 ```
 where the `selectedDevice` is one of the string options listed in the `Microphone.devices` array. The Tech Demo uses the implementation in the `OdinMicrophoneController` script, which also handles saving and loading the users selection in previous game sessions.
-
-
-## Audio
-
-To better showcase the capabilities of ODIN in apps and games, we've implemented some audio
-features that are often used in games but not supported by Unity's default Audio Engine. 
-We have introduced them with the implementation of [atmoky's True Spatial Audio plugin](https://atmoky.com/products/true-spatial/).
-
-Have a look at the [Developer Documentation](https://developer.atmoky.com/true-spatial-unity/docs) to learn how to implement atmoky with the most recent version in your Unity project. In this tech demo you can find multiple show cased features.
-
-- **Binaural Rendering**: While Unity does have a spatializer that supports attenuation as well as basic directivity, atmoky introduces a very sophisticated [binaural rendering](https://developer.atmoky.com/true-spatial-unity/docs/spatializer). Each spatial voice chat source and each sample source in the level is marked as a spatialized audio source - simply by adding the `AtmokySource` component to them and adjusting their settings.
-- **Directed Sounds**: In addition to the spatialization sounds can have a [directivity](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/directivity), especially useful for creating a realistic impression of the voices of other players - if they are talking towards you they appear louder than if they are talking to a different direction.
-- **Occlusion**: Atmoky introduces [audio occluders](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/occlusion) which filter sounds based on their settings if they are located between an audio source and the player character.. For the 3rd Person perspective of the demo it uses an Audio Listener placed inside the local player character so that sounds are perceived more immersively from the character's location.
-- **Audio Effects**: The different rooms of the level introduce different versions of reverb - ranging from very exaggerated to more subtle, naturally feeling versions. To make these sound even more plausible we use atmoky's [Near-Field Effect](https://developer.atmoky.com/true-spatial-unity/docs/spatializer/nfe) to control the amount of sound coming from the reverb pass and the dry sound, according to the distance between sound source and listener.
-- **Bulk Rendering**: To the very right of the level you can find a flock of birds which show case [atmoky's bulk rendering](https://developer.atmoky.com/true-spatial-unity/docs/renderer/bulk-rendering) - a technique to implement high amounts of audio sources that still sound very natural to a user, even when the audio listener is placed inside the flock.
 
 ## Game Logic
 
