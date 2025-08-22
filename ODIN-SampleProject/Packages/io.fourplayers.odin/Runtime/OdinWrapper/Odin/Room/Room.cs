@@ -279,30 +279,6 @@ namespace OdinNative.Odin.Room
         }
 
         /// <summary>
-        /// Updates the user data for the current room.
-        /// </summary>
-        /// <param name="userData">Userdata to send</param>
-        /// <returns>true if userdata was set for the room or false</returns>
-        public bool UpdateRoomUserData(IUserData userData)
-        {
-            byte[] data = userData?.ToBytes() ?? new byte[0];
-            RoomUserData = (UserData)data;
-            return OdinLibrary.Api.RoomUpdateUserData(_Handle, data, (ulong)data.Length, OdinUserDataTarget.OdinUserDataTarget_Room) == Utility.OK;
-        }
-
-        /// <summary>
-        /// Updates the user data for the current room.
-        /// </summary>
-        /// <param name="userData">Userdata to send</param>
-        /// <returns>true if userdata was set for the room or false</returns>
-        public async Task<bool> UpdateRoomUserDataAsync(IUserData userData)
-        {
-            return await Task.Run(() => {
-                return UpdateRoomUserData(userData);
-            });
-        }
-
-        /// <summary>
         /// Sends arbitrary data to a array of target peerIds.
         /// </summary>
         /// <remarks>associated ids of peers must be in the same room and should not be empty</remarks>
@@ -453,7 +429,8 @@ namespace OdinNative.Odin.Room
         /// <remarks>Default <see cref="Room"/> sender and <see cref="MediaActiveStateChangedEventArgs"/></remarks>
         public event MediaActiveStateChangedEventHandler OnMediaActiveStateChanged;
         /// <summary>
-        /// Passthrough event that identified a new RoomUserDataChanged event by Event-Tag.
+        /// Passthrough event that identified a new RoomUserDataChanged event by Event-Tag. Changing a Room's UserData
+        /// is only possible via request to Odin server API, but not supported inside the client SDK.
         /// </summary>
         /// <remarks>Default <see cref="Room"/> sender and <see cref="RoomUserDataChangedEventArgs"/></remarks>
         public event RoomUserDataChangedEventHandler OnRoomUserDataChanged;

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace OdinNative.Core.Handles
 {
@@ -32,10 +33,24 @@ namespace OdinNative.Core.Handles
             
             NativeMethods.OdinStartupExDelegate startupClientLib;
             GetLibraryMethod("odin_startup_ex", out startupClientLib);
+            
+            
+#if (UNITY_STANDALONE || UNITY_EDITOR || ENABLE_IL2CPP || ENABLE_MONO) && !ODIN_UNITY_AUDIO_ENGINE_DISABLED
+            uint sampleRate = (uint)UnityEngine.AudioSettings.outputSampleRate;
+            if (0 == sampleRate)
+            {
+                sampleRate = OdinNative.Core.Imports.NativeBindings.BlockSamplerate;
+                Debug.LogWarning("ODIN: Sample Rate returned by Unity Audio Settings is invalid. This usually happens when the Unity Audio Engine is disabled. If this is the case, please set the ODIN_UNITY_AUDIO_ENGINE_DISABLED flag in the Player Settings Scripting Define Symbols section.");
+            }
+#else
+               uint sampleRate = OdinNative.Core.Imports.NativeBindings.BlockSamplerate;
+#endif
+            byte channelCount = (byte)OdinNative.Core.Imports.NativeBindings.OdinChannelLayout.OdinChannelLayout_Mono;
+            
             NativeBindings.OdinAudioStreamConfig defaultConfig = new NativeBindings.OdinAudioStreamConfig() 
-            { 
-                sample_rate = OdinNative.Core.Imports.NativeBindings.BlockSamplerate, 
-                channel_count = (byte)OdinNative.Core.Imports.NativeBindings.OdinChannelLayout.OdinChannelLayout_Mono
+            {
+                sample_rate = sampleRate,
+                channel_count = channelCount
             };
             startupClientLib(OdinNative.Core.Imports.NativeBindings.OdinVersion, defaultConfig);
         }

@@ -21,6 +21,7 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_startup_ex", out _OdinStartupEx);
             handle.GetLibraryMethod("odin_shutdown", out _OdinShutdown);
             handle.GetLibraryMethod("odin_room_create", out _OdinRoomCreate);
+            handle.GetLibraryMethod("odin_audio_set_stream_delay", out _OdinAudioSetStreamDelay);
             handle.GetLibraryMethod("odin_room_configure_apm", out _OdinRoomConfigureApm);
             handle.GetLibraryMethod("odin_room_close", out _OdinRoomClose);
             handle.GetLibraryMethod("odin_room_destroy", out _OdinRoomDestroy);
@@ -30,13 +31,15 @@ namespace OdinNative.Core.Imports
             handle.GetLibraryMethod("odin_room_connection_stats", out _OdinRoomConnectionStats);
             handle.GetLibraryMethod("odin_room_join", out _OdinRoomJoin);
             handle.GetLibraryMethod("odin_room_add_media", out _OdinRoomAddMedia);
-            handle.GetLibraryMethod("odin_room_update_user_data", out _OdinRoomUpdateUserData);
+            handle.GetLibraryMethod("odin_room_update_peer_user_data", out _OdinRoomUpdateUserData);
             handle.GetLibraryMethod("odin_room_update_position", out _OdinRoomUpdatePosition);
             handle.GetLibraryMethod("odin_room_set_event_callback", out _OdinRoomSetEventCallback);
             handle.GetLibraryMethod("odin_room_set_position_scale", out _OdinRoomSetPositionScale);
             handle.GetLibraryMethod("odin_room_send_message", out _OdinRoomSendMessage);
             handle.GetLibraryMethod("odin_video_stream_create", out _OdinVideoStreamCreate);
             handle.GetLibraryMethod("odin_audio_stream_create", out _OdinAudioStreamCreate);
+            handle.GetLibraryMethod("odin_media_stream_resume", out _OdinMediaStreamResume);
+            handle.GetLibraryMethod("odin_media_stream_pause", out _OdinMediaStreamPause);
             handle.GetLibraryMethod("odin_media_stream_destroy", out _OdinMediaStreamDestroy);
             handle.GetLibraryMethod("odin_media_stream_type", out _OdinMediaStreamType);
             handle.GetLibraryMethod("odin_media_stream_media_id", out _OdinMediaStreamMediaId);

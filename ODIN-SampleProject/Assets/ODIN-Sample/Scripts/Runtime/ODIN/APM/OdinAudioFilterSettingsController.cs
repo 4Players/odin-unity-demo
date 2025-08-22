@@ -32,6 +32,11 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
         public string configProperty;
 
         /// <summary>
+        ///     During serialization, should overwrite current setting and hard set to false. Used to securely disable Odin Room unused settings.
+        /// </summary>
+        public bool alwaysDisable;
+
+        /// <summary>
         ///     Reference to the toggle.
         /// </summary>
         public Toggle toggle;
@@ -77,7 +82,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
     /// </summary>
     public class OdinAudioFilterSettingsController : MonoBehaviour
     {
-        
+
         /// <summary>
         ///     All bool settings
         /// </summary>
@@ -120,7 +125,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
 
             foreach (OdinFloatSetting setting in floatSettings)
                 setting.slider.onValueChanged.RemoveAllListeners();
-            
+
             foreach (OdinEnumSetting setting in enumSettings)
                 setting.dropdown.onValueChanged.RemoveAllListeners();
 
@@ -149,6 +154,10 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
                 OdinAudioFilterSettingsModel.OverwriteDefaultData(_model);
             }
 
+            // disable all unused audio features to prevent unwanted artifacts
+            foreach (OdinBoolSetting boolSetting in boolSettings)
+                if (boolSetting.alwaysDisable) UpdateBoolSetting(boolSetting.configProperty, false);
+
             ApplyModelToOdinHandler(_model);
             UpdateViews();
 
@@ -163,7 +172,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
                 {
                     UpdateFloatSetting(setting.configProperty, newValue);
                 });
-            
+
             foreach (OdinEnumSetting setting in enumSettings)
                 setting.dropdown.onValueChanged.AddListener(newValue =>
                 {
@@ -286,7 +295,7 @@ namespace ODIN_Sample.Scripts.Runtime.ODIN.APM
             }
 
             // Set Enum dropdowns to current value.
-            
+
         }
 
         /// <summary>
