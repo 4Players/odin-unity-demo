@@ -19,7 +19,7 @@ In this guide we’ll walk you through the basic concepts of integrating ODIN in
 the Photon PUN 2 multiplayer framework, but ODIN can be integrated into your game using any multiplayer solution or
 even without multiplayer. The ODIN-Demo itself also allows us to easily switch out Photon for another framework.
 
-If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://www.4players.io/odin/introduction/).
+If you are unsure why you should use ODIN for that, learn more about our features and what makes us special in our [introduction](https://docs.4players.io/voice/introduction/).
 
 ## Project Structure
 
@@ -38,13 +38,13 @@ The demo scene's hierarchy contains three root game objects used for categorizin
 
 ## ODIN terms and behaviours
 
-This is a short introduction into the most important ODIN terms - for more in-depth information [please take a look at the ODIN documentation](https://www.4players.io/odin/introduction/).
+This is a short introduction into the most important ODIN terms - for more in-depth information [please take a look at the ODIN documentation](https://docs.4players.io/voice/).
 
 ### Rooms, Peers and Media
 
 Every client connects to an ODIN server, authenticates with an access token and joins a room. Once the client has joined a room, they are a peer inside the ODIN room. Every peer can add media to that room, linked to a physical device like a microphone. Clients can join multiple rooms at the same time and can add multiple media streams at the same time.
 
-To find more information on the basic ODIN topology, [please take a look at the Basic Concepts documentation](https://www.4players.io/odin/introduction/structure/).
+To find more information on the basic ODIN topology, [please take a look at the Basic Concepts documentation](https://docs.4players.io/voice/introduction/structure/).
 
 ### OdinHandler
 
@@ -65,7 +65,7 @@ peer id and a room name.
 
 ### User Data
 
-Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data on all clients. Read more about user data in the guide: [Understanding User Data](https://www.4players.io/odin/guides/unity/user-data/).
+Every peer in Unity can store arbitrary information as user data. When local user data is updated, the server updates user data on all clients. Read more about user data in the guide: [Understanding User Data](https://docs.4players.io/voice/unity/guides/user-data/).
 
 ## Multiplayer
 
